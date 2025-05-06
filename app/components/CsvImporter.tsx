@@ -1,0 +1,520 @@
+'use client';
+
+import { useState } from 'react';
+import { Box, Button, Typography, CircularProgress, Alert, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from '@mui/material';
+import { addBike } from '../services/bikeService';
+import { Bike } from '../models/Bike';
+
+export default function CsvImporter() {
+  const [file, setFile] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [delimiter, setDelimiter] = useState<string>('auto');
+  const [debugInfo, setDebugInfo] = useState<{skipped: number, total: number, reasons: Record<string, number>}>({
+    skipped: 0,
+    total: 0,
+    reasons: {}
+  });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+      setError(null);
+      setSuccess(null);
+      setDebugInfo({
+        skipped: 0,
+        total: 0,
+        reasons: {}
+      });
+    }
+  };
+
+  const handleDelimiterChange = (e: SelectChangeEvent) => {
+    setDelimiter(e.target.value);
+  };
+
+  // Detect the delimiter from the file content
+  const detectDelimiter = (content: string): string => {
+    const firstLine = content.split('\n')[0];
+    
+    // Count occurrences of common delimiters
+    const delimiters = [',', ';', '\t'];
+    const counts = delimiters.map(d => {
+      return {
+        delimiter: d,
+        count: (firstLine.match(new RegExp(d === '\t' ? '\t' : `\\${d}`, 'g')) || []).length
+      };
+    });
+    
+    // Find the delimiter with the most occurrences
+    const detected = counts.sort((a, b) => b.count - a.count)[0];
+    return detected.count > 0 ? detected.delimiter : ','; // Default to comma if no delimiter found
+  };
+
+  const addSkipReason = (reason: string) => {
+    setDebugInfo(prev => {
+      const newReasons = { ...prev.reasons };
+      newReasons[reason] = (newReasons[reason] || 0) + 1;
+      return {
+        ...prev,
+        skipped: prev.skipped + 1,
+        reasons: newReasons
+      };
+    });
+  };
+
+  const processCSV = (csvText: string, csvDelimiter: string) => {
+    // Split the CSV into lines
+    const lines = csvText.split(/\r?\n/); // Handle both Windows and Unix line endings
+    
+    // Reset debug info
+    setDebugInfo({
+      skipped: 0,
+      total: lines.length - 1, // Exclude header row
+      reasons: {}
+    });
+    
+    // Get headers from the first non-empty line
+    let headerLine = 0;
+    while (headerLine < lines.length && !lines[headerLine].trim()) {
+      headerLine++;
+    }
+    
+    if (headerLine >= lines.length) {
+      throw new Error('CSV file appears to be empty');
+    }
+    
+    const headers = lines[headerLine].split(csvDelimiter).map(header => header.trim());
+    console.log('Headers detected:', headers);
+    
+    // Parse the data
+    const data: Bike[] = [];
+    
+    for (let i = headerLine + 1; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) {
+        addSkipReason('Empty line');
+        continue; // Skip empty lines
+      }
+      
+      // Try to handle quoted values properly
+      let values: string[] = [];
+      let currentValue = '';
+      let inQuotes = false;
+      
+      // Simple CSV parser that handles quoted values
+      for (let j = 0; j < line.length; j++) {
+        const char = line[j];
+        
+        if (char === '"' && (j === 0 || line[j-1] !== '\\')) {
+          inQuotes = !inQuotes;
+        } else if (char === csvDelimiter && !inQuotes) {
+          values.push(currentValue.trim());
+          currentValue = '';
+        } else {
+          currentValue += char;
+        }
+      }
+      
+      // Add the last value
+      values.push(currentValue.trim());
+      
+      // Post-process values to remove quotes
+      values = values.map(value => {
+        if (value.startsWith('"') && value.endsWith('"')) {
+          return value.substring(1, value.length - 1).trim();
+        }
+        return value.trim();
+      });
+      
+      // Check if we have the right number of columns
+      if (values.length !== headers.length) {
+        addSkipReason(`Column count mismatch (found ${values.length}, expected ${headers.length})`);
+        console.warn(`Line ${i+1}: Wrong number of columns (found ${values.length}, expected ${headers.length})`);
+        console.warn(`Line content: ${line}`);
+        continue;
+      }
+      
+      // Create a bike object from the CSV row
+      const bike: Partial<Bike> = {
+        manufacturer: 'Bulls', // Default value
+      };
+      
+      // Track if we have at least the model name
+      let hasModelName = false;
+      
+      // Map CSV headers to Bike properties
+      headers.forEach((header, index) => {
+        const value = values[index];
+        if (!value) return; // Skip empty values
+        
+        const headerLower = header.toLowerCase().trim();
+        
+        switch(headerLower) {
+          case 'model':
+          case 'modelname':
+          case 'name':
+            bike.modelName = value;
+            hasModelName = true;
+            break;
+          case 'year':
+          case 'modelyear':
+            bike.modelYear = parseInt(value) || new Date().getFullYear();
+            break;
+          case 'weight':
+          case 'kg':
+            bike.weight = parseFloat(value.replace(',', '.')) || 0;
+            break;
+          case 'material':
+          case 'framematerial':
+          case 'frame':
+            bike.frameMaterial = value;
+            break;
+          case 'image':
+          case 'imageurl':
+          case 'img':
+          case 'url':
+            bike.imageUrl = value;
+            break;
+          case 'location':
+          case 'store':
+          case 'warehouse':
+            bike.location = value;
+            break;
+          case 'battery':
+          case 'batt':
+          case 'wh':
+            bike.battery = value;
+            break;
+          case 'color':
+          case 'colour':
+            bike.color = value;
+            break;
+          case 'size':
+          case 'framesize':
+            bike.size = value;
+            break;
+          case 'category':
+          case 'cat':
+          case 'type':
+            bike.category = value;
+            break;
+          case 'isebike':
+          case 'ebike':
+          case 'electric':
+          case 'e-bike':
+            bike.isEbike = value.toLowerCase() === 'true' || 
+                           value === '1' || 
+                           value.toLowerCase() === 'yes' || 
+                           value.toLowerCase() === 'y' ||
+                           value.toLowerCase() === 'e'; // Accept more variations
+            break;
+          case 'pieces':
+          case 'quantity':
+          case 'amount':
+          case 'count':
+          case 'qty':
+            bike.pieces = parseInt(value) || 1;
+            break;
+          case 'priceretail':
+          case 'retail':
+          case 'price':
+          case 'msrp':
+            bike.priceRetail = parseInt(value.replace(/[^\d]/g, '')) || 0;
+            break;
+          case 'priceaction':
+          case 'action':
+          case 'sale':
+          case 'discount':
+            bike.priceAction = parseInt(value.replace(/[^\d]/g, '')) || 0;
+            break;
+          case 'pricereseller':
+          case 'reseller':
+          case 'wholesale':
+          case 'dealer':
+            bike.priceReseller = parseInt(value.replace(/[^\d]/g, '')) || 0;
+            break;
+          case 'note':
+          case 'notes':
+          case 'description':
+          case 'desc':
+          case 'comment':
+            bike.note = value;
+            break;
+          default:
+            console.warn(`Unknown header: "${header}" with value: "${value}"`);
+        }
+      });
+      
+      // Fill in any missing required fields with defaults
+      const completeBike: Bike = {
+        manufacturer: 'Bulls',
+        modelName: bike.modelName || '',
+        modelYear: bike.modelYear || new Date().getFullYear(),
+        weight: bike.weight || 0,
+        frameMaterial: bike.frameMaterial || '',
+        imageUrl: bike.imageUrl || '',
+        location: bike.location || '',
+        battery: bike.battery || '',
+        color: bike.color || '',
+        size: bike.size || '',
+        category: bike.category || '',
+        isEbike: bike.isEbike || false,
+        pieces: bike.pieces || 1,
+        priceRetail: bike.priceRetail || 0,
+        priceAction: bike.priceAction || 0,
+        priceReseller: bike.priceReseller || 0,
+        note: bike.note || ''
+      };
+      
+      // Only add bikes that have at least a model name
+      if (hasModelName && completeBike.modelName) {
+        data.push(completeBike);
+      } else {
+        addSkipReason('Missing model name');
+        console.warn(`Line ${i+1}: Missing model name`);
+      }
+    }
+    
+    return data;
+  };
+
+  const importBikes = async (bikes: Bike[]) => {
+    let imported = 0;
+    let errors = 0;
+    
+    for (let i = 0; i < bikes.length; i++) {
+      try {
+        await addBike(bikes[i]);
+        imported++;
+        setProgress(Math.round((i + 1) / bikes.length * 100));
+      } catch (err) {
+        errors++;
+        console.error(`Error importing bike ${bikes[i].modelName}:`, err);
+      }
+    }
+    
+    return { imported, errors };
+  };
+
+  const handleSubmit = async () => {
+    if (!file) {
+      setError('Please select a CSV file first');
+      return;
+    }
+    
+    setIsLoading(true);
+    setProgress(0);
+    setError(null);
+    setSuccess(null);
+    
+    try {
+      // Read the file
+      const text = await file.text();
+      console.log(`CSV file size: ${text.length} characters`);
+      
+      // Auto-detect delimiter if set to 'auto'
+      const useDelimiter = delimiter === 'auto' ? detectDelimiter(text) : delimiter;
+      console.log(`Using delimiter: "${useDelimiter}" (${useDelimiter === '\t' ? 'tab' : useDelimiter})`);
+      
+      // Process the CSV
+      const bikes = processCSV(text, useDelimiter);
+      console.log(`Found ${bikes.length} valid bikes in CSV`);
+      
+      if (bikes.length === 0) {
+        throw new Error('No valid bike data found in the CSV file');
+      }
+      
+      // Import the bikes
+      const { imported, errors } = await importBikes(bikes);
+      
+      setSuccess(`Successfully imported ${imported} bikes out of ${bikes.length} (${errors} errors). ${debugInfo.skipped} entries were skipped from the original CSV.`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An unknown error occurred');
+      console.error('CSV import error:', err);
+    } finally {
+      setIsLoading(false);
+      setFile(null);
+      // Reset the file input
+      const fileInput = document.getElementById('csv-file-input') as HTMLInputElement;
+      if (fileInput) fileInput.value = '';
+    }
+  };
+
+  const generateSampleCsv = () => {
+    const headers = [
+      'modelName', 'modelYear', 'weight', 'frameMaterial', 
+      'imageUrl', 'location', 'battery', 'color', 'size', 
+      'category', 'isEbike', 'pieces', 'priceRetail', 
+      'priceAction', 'priceReseller', 'note'
+    ];
+    
+    const sampleData = [
+      [
+        'Wild Cross 1', '2023', '15.5', 'Aluminum', 
+        'https://example.com/bike1.jpg', 'Store A', 'Bosch PowerTube 625Wh', 'Red', 'M', 
+        'MTB', 'true', '2', '59990', 
+        '54990', '49990', 'Demo model with slight wear'
+      ],
+      [
+        'Lacuba EVO 8', '2024', '22.3', 'Carbon', 
+        'https://example.com/bike2.jpg', 'Warehouse', 'Bosch PowerTube 750Wh', 'Black', 'L', 
+        'City', 'true', '1', '72990', 
+        '68990', '62990', 'New arrival'
+      ]
+    ];
+    
+    let csvContent = headers.join(',') + '\n';
+    
+    for (const row of sampleData) {
+      csvContent += row.join(',') + '\n';
+    }
+    
+    return csvContent;
+  };
+
+  const downloadSampleCsv = () => {
+    const csvContent = generateSampleCsv();
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'bulls_bikes_sample.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  return (
+    <Box sx={{ mt: 4, mb: 4 }}>
+      <Typography variant="h6" sx={{ mb: 2 }}>Import Bikes from CSV</Typography>
+      
+      <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
+        <Box sx={{ flexGrow: 1, mr: 2 }}>
+          <input
+            id="csv-file-input"
+            type="file"
+            accept=".csv,.txt"
+            onChange={handleFileChange}
+            style={{ display: 'none' }}
+          />
+          <Button
+            variant="outlined"
+            component="label"
+            htmlFor="csv-file-input"
+            sx={{ mr: 2 }}
+            disabled={isLoading}
+          >
+            Select CSV File
+          </Button>
+          <Typography variant="body2" sx={{ mt: 1 }}>
+            {file ? `Selected: ${file.name}` : 'No file selected'}
+          </Typography>
+        </Box>
+        
+        <FormControl sx={{ minWidth: 120 }}>
+          <InputLabel id="delimiter-label">Delimiter</InputLabel>
+          <Select
+            labelId="delimiter-label"
+            value={delimiter}
+            label="Delimiter"
+            onChange={handleDelimiterChange}
+            disabled={isLoading}
+            size="small"
+          >
+            <MenuItem value="auto">Auto-detect</MenuItem>
+            <MenuItem value=",">Comma (,)</MenuItem>
+            <MenuItem value=";">Semicolon (;)</MenuItem>
+            <MenuItem value="\t">Tab</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
+      
+      <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSubmit}
+          disabled={!file || isLoading}
+        >
+          {isLoading ? 'Importing...' : 'Import Data'}
+        </Button>
+        
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={downloadSampleCsv}
+          disabled={isLoading}
+        >
+          Download Sample CSV
+        </Button>
+      </Box>
+      
+      {isLoading && (
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <CircularProgress size={24} sx={{ mr: 2 }} />
+          <Typography variant="body2">
+            Importing... {progress}%
+          </Typography>
+        </Box>
+      )}
+      
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+      
+      {success && (
+        <Alert severity="success" sx={{ mb: 2 }}>
+          {success}
+        </Alert>
+      )}
+
+      {debugInfo.skipped > 0 && (
+        <Alert severity="info" sx={{ mb: 2 }}>
+          <Typography variant="subtitle2">Debug Information:</Typography>
+          <Typography variant="body2">
+            Skipped {debugInfo.skipped} rows out of {debugInfo.total} total rows in CSV
+          </Typography>
+          <Typography variant="subtitle2" sx={{ mt: 1 }}>Reasons for skipping:</Typography>
+          <ul>
+            {Object.entries(debugInfo.reasons).map(([reason, count]) => (
+              <li key={reason}>{reason}: {count} rows</li>
+            ))}
+          </ul>
+        </Alert>
+      )}
+      
+      <Box sx={{ mt: 4 }}>
+        <Typography variant="subtitle2">CSV Format Instructions:</Typography>
+        <Typography variant="body2">
+          Your CSV file should include headers. Recognized headers (case-insensitive):
+        </Typography>
+        <ul>
+          <li>modelName/model/name - Bike model name</li>
+          <li>modelYear/year - Model year</li>
+          <li>weight/kg - Weight in kg</li>
+          <li>frameMaterial/material/frame - Frame material</li>
+          <li>imageUrl/image/img/url - URL to bike image</li>
+          <li>location/store/warehouse - Where the bike is stored</li>
+          <li>battery/batt/wh - Battery specifications</li>
+          <li>color/colour - Bike color</li>
+          <li>size/frameSize - Size of the bike</li>
+          <li>category/cat/type - MTB, Road, etc.</li>
+          <li>isEbike/eBike/electric/e-bike - true/false, yes/no, y/n, or 1/0</li>
+          <li>pieces/quantity/amount/count/qty - Number of pieces</li>
+          <li>priceRetail/retail/price/msrp - Retail price in CZK</li>
+          <li>priceAction/action/sale/discount - Action price in CZK</li>
+          <li>priceReseller/reseller/wholesale/dealer - Reseller price in CZK</li>
+          <li>note/notes/description/desc/comment - Additional notes</li>
+        </ul>
+        <Typography variant="body2">
+          Note: Manufacturer will always be set to "Bulls"
+        </Typography>
+      </Box>
+    </Box>
+  );
+} 
