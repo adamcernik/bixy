@@ -28,7 +28,7 @@ export default function Home() {
   const [openAddDialog, setOpenAddDialog] = useState(false);
 
   const pathname = usePathname();
-  const basePath = pathname.startsWith('/bixy') ? '/bixy' : '';
+  const basePath = process.env.NODE_ENV === 'production' ? '/bixy' : '';
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
@@ -69,13 +69,12 @@ export default function Home() {
         <div className="w-full">
           <div className="flex items-center mb-4">
             <div className="flex items-center">
-              <Image 
+              <img 
                 src={`${basePath}/bixy-logo.svg`}
                 alt="Bixy Logo" 
                 width={80} 
-                height={64} 
-                priority
-                className="object-contain"
+                height={64}
+                style={{ objectFit: 'contain' }}
               />
               <h1 className="text-3xl font-bold ml-4">Bixy Stock Management</h1>
               <div className="ml-2">
@@ -99,13 +98,12 @@ export default function Home() {
         {/* Header with logo and title */}
         <div className="flex items-center mb-4">
           <div className="flex items-center flex-grow">
-            <Image 
+            <img 
               src={`${basePath}/bixy-logo.svg`}
               alt="Bixy Logo" 
               width={80} 
-              height={64} 
-              priority
-              className="object-contain"
+              height={64}
+              style={{ objectFit: 'contain' }}
             />
             <h1 className="text-3xl font-bold ml-4">Bixy Stock Management</h1>
             <div className="ml-2">
