@@ -6,6 +6,7 @@ import Image from 'next/image';
 import ConnectionIndicator from './components/ConnectionIndicator';
 import { Box, Tabs, Tab, Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import { usePathname } from 'next/navigation';
 
 // Dynamically import the BikeDataGrid component to avoid server-side rendering issues with Firebase
 const BikeDataGrid = dynamic(() => import('./components/BikeDataGrid'), {
@@ -25,6 +26,9 @@ export default function Home() {
   const [showBikeGrid, setShowBikeGrid] = useState(true);
   const [showCsvImporter, setShowCsvImporter] = useState(false);
   const [openAddDialog, setOpenAddDialog] = useState(false);
+
+  const pathname = usePathname();
+  const basePath = pathname.startsWith('/bixy') ? '/bixy' : '';
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
@@ -66,7 +70,7 @@ export default function Home() {
           <div className="flex items-center mb-4">
             <div className="flex items-center">
               <Image 
-                src="/bixy-logo.svg" 
+                src={`${basePath}/bixy-logo.svg`}
                 alt="Bixy Logo" 
                 width={80} 
                 height={64} 
@@ -96,7 +100,7 @@ export default function Home() {
         <div className="flex items-center mb-4">
           <div className="flex items-center flex-grow">
             <Image 
-              src="/bixy-logo.svg" 
+              src={`${basePath}/bixy-logo.svg`}
               alt="Bixy Logo" 
               width={80} 
               height={64} 
