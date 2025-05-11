@@ -2,24 +2,26 @@
 2:I[3475,["992","static/chunks/bc9e92e6-a055962364c9dbd6.js","118","static/chunks/05411bfb-69dfdc99bfa13d7c.js","566","static/chunks/566-f4e235266c9aa818.js","177","static/chunks/app/layout-af252db11626c8ea.js"],"AuthProvider"]
 3:I[7555,[],""]
 4:I[1295,[],""]
-5:I[894,[],"ClientPageRoot"]
-6:I[9034,["992","static/chunks/bc9e92e6-a055962364c9dbd6.js","118","static/chunks/05411bfb-69dfdc99bfa13d7c.js","566","static/chunks/566-f4e235266c9aa818.js","329","static/chunks/329-46874fefcfbf99f5.js","974","static/chunks/app/page-c8deb8bffedb5f94.js"],"default"]
-9:I[9665,[],"MetadataBoundary"]
-b:I[9665,[],"OutletBoundary"]
-e:I[4911,[],"AsyncMetadataOutlet"]
-10:I[9665,[],"ViewportBoundary"]
-12:I[6614,[],""]
+5:I[3063,["63","static/chunks/63-41728647409a1937.js","345","static/chunks/app/not-found-67d6e961774448f6.js"],"Image"]
+6:I[6874,["63","static/chunks/63-41728647409a1937.js","345","static/chunks/app/not-found-67d6e961774448f6.js"],""]
+7:I[894,[],"ClientPageRoot"]
+8:I[9034,["992","static/chunks/bc9e92e6-a055962364c9dbd6.js","118","static/chunks/05411bfb-69dfdc99bfa13d7c.js","566","static/chunks/566-f4e235266c9aa818.js","63","static/chunks/63-41728647409a1937.js","24","static/chunks/24-d7c8bb4a12d31575.js","974","static/chunks/app/page-b8de9dea9e22d9a7.js"],"default"]
+b:I[9665,[],"MetadataBoundary"]
+d:I[9665,[],"OutletBoundary"]
+10:I[4911,[],"AsyncMetadataOutlet"]
+12:I[9665,[],"ViewportBoundary"]
+14:I[6614,[],""]
 :HL["/bixy/_next/static/media/569ce4b8f30dc480-s.p.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 :HL["/bixy/_next/static/media/93f479601ee12b01-s.p.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
-:HL["/bixy/_next/static/css/897b624de2d6fbd8.css","style"]
-0:{"P":null,"b":"xpsIen6_Td1ofvz5PGq47","p":"/bixy","c":["",""],"i":false,"f":[[["",{"children":["__PAGE__",{}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/bixy/_next/static/css/897b624de2d6fbd8.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":[["$","head",null,{"children":[["$","meta",null,{"name":"viewport","content":"width=device-width, initial-scale=1.0"}],["$","meta",null,{"name":"theme-color","content":"#ffffff"}],["$","link",null,{"rel":"apple-touch-icon","href":"/apple-touch-icon.png"}],["$","link",null,{"rel":"manifest","href":"/site.webmanifest"}]]}],["$","body",null,{"className":"__variable_f9091f __variable_7f9a85 antialiased","children":["$","$L2",null,{"children":["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]}]]}]]}],{"children":["__PAGE__",["$","$1","c",{"children":[["$","$L5",null,{"Component":"$6","searchParams":{},"params":{},"promises":["$@7","$@8"]}],["$","$L9",null,{"children":"$La"}],null,["$","$Lb",null,{"children":["$Lc","$Ld",["$","$Le",null,{"promise":"$@f"}]]}]]}],{},null,false]},null,false],["$","$1","h",{"children":[null,["$","$1","G6rcm3nc9DJGQ3qnahlic",{"children":[["$","$L10",null,{"children":"$L11"}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],null]}],false]],"m":"$undefined","G":["$12","$undefined"],"s":false,"S":true}
-13:"$Sreact.suspense"
-14:I[4911,[],"AsyncMetadata"]
-7:{}
-8:{}
-a:["$","$13",null,{"fallback":null,"children":["$","$L14",null,{"promise":"$@15"}]}]
-d:null
-11:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
-c:null
-15:{"metadata":[["$","title","0",{"children":"Bixy Stock Management"}],["$","meta","1",{"name":"description","content":"Inventory management system for Bulls bikes"}],["$","link","2",{"rel":"manifest","href":"/site.webmanifest","crossOrigin":"$undefined"}],["$","link","3",{"rel":"icon","href":"/favicon.ico","sizes":"any"}],["$","link","4",{"rel":"icon","href":"/favicon.svg","type":"image/svg+xml"}],["$","link","5",{"rel":"icon","href":"/favicon-96x96.png","type":"image/png","sizes":"96x96"}],["$","link","6",{"rel":"apple-touch-icon","href":"/apple-touch-icon.png"}]],"error":null,"digest":"$undefined"}
-f:{"metadata":"$15:metadata","error":null,"digest":"$undefined"}
+:HL["/bixy/_next/static/css/26cb7e99b67b729d.css","style"]
+0:{"P":null,"b":"NahfJtFdmiW5GvNLKjCMP","p":"/bixy","c":["",""],"i":false,"f":[[["",{"children":["__PAGE__",{}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/bixy/_next/static/css/26cb7e99b67b729d.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":[["$","head",null,{"children":[["$","link",null,{"rel":"apple-touch-icon","href":"/apple-touch-icon.png"}],["$","link",null,{"rel":"manifest","href":"/site.webmanifest"}]]}],["$","body",null,{"className":"__variable_f9091f __variable_7f9a85 antialiased","children":["$","$L2",null,{"children":["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","div",null,{"className":"flex flex-col items-center justify-center h-screen","children":["$","div",null,{"className":"flex flex-col items-center gap-4","children":[["$","$L5",null,{"src":"/bixy/bixy-logo.svg","alt":"Bixy Logo","width":150,"height":120,"style":{"objectFit":"contain"}}],["$","h1",null,{"className":"text-4xl font-bold","children":"404 - Page Not Found"}],["$","p",null,{"className":"text-lg mb-6","children":"The page you are looking for does not exist."}],["$","$L6",null,{"href":"/","className":"px-4 py-2 bg-blue-600 text-white font-medium rounded hover:bg-blue-700 transition-colors","children":"Return to Home"}]]}]}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]}]]}]]}],{"children":["__PAGE__",["$","$1","c",{"children":[["$","$L7",null,{"Component":"$8","searchParams":{},"params":{},"promises":["$@9","$@a"]}],["$","$Lb",null,{"children":"$Lc"}],null,["$","$Ld",null,{"children":["$Le","$Lf",["$","$L10",null,{"promise":"$@11"}]]}]]}],{},null,false]},null,false],["$","$1","h",{"children":[null,["$","$1","QlBbLwaaPVMPZdyeJirqP",{"children":[["$","$L12",null,{"children":"$L13"}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],null]}],false]],"m":"$undefined","G":["$14","$undefined"],"s":false,"S":true}
+15:"$Sreact.suspense"
+16:I[4911,[],"AsyncMetadata"]
+9:{}
+a:{}
+c:["$","$15",null,{"fallback":null,"children":["$","$L16",null,{"promise":"$@17"}]}]
+f:null
+13:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","meta","2",{"name":"theme-color","content":"#ffffff"}]]
+e:null
+17:{"metadata":[["$","title","0",{"children":"Bixy Stock Management"}],["$","meta","1",{"name":"description","content":"Inventory management system for Bulls bikes"}],["$","link","2",{"rel":"manifest","href":"/site.webmanifest","crossOrigin":"$undefined"}],["$","link","3",{"rel":"icon","href":"/favicon.ico","sizes":"any"}],["$","link","4",{"rel":"icon","href":"/favicon.svg","type":"image/svg+xml"}],["$","link","5",{"rel":"icon","href":"/favicon-96x96.png","type":"image/png","sizes":"96x96"}],["$","link","6",{"rel":"apple-touch-icon","href":"/apple-touch-icon.png"}]],"error":null,"digest":"$undefined"}
+11:{"metadata":"$17:metadata","error":null,"digest":"$undefined"}
