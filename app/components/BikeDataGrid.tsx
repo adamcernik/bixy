@@ -38,14 +38,17 @@ import {
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import { getBikes, addBike, updateBike, deleteBike } from '../services/bikeService';
 import { Bike } from '../models/Bike';
+import { getAssetPath } from '../utils/pathUtils';
 
 const initialBikeState: Bike = {
   manufacturer: 'Bulls', // Default value
   modelName: '',
+  modelNumber: '',
   modelYear: new Date().getFullYear(),
   weight: 0,
   frameMaterial: '',
-  imageUrl: '',
+  imageUrl: 0, // JPEG file number
+  link: '',
   location: '',
   battery: '',
   color: '',
@@ -103,6 +106,17 @@ interface BikeDataGridProps {
   openAddDialog?: boolean;
   setOpenAddDialog?: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
+// Add this helper function near the top of the file
+const getImagePath = (imageNumber: number): string => {
+  if (!imageNumber) return '';
+  return getAssetPath(`/jpeg/${imageNumber}.jpeg`);
+};
+
+// Add a placeholder image function
+const getPlaceholderImage = (): string => {
+  return getAssetPath('/bixy-logo.svg');
+};
 
 export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDataGridProps) {
   const [bikes, setBikes] = useState<Bike[]>([]);
@@ -219,7 +233,7 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
     const { value } = e.target;
     setCurrentBike(prev => ({
       ...prev,
-      imageUrl: value
+      imageUrl: parseInt(value) || 0
     }));
   };
 
@@ -517,13 +531,15 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
       headerName: 'Image', 
       width: columnWidths.imageUrl || 120,
       editable: true,
+      type: 'number',
       renderCell: (params: GridRenderCellParams) => {
         if (!params.value) return 'No image';
+        const imagePath = getImagePath(params.value as number);
         
         return (
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
             <img 
-              src={params.value} 
+              src={imagePath} 
               alt="Bike" 
               style={{ 
                 width: '100%', 
@@ -532,20 +548,15 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
                 objectFit: 'contain',
                 marginBottom: '4px'
               }} 
-            />
-            <a 
-              href={params.value} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              style={{ 
-                fontSize: '11px', 
-                color: '#1976d2',
-                textDecoration: 'none'
+              onError={(e) => {
+                // Replace with placeholder on error
+                (e.target as HTMLImageElement).src = getPlaceholderImage();
+                (e.target as HTMLImageElement).onerror = null; // Prevent infinite loops
               }}
-            >
-              Open image
-            </a>
+            />
+            <span style={{ fontSize: '11px' }}>
+              {params.value}
+            </span>
           </Box>
         );
       }
@@ -767,34 +778,39 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
             
             <Box sx={{ m: 1, width: '97%' }}>
               <TextField
-                label="Image URL"
+                label="Image Number"
                 name="imageUrl"
+                type="number"
                 value={currentBike.imageUrl}
                 onChange={handleImageUrlChange}
-                placeholder="Enter direct URL to image"
+                placeholder="Enter image number"
                 fullWidth
-                helperText={imagePreviewError ? "Unable to load image from this URL" : "Enter a direct link to the image"}
-                error={imagePreviewError}
+                helperText="Enter the number of the JPEG file in the jpeg folder"
                 InputProps={{
                   endAdornment: currentBike.imageUrl ? (
                     <a
-                      href={currentBike.imageUrl}
+                      href={getImagePath(currentBike.imageUrl)}
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{ marginLeft: '8px', color: '#1976d2', textDecoration: 'none' }}
                     >
-                      Test link
+                      View image
                     </a>
                   ) : null
                 }}
               />
-              {currentBike.imageUrl && (
+              {currentBike.imageUrl > 0 && (
                 <Box sx={{ mt: 1, display: 'flex', justifyContent: 'center', height: '100px' }}>
                   <img
-                    src={currentBike.imageUrl}
+                    src={getImagePath(currentBike.imageUrl)}
                     alt="Bike preview"
                     style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }}
-                    onError={() => setImagePreviewError(true)}
+                    onError={(e) => {
+                      setImagePreviewError(true);
+                      // Replace with placeholder on error
+                      (e.target as HTMLImageElement).src = getPlaceholderImage();
+                      (e.target as HTMLImageElement).onerror = null; // Prevent infinite loops
+                    }}
                     onLoad={() => setImagePreviewError(false)}
                   />
                 </Box>
