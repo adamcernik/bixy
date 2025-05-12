@@ -6,6 +6,7 @@ import Image from 'next/image';
 import ConnectionIndicator from './components/ConnectionIndicator';
 import UserAvatar from './components/UserAvatar';
 import AccessDenied from './components/AccessDenied';
+import ResponsiveHeader from './components/ResponsiveHeader';
 import { Box, Tabs, Tab, Button, IconButton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import PeopleIcon from '@mui/icons-material/People';
@@ -37,6 +38,7 @@ export default function Home() {
   const [showCsvImporter, setShowCsvImporter] = useState(false);
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [openUserManagement, setOpenUserManagement] = useState(false);
+  const [dbConnected, setDbConnected] = useState(false);
 
   const { user, userData, loading } = useAuth();
   const hasAccess = userData?.hasAccess || userData?.isAdmin;
@@ -45,9 +47,9 @@ export default function Home() {
   const pathname = usePathname();
   const basePath = process.env.NODE_ENV === 'production' ? '/bixy' : '';
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setActiveTab(newValue);
-    if (newValue === 0) {
+  const handleTabChange = (index: number) => {
+    setActiveTab(index);
+    if (index === 0) {
       setShowBikeGrid(true);
       setShowCsvImporter(false);
     } else {
@@ -55,6 +57,24 @@ export default function Home() {
       setShowCsvImporter(true);
     }
   };
+
+  // Check database connection
+  useEffect(() => {
+    const checkDbConnection = async () => {
+      try {
+        // We'll use the ConnectionIndicator's logic but just to set state
+        const { db } = await import('./firebase/config');
+        const { collection, getDocs } = await import('firebase/firestore');
+        await getDocs(collection(db, 'bikes'));
+        setDbConnected(true);
+      } catch (err) {
+        console.error("Firebase connection error:", err);
+        setDbConnected(false);
+      }
+    };
+
+    checkDbConnection();
+  }, []);
 
   // Global error handler for Firebase errors
   useEffect(() => {
@@ -72,10 +92,7 @@ export default function Home() {
 
   // Function to handle Add New Bike button click
   const handleAddNewBike = () => {
-    // If BikeDataGrid component has a ref or method to open the add dialog
-    // we would call it here
     setOpenAddDialog(true);
-    // This state change can be observed by child components
   };
 
   const handleOpenUserManagement = () => {
@@ -88,22 +105,17 @@ export default function Home() {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen flex-col p-6">
-        <div className="w-full">
-          <div className="flex items-center mb-4">
-            <div className="flex items-center flex-grow">
-              <img 
-                src={getAssetPath('/bixy-logo.svg')}
-                alt="Bixy Logo" 
-                width={80} 
-                height={64}
-                style={{ objectFit: 'contain' }}
-              />
-              <h1 className="text-3xl font-bold ml-4">Bixy Stock Management</h1>
-            </div>
-          </div>
-          <div className="flex justify-center items-center h-[calc(100vh-150px)]">
-            <p>Loading...</p>
+      <main className="flex min-h-screen flex-col">
+        <div className="w-full flex justify-center items-center h-screen">
+          <div className="text-center">
+            <img 
+              src={getAssetPath('/bixy-logo.svg')}
+              alt="Bixy Logo" 
+              width={80} 
+              height={64}
+              style={{ objectFit: 'contain', margin: '0 auto' }}
+            />
+            <p className="mt-4">Loading...</p>
           </div>
         </div>
       </main>
@@ -112,26 +124,15 @@ export default function Home() {
 
   if (error) {
     return (
-      <main className="flex min-h-screen flex-col p-6">
-        <div className="w-full">
-          <div className="flex items-center mb-4">
-            <div className="flex items-center flex-grow">
-              <img 
-                src={getAssetPath('/bixy-logo.svg')}
-                alt="Bixy Logo" 
-                width={80} 
-                height={64}
-                style={{ objectFit: 'contain' }}
-              />
-              <h1 className="text-3xl font-bold ml-4">Bixy Stock Management</h1>
-              <div className="ml-2">
-                <ConnectionIndicator />
-              </div>
-              <div className="ml-auto">
-                <UserAvatar />
-              </div>
-            </div>
-          </div>
+      <main className="flex min-h-screen flex-col">
+        <ResponsiveHeader 
+          dbConnected={false}
+          onTabChange={handleTabChange}
+          activeTab={activeTab}
+          onAddNewBike={handleAddNewBike}
+          onOpenUserManagement={handleOpenUserManagement}
+        />
+        <div className="p-6">
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
             <p className="font-bold">Error connecting to database</p>
             <p>{error.message}</p>
@@ -145,8 +146,8 @@ export default function Home() {
   // Show login screen or access denied if not authenticated or authorized
   if (!user || (user && !hasAccess)) {
     return (
-      <main className="flex min-h-screen flex-col p-6">
-        <div className="w-full">
+      <main className="flex min-h-screen flex-col">
+        <div className="w-full p-6">
           {/* Header with logo and title */}
           <div className="flex items-center mb-4">
             <div className="flex items-center flex-grow">
@@ -175,75 +176,20 @@ export default function Home() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col p-6 bg-gradient-to-b dark:from-gray-900 dark:to-black">
-      <div className="w-full">
-        {/* Header with logo and title */}
-        <div className="flex items-center mb-4">
-          <div className="flex items-center flex-grow">
-            <img 
-              src={getAssetPath('/bixy-logo.svg')}
-              alt="Bixy Logo" 
-              width={80} 
-              height={64}
-              style={{ objectFit: 'contain' }}
-            />
-            <h1 className="text-3xl font-bold ml-4 dark:text-white">Bixy Stock Management</h1>
-            <div className="ml-2">
-              <ConnectionIndicator />
-            </div>
-            <div className="ml-auto">
-              <UserAvatar />
-            </div>
-          </div>
-        </div>
-        
-        {/* Tabs navigation and Add button inline */}
-        <div className="flex items-center mb-4">
-          <Box sx={{ 
-            display: 'flex', 
-            width: '100%', 
-            alignItems: 'center',
-            borderBottom: 1, 
-            borderColor: 'divider',
-            '.MuiTab-root': {
-              color: theme => theme.palette.mode === 'dark' ? '#999999' : '#555555',
-              '&.Mui-selected': { 
-                color: theme => theme.palette.mode === 'dark' ? '#ffffff' : '#1976d2' 
-              }
-            }
-          }}>
-            <Tabs 
-              value={activeTab} 
-              onChange={handleTabChange} 
-              aria-label="inventory tabs"
-              sx={{ 
-                flexGrow: 1,
-              }}
-            >
-              <Tab label="View Inventory" />
-              <Tab label="Import from CSV" />
-            </Tabs>
-            
-            {/* Admin actions */}
-            <Box sx={{ ml: 2, display: 'flex', gap: 1 }}>
-              {isAdmin && (
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  onClick={handleOpenUserManagement}
-                  startIcon={<PeopleIcon />}
-                >
-                  Users
-                </Button>
-              )}
-            </Box>
-          </Box>
-        </div>
-        
+    <main className="flex min-h-screen flex-col bg-gradient-to-b dark:from-gray-900 dark:to-black">
+      <ResponsiveHeader 
+        dbConnected={dbConnected}
+        onTabChange={handleTabChange}
+        activeTab={activeTab}
+        onAddNewBike={handleAddNewBike}
+        onOpenUserManagement={handleOpenUserManagement}
+      />
+      
+      <div className="w-full p-4">
         {/* Content area */}
         <div>
           {showBikeGrid && (
-            <div className="h-[calc(100vh-200px)]">
+            <div className="h-[calc(100vh-100px)]">
               <BikeDataGrid openAddDialog={openAddDialog} setOpenAddDialog={setOpenAddDialog} />
             </div>
           )}
