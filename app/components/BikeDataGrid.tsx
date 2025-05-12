@@ -579,6 +579,15 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
           indeterminate={selectedItems.size > 0 && selectedItems.size < bikes.length}
           checked={bikes.length > 0 && selectedItems.size === bikes.length}
           onChange={(event) => handleSelectAll(event.target.checked)}
+          sx={{
+            color: '#000',
+            '&.Mui-checked': {
+              color: '#1976d2',
+            },
+            '&.MuiCheckbox-indeterminate': {
+              color: '#1976d2',
+            }
+          }}
         />
       ),
       renderCell: (params: GridRenderCellParams) => (
@@ -586,6 +595,12 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
           checked={selectedItems.has(params.id)}
           onChange={(event) => handleRowSelection(params.id, event.target.checked)}
           onClick={(event) => event.stopPropagation()}
+          sx={{
+            color: '#000',
+            '&.Mui-checked': {
+              color: '#1976d2',
+            }
+          }}
         />
       ),
     };
@@ -913,11 +928,21 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
               display: 'flex',
               flexWrap: 'wrap',
               mt: 1,
+              // Dark theme for dialog content
               '& .MuiInputBase-input, & .MuiInputLabel-root, & .MuiFormControlLabel-label': {
-                color: '#000',
+                color: 'white',
+              },
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'rgba(255, 255, 255, 0.23)',
+              },
+              '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'rgba(255, 255, 255, 0.5)',
+              },
+              '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#90caf9',
               },
               '& .MuiMenuItem-root': {
-                color: '#000', 
+                color: 'black', 
               }
             }}
             noValidate
@@ -1153,7 +1178,7 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleClose} sx={{ color: 'white' }}>Cancel</Button>
           <Button onClick={handleAddNewBike} variant="contained">Save</Button>
         </DialogActions>
       </Dialog>

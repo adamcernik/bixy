@@ -12,77 +12,111 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-  
-  body {
-    color: rgb(var(--foreground-rgb));
-    background: linear-gradient(
-      to bottom,
-      rgb(var(--background-start-rgb)),
-      rgb(var(--background-end-rgb))
-    );
-  }
-
-  /* Keep data grid white and readable in dark mode */
-  .MuiDataGrid-root {
-    background-color: white !important;
-    color: black !important;
-  }
-  
-  .MuiDataGrid-columnHeader, 
-  .MuiDataGrid-cell {
-    color: black !important;
-  }
-  
-  .MuiDataGrid-row:not(.custom-row-selected) {
-    background-color: white !important;
-  }
-  
-  .MuiDataGrid-row:not(.custom-row-selected):hover {
-    background-color: rgba(0, 0, 0, 0.04) !important;
-  }
-  
-  .MuiDataGrid-row.custom-row-selected {
-    background-color: rgba(25, 118, 210, 0.16) !important;
-  }
-  
-  .MuiDataGrid-row.custom-row-selected:hover {
-    background-color: rgba(25, 118, 210, 0.24) !important;
-  }
+/* Dark mode styles applied globally (regardless of system preference) */
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 0, 0, 0;
+  --background-end-rgb: 0, 0, 0;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+    to bottom,
+    rgb(var(--background-start-rgb)),
+    rgb(var(--background-end-rgb))
+  );
 }
 
-/* Override Material UI components to always have dark text regardless of theme */
+/* Make DataGrid white with dark text */
+.MuiDataGrid-root {
+  background-color: white !important;
+  color: black !important;
+}
+
+.MuiDataGrid-columnHeader, 
+.MuiDataGrid-cell {
+  color: black !important;
+}
+
+.MuiDataGrid-row:not(.custom-row-selected) {
+  background-color: white !important;
+}
+
+.MuiDataGrid-row:not(.custom-row-selected):hover {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+.MuiDataGrid-row.custom-row-selected {
+  background-color: rgba(25, 118, 210, 0.16) !important;
+}
+
+.MuiDataGrid-row.custom-row-selected:hover {
+  background-color: rgba(25, 118, 210, 0.24) !important;
+}
+
+.MuiDataGrid-footerContainer {
+  background-color: white !important;
+  color: black !important;
+}
+
+.MuiDataGrid-virtualScroller {
+  background-color: white !important;
+}
+
+/* Handle checkbox colors correctly */
+.MuiDataGrid-checkboxInput {
+  color: rgba(0, 0, 0, 0.54) !important;
+}
+
+.MuiDataGrid-checkboxInput.Mui-checked {
+  color: #1976d2 !important;
+}
+
+/* Dialog styles */
+.MuiDialog-paper {
+  background-color: #1e1e1e !important;
+}
+
+.MuiDialogTitle-root {
+  color: white !important;
+}
+
+/* Form elements in dialogs */
+.MuiDialog-paper .MuiInputBase-input,
+.MuiDialog-paper .MuiInputLabel-root, 
+.MuiDialog-paper .MuiFormControlLabel-label {
+  color: white !important;
+}
+
+.MuiDialog-paper .MuiMenuItem-root {
+  color: black !important;
+}
+
+/* Fix button colors */
+.MuiButton-root {
+  color: inherit;
+}
+
+/* Fix menu and panel colors */
 .MuiDataGrid-panel,
 .MuiPopover-paper,
-.MuiDialog-paper,
 .MuiMenu-paper,
 .MuiAutocomplete-paper,
-.MuiDataGrid-columnsPanel,
+.MuiDataGrid-columnsPanel {
+  background-color: white !important;
+  color: black !important;
+}
+
 .MuiMenuItem-root,
-.MuiCheckbox-root + span,
-.MuiFormControlLabel-label,
-.MuiInputBase-input,
-.MuiInputLabel-root,
-.MuiTypography-root,
 .MuiListItemText-primary,
 .MuiListItemText-secondary {
-  color: #000 !important;
+  color: black !important;
 }
 
 /* Ensure text within column panels is dark */
 .MuiDataGrid-columnsPanelRow * {
-  color: #000 !important;
+  color: black !important;
 }
 
 /* Only buttons should keep their original styling */

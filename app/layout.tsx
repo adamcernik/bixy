@@ -31,7 +31,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#ffffff",
+  themeColor: "#121212",
   width: "device-width",
   initialScale: 1.0
 };
@@ -48,7 +48,7 @@ export default function RootLayout({
         <link rel="manifest" href="/site.webmanifest" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased dark:bg-gray-900`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-900 text-white`}
       >
         <ThemeProvider>
           <AuthProvider>{children}</AuthProvider>
