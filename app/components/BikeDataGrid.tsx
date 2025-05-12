@@ -770,15 +770,15 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2, gap: 2 }}>
         <Button 
           variant="outlined" 
-          color="inherit"
+          color="primary"
           onClick={handleExportExcel}
           sx={{
-            backgroundColor: 'transparent',
-            color: theme => theme.palette.mode === 'dark' ? '#fff' : '#fff',
-            borderColor: theme => theme.palette.mode === 'dark' ? '#fff' : '#fff',
+            backgroundColor: 'white',
+            color: '#1976d2',
+            borderColor: '#1976d2',
             '&:hover': { 
-              backgroundColor: 'rgba(255, 255, 255, 0.1)', 
-              borderColor: theme => theme.palette.mode === 'dark' ? '#fff' : '#fff'
+              backgroundColor: 'rgba(25, 118, 210, 0.08)', 
+              borderColor: '#1976d2'
             }
           }}
         >
@@ -830,6 +830,7 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
         }}
         sx={{ 
           height: 'calc(100vh - 150px)',
+          backgroundColor: 'white',
           '& .modified-cell': {
             backgroundColor: theme => 
               theme.palette.mode === 'dark' 
@@ -850,7 +851,7 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
               '.MuiInputBase-input': {
                 padding: '0 8px',
                 height: '100%',
-                color: theme => theme.palette.mode === 'dark' ? '#fff' : '#000',
+                color: '#000',
               }
             },
             '& .MuiSelect-select': {
@@ -858,31 +859,29 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
               display: 'flex',
               alignItems: 'center',
               padding: '0 8px',
-              color: theme => theme.palette.mode === 'dark' ? '#fff' : '#000',
+              color: '#000',
             }
           },
           // Custom row styling
           '& .MuiDataGrid-root': {
-            color: theme => theme.palette.mode === 'dark' ? '#fff' : '#000',
-            backgroundColor: 'transparent',
+            color: '#000',
+            backgroundColor: 'white',
           },
           '& .MuiDataGrid-row': {
+            backgroundColor: 'white',
             '&.custom-row-selected': {
-              backgroundColor: theme => 
-                theme.palette.mode === 'dark' 
-                  ? 'rgba(25, 118, 210, 0.16)' 
-                  : 'rgba(25, 118, 210, 0.08)'
+              backgroundColor: 'rgba(25, 118, 210, 0.08)'
             },
             '&.custom-row-selected:hover': {
-              backgroundColor: theme => 
-                theme.palette.mode === 'dark' 
-                  ? 'rgba(25, 118, 210, 0.24)' 
-                  : 'rgba(25, 118, 210, 0.12)'
+              backgroundColor: 'rgba(25, 118, 210, 0.12)'
+            },
+            '&:hover': {
+              backgroundColor: 'rgba(0, 0, 0, 0.04)'
             }
           },
           // Ensure all cell text is visible and readable
           '& .MuiDataGrid-cell': {
-            color: theme => theme.palette.mode === 'dark' ? '#fff' : '#000',
+            color: '#000',
             fontSize: '1rem',
             textOverflow: 'ellipsis',
             overflow: 'hidden',
@@ -891,11 +890,12 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
           },
           // Make column headers darker too for consistency
           '& .MuiDataGrid-columnHeader': {
-            color: theme => theme.palette.mode === 'dark' ? '#fff' : '#000',
+            color: '#000',
+            backgroundColor: 'white',
           },
           // Apply dark text to filter panel and menus
           '& .MuiDataGrid-filterPanel, & .MuiDataGrid-menu, & .MuiDataGrid-panel': {
-            color: theme => theme.palette.mode === 'dark' ? '#fff' : '#000',
+            color: '#000',
           }
         }}
         getRowClassName={(params) => {

@@ -30,21 +30,21 @@
 
   /* Keep data grid white and readable in dark mode */
   .MuiDataGrid-root {
-    background-color: transparent !important;
-    color: white !important;
+    background-color: white !important;
+    color: black !important;
   }
   
   .MuiDataGrid-columnHeader, 
   .MuiDataGrid-cell {
-    color: white !important;
+    color: black !important;
   }
   
   .MuiDataGrid-row:not(.custom-row-selected) {
-    background-color: rgba(255, 255, 255, 0.04) !important;
+    background-color: white !important;
   }
   
   .MuiDataGrid-row:not(.custom-row-selected):hover {
-    background-color: rgba(255, 255, 255, 0.08) !important;
+    background-color: rgba(0, 0, 0, 0.04) !important;
   }
   
   .MuiDataGrid-row.custom-row-selected {
