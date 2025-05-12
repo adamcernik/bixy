@@ -8,10 +8,16 @@ const bikesCollection = collection(db, COLLECTION_NAME);
 export const getBikes = async (): Promise<Bike[]> => {
   try {
     const snapshot = await getDocs(bikesCollection);
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    } as Bike));
+    const bikes = snapshot.docs.map(doc => {
+      const data = doc.data();
+      console.log('Raw bike data from Firebase:', data);
+      return {
+        id: doc.id,
+        ...data
+      } as Bike;
+    });
+    console.log('Processed bikes:', bikes);
+    return bikes;
   } catch (error) {
     console.error("Error fetching bikes:", error);
     // Create the collection if it doesn't exist by adding a test document
@@ -21,10 +27,12 @@ export const getBikes = async (): Promise<Bike[]> => {
         const testBike: Bike = {
           manufacturer: 'Bulls',
           modelName: 'Test Bike',
-          modelYear: 2023,
+          modelNumber: 'TB-2024',
+          modelYear: 2024,
           weight: 15,
           frameMaterial: 'Aluminum',
-          imageUrl: '',
+          imageUrl: 0,
+          link: '',
           location: 'Store',
           battery: 'Test 500Wh',
           color: 'Black',
@@ -32,9 +40,9 @@ export const getBikes = async (): Promise<Bike[]> => {
           category: 'MTB',
           isEbike: true,
           pieces: 1,
-          priceRetail: 50000,
-          priceAction: 45000,
-          priceReseller: 40000,
+          priceRetail: 59990,
+          priceAction: 54990,
+          priceReseller: 49990,
           note: 'Test bike'
         };
         await addDoc(bikesCollection, testBike);

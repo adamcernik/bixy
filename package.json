@@ -8,8 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "export": "next export",
-    "predeploy": "npm run build && cp .nojekyll out/",
+    "predeploy": "npm run build && mkdir -p out && cp .nojekyll out/ || true",
     "deploy": "gh-pages -d out --dotfiles"
   },
   "dependencies": {
@@ -21,7 +20,8 @@
     "firebase": "^11.6.1",
     "next": "15.3.1",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

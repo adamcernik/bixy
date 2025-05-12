@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { 
   DataGrid, 
   GridColDef, 
@@ -17,7 +17,11 @@ import {
   GridCellModes,
   useGridApiContext,
   GridCellEditStopParams,
-  GridCellParams
+  GridCellParams,
+  GridToolbarContainer,
+  GridToolbarFilterButton,
+  GridToolbarExport,
+  GridRowId
 } from '@mui/x-data-grid';
 import { 
   Box, 
@@ -33,19 +37,24 @@ import {
   Typography,
   Snackbar,
   Alert,
-  Select
+  Select,
+  Checkbox
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import { getBikes, addBike, updateBike, deleteBike } from '../services/bikeService';
 import { Bike } from '../models/Bike';
+import * as XLSX from 'xlsx';
+import { getAssetPath } from '../utils/pathUtils';
 
 const initialBikeState: Bike = {
   manufacturer: 'Bulls', // Default value
   modelName: '',
+  modelNumber: '',
   modelYear: new Date().getFullYear(),
   weight: 0,
   frameMaterial: '',
-  imageUrl: '',
+  imageUrl: 0, // Default to 0
+  link: '',
   location: '',
   battery: '',
   color: '',
@@ -104,6 +113,27 @@ interface BikeDataGridProps {
   setOpenAddDialog?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+// Add this helper function near the top of the file
+const getImagePath = (imageNumber: number): string => {
+  if (!imageNumber) return '';
+  return getAssetPath(`/jpeg/${imageNumber}.jpeg`);
+};
+
+// Add a placeholder image function
+const getPlaceholderImage = (): string => {
+  return getAssetPath('/bixy-logo.svg');
+};
+
+// Add this custom toolbar component before the BikeDataGrid component
+function CustomToolbar() {
+  return (
+    <GridToolbarContainer>
+      <GridToolbarFilterButton />
+      <GridToolbarExport />
+    </GridToolbarContainer>
+  );
+}
+
 export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDataGridProps) {
   const [bikes, setBikes] = useState<Bike[]>([]);
   const [loading, setLoading] = useState(true);
@@ -120,6 +150,8 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
   const [editedValue, setEditedValue] = useState<any>(null);
   const [modifiedCells, setModifiedCells] = useState<Record<string, Set<string>>>({});
+  const [selectedItems, setSelectedItems] = useState<Set<GridRowId>>(new Set());
+  const gridApiRef = useRef<any>(null);
 
   const fetchBikes = async () => {
     setLoading(true);
@@ -219,7 +251,7 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
     const { value } = e.target;
     setCurrentBike(prev => ({
       ...prev,
-      imageUrl: value
+      imageUrl: parseInt(value) || 0
     }));
   };
 
@@ -373,7 +405,9 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
   };
 
   const priceFormatter = (params: any) => {
-    return params.value ? `${params.value.toLocaleString()} CZK` : '';
+    if (params.value === undefined || params.value === null) return '';
+    // Always show 0 as '0 Kč'
+    return `${Number(params.value).toLocaleString('cs-CZ')} Kč`;
   };
 
   const yearFormatter = (params: any) => {
@@ -506,9 +540,61 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
     return modifiedCells[id]?.has(field) || false;
   };
 
+  // Function to handle individual row selection
+  const handleRowSelection = useCallback((id: GridRowId, isSelected: boolean) => {
+    setSelectedItems(prevSelectedItems => {
+      const newSelectedItems = new Set(prevSelectedItems);
+      if (isSelected) {
+        newSelectedItems.add(id);
+      } else {
+        newSelectedItems.delete(id);
+      }
+      return newSelectedItems;
+    });
+  }, []);
+
+  // Function to handle "select all" checkbox
+  const handleSelectAll = useCallback((checked: boolean) => {
+    if (checked) {
+      // Select all visible rows
+      const allIds = bikes.map(bike => bike.id as GridRowId);
+      setSelectedItems(new Set(allIds));
+    } else {
+      // Deselect all
+      setSelectedItems(new Set());
+    }
+  }, [bikes]);
+
+  // Function to handle checkbox column rendering
+  const renderCheckboxColumn = () => {
+    return {
+      field: 'selection',
+      headerName: '',
+      width: 50,
+      sortable: false,
+      filterable: false,
+      disableColumnMenu: true,
+      renderHeader: () => (
+        <Checkbox
+          indeterminate={selectedItems.size > 0 && selectedItems.size < bikes.length}
+          checked={bikes.length > 0 && selectedItems.size === bikes.length}
+          onChange={(event) => handleSelectAll(event.target.checked)}
+        />
+      ),
+      renderCell: (params: GridRenderCellParams) => (
+        <Checkbox
+          checked={selectedItems.has(params.id)}
+          onChange={(event) => handleRowSelection(params.id, event.target.checked)}
+          onClick={(event) => event.stopPropagation()}
+        />
+      ),
+    };
+  };
+
   const columns: GridColDef[] = [
     { field: 'manufacturer', headerName: 'Manufacturer', width: columnWidths.manufacturer || 100 },
     { field: 'modelName', headerName: 'Model', width: columnWidths.modelName || 150, editable: true },
+    { field: 'modelNumber', headerName: 'Model Number', width: columnWidths.modelNumber || 120, editable: true },
     { field: 'modelYear', headerName: 'Year', width: columnWidths.modelYear || 80, type: 'number', editable: true, valueFormatter: yearFormatter },
     { field: 'weight', headerName: 'Weight (kg)', width: columnWidths.weight || 100, type: 'number', editable: true },
     { field: 'frameMaterial', headerName: 'Frame Material', width: columnWidths.frameMaterial || 130, editable: true },
@@ -517,13 +603,15 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
       headerName: 'Image', 
       width: columnWidths.imageUrl || 120,
       editable: true,
+      type: 'number',
       renderCell: (params: GridRenderCellParams) => {
         if (!params.value) return 'No image';
+        const imagePath = getImagePath(params.value as number);
         
         return (
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
             <img 
-              src={params.value} 
+              src={imagePath} 
               alt="Bike" 
               style={{ 
                 width: '100%', 
@@ -532,21 +620,40 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
                 objectFit: 'contain',
                 marginBottom: '4px'
               }} 
-            />
-            <a 
-              href={params.value} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              style={{ 
-                fontSize: '11px', 
-                color: '#1976d2',
-                textDecoration: 'none'
+              onError={(e) => {
+                // Replace with placeholder on error
+                (e.target as HTMLImageElement).src = getPlaceholderImage();
+                (e.target as HTMLImageElement).onerror = null; // Prevent infinite loops
               }}
-            >
-              Open image
-            </a>
+            />
+            <span style={{ fontSize: '11px' }}>
+              {params.value}
+            </span>
           </Box>
+        );
+      }
+    },
+    { 
+      field: 'link', 
+      headerName: 'Product Link', 
+      width: columnWidths.link || 120,
+      editable: true,
+      renderCell: (params: GridRenderCellParams) => {
+        if (!params.value) return 'No link';
+        
+        return (
+          <a 
+            href={params.value} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            style={{ 
+              color: '#1976d2',
+              textDecoration: 'none'
+            }}
+          >
+            Open link
+          </a>
         );
       }
     },
@@ -592,27 +699,24 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
     { field: 'pieces', headerName: 'Pieces', width: columnWidths.pieces || 80, type: 'number', editable: true },
     { 
       field: 'priceRetail', 
-      headerName: 'Retail Price (CZK)', 
+      headerName: 'Retail Price', 
       width: columnWidths.priceRetail || 140, 
       type: 'number',
-      editable: true,
-      valueFormatter: priceFormatter
+      editable: true
     },
     { 
       field: 'priceAction', 
-      headerName: 'Action Price (CZK)', 
+      headerName: 'Action Price', 
       width: columnWidths.priceAction || 140, 
       type: 'number',
-      editable: true,
-      valueFormatter: priceFormatter
+      editable: true
     },
     { 
       field: 'priceReseller', 
-      headerName: 'Reseller Price (CZK)', 
+      headerName: 'Reseller Price', 
       width: columnWidths.priceReseller || 140, 
       type: 'number',
-      editable: true,
-      valueFormatter: priceFormatter
+      editable: true
     },
     { field: 'note', headerName: 'Note', width: columnWidths.note || 200, editable: true },
     {
@@ -631,11 +735,66 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
     }
   ];
 
+  // Append the checkbox column to the existing columns
+  const columnsWithCheckbox: GridColDef[] = [
+    renderCheckboxColumn(),
+    ...columns
+  ];
+
+  // Add this debug log before the return statement
+  console.log("Bikes passed to DataGrid:", bikes);
+
+  // Export to Excel feature with selected rows support
+  const handleExportExcel = () => {
+    // Determine which bikes to export (selected or all)
+    let exportData: any[];
+    
+    if (selectedItems.size > 0) {
+      // Export only selected bikes
+      exportData = bikes
+        .filter(bike => bike.id && selectedItems.has(bike.id as GridRowId))
+        .map(({ id, ...rest }) => rest);
+    } else {
+      // Export all bikes
+      exportData = bikes.map(({ id, ...rest }) => rest);
+    }
+    
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Bikes');
+    XLSX.writeFile(workbook, 'bikes_inventory.xlsx');
+  };
+
   return (
     <Box sx={{ width: '100%', height: '100%' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2, gap: 2 }}>
+        <Button 
+          variant="outlined" 
+          color="inherit"
+          onClick={handleExportExcel}
+          sx={{
+            backgroundColor: 'transparent',
+            color: theme => theme.palette.mode === 'dark' ? '#fff' : '#fff',
+            borderColor: theme => theme.palette.mode === 'dark' ? '#fff' : '#fff',
+            '&:hover': { 
+              backgroundColor: 'rgba(255, 255, 255, 0.1)', 
+              borderColor: theme => theme.palette.mode === 'dark' ? '#fff' : '#fff'
+            }
+          }}
+        >
+          Export to Excel {selectedItems.size > 0 ? `(${selectedItems.size} selected)` : ''}
+        </Button>
+        <Button 
+          variant="contained" 
+          color="primary"
+          onClick={() => handleOpen()}
+        >
+          Add New Bike
+        </Button>
+      </Box>
       <DataGrid
         rows={bikes}
-        columns={columns}
+        columns={columnsWithCheckbox}
         loading={loading}
         editMode="cell"
         cellModesModel={cellModesModel}
@@ -644,7 +803,6 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
         onCellEditStop={handleCellEditStop}
         onCellClick={handleCellClick}
         onColumnResize={handleColumnResize}
-        columnVisibilityModel={{}}
         processRowUpdate={processRowUpdate}
         onProcessRowUpdateError={(error) => console.error("Error processing row update:", error)}
         onRowDoubleClick={handleRowClick}
@@ -654,16 +812,14 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
           },
           sorting: {
             sortModel: [{ field: 'modelName', sort: 'asc' }],
-          },
-          columns: {
-            columnVisibilityModel: {},
           }
         }}
         pageSizeOptions={[10, 20, 50, 100]}
-        checkboxSelection
         disableRowSelectionOnClick
         isCellEditable={(params) => {
-          return params.field !== 'actions' && params.field !== 'manufacturer' && params.field !== 'isEbike' && params.field !== 'imageUrl';
+          return params.field !== 'actions' && params.field !== 'manufacturer' && 
+                 params.field !== 'isEbike' && params.field !== 'imageUrl' &&
+                 params.field !== 'selection';
         }}
         getCellClassName={(params) => {
           // Apply yellow background to modified cells
@@ -675,11 +831,17 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
         sx={{ 
           height: 'calc(100vh - 150px)',
           '& .modified-cell': {
-            backgroundColor: 'rgba(255, 250, 160, 0.2)',
+            backgroundColor: theme => 
+              theme.palette.mode === 'dark' 
+                ? 'rgba(255, 250, 160, 0.1)' 
+                : 'rgba(255, 250, 160, 0.2)',
             transition: 'background-color 1.5s ease-out',
           },
           '& .MuiDataGrid-cell--editing': {
-            backgroundColor: 'rgba(255, 231, 98, 0.25)', // More visible yellow for the entire cell
+            backgroundColor: theme => 
+              theme.palette.mode === 'dark' 
+                ? 'rgba(255, 231, 98, 0.15)' 
+                : 'rgba(255, 231, 98, 0.25)',
             padding: '0 !important',
             '& .MuiInputBase-root': {
               height: '100%',
@@ -688,6 +850,7 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
               '.MuiInputBase-input': {
                 padding: '0 8px',
                 height: '100%',
+                color: theme => theme.palette.mode === 'dark' ? '#fff' : '#000',
               }
             },
             '& .MuiSelect-select': {
@@ -695,19 +858,48 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
               display: 'flex',
               alignItems: 'center',
               padding: '0 8px',
+              color: theme => theme.palette.mode === 'dark' ? '#fff' : '#000',
             }
           },
-          // Enhanced style for clickable cells
-          '& .MuiDataGrid-cell:not(.MuiDataGrid-cell--editing):not([data-field="actions"]):not([data-field="manufacturer"]):not([data-field="isEbike"]):not([data-field="imageUrl"]):hover': {
-            cursor: 'text',
-            backgroundColor: 'rgba(0, 0, 0, 0.04)'
+          // Custom row styling
+          '& .MuiDataGrid-root': {
+            color: theme => theme.palette.mode === 'dark' ? '#fff' : '#000',
+            backgroundColor: 'transparent',
+          },
+          '& .MuiDataGrid-row': {
+            '&.custom-row-selected': {
+              backgroundColor: theme => 
+                theme.palette.mode === 'dark' 
+                  ? 'rgba(25, 118, 210, 0.16)' 
+                  : 'rgba(25, 118, 210, 0.08)'
+            },
+            '&.custom-row-selected:hover': {
+              backgroundColor: theme => 
+                theme.palette.mode === 'dark' 
+                  ? 'rgba(25, 118, 210, 0.24)' 
+                  : 'rgba(25, 118, 210, 0.12)'
+            }
+          },
+          // Ensure all cell text is visible and readable
+          '& .MuiDataGrid-cell': {
+            color: theme => theme.palette.mode === 'dark' ? '#fff' : '#000',
+            fontSize: '1rem',
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            backgroundColor: 'inherit',
+          },
+          // Make column headers darker too for consistency
+          '& .MuiDataGrid-columnHeader': {
+            color: theme => theme.palette.mode === 'dark' ? '#fff' : '#000',
+          },
+          // Apply dark text to filter panel and menus
+          '& .MuiDataGrid-filterPanel, & .MuiDataGrid-menu, & .MuiDataGrid-panel': {
+            color: theme => theme.palette.mode === 'dark' ? '#fff' : '#000',
           }
         }}
-        slots={{ toolbar: GridToolbar }}
-        slotProps={{
-          toolbar: {
-            showQuickFilter: true,
-          },
+        getRowClassName={(params) => {
+          return selectedItems.has(params.id) ? 'custom-row-selected' : '';
         }}
       />
 
@@ -720,7 +912,13 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
               '& .MuiTextField-root': { m: 1, width: '47%' },
               display: 'flex',
               flexWrap: 'wrap',
-              mt: 1
+              mt: 1,
+              '& .MuiInputBase-input, & .MuiInputLabel-root, & .MuiFormControlLabel-label': {
+                color: '#000',
+              },
+              '& .MuiMenuItem-root': {
+                color: '#000', 
+              }
             }}
             noValidate
             autoComplete="off"
@@ -737,6 +935,14 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
               label="Model Name"
               name="modelName"
               value={currentBike.modelName}
+              onChange={handleInputChange}
+              required
+            />
+            
+            <TextField
+              label="Model Number"
+              name="modelNumber"
+              value={currentBike.modelNumber}
               onChange={handleInputChange}
               required
             />
@@ -767,39 +973,54 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
             
             <Box sx={{ m: 1, width: '97%' }}>
               <TextField
-                label="Image URL"
+                label="Image Number"
                 name="imageUrl"
+                type="number"
                 value={currentBike.imageUrl}
                 onChange={handleImageUrlChange}
-                placeholder="Enter direct URL to image"
+                placeholder="Enter image number"
                 fullWidth
-                helperText={imagePreviewError ? "Unable to load image from this URL" : "Enter a direct link to the image"}
-                error={imagePreviewError}
+                helperText="Enter the number of the JPEG file in the jpeg folder"
                 InputProps={{
                   endAdornment: currentBike.imageUrl ? (
                     <a
-                      href={currentBike.imageUrl}
+                      href={getImagePath(currentBike.imageUrl)}
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{ marginLeft: '8px', color: '#1976d2', textDecoration: 'none' }}
                     >
-                      Test link
+                      View image
                     </a>
                   ) : null
                 }}
               />
-              {currentBike.imageUrl && (
+              {currentBike.imageUrl > 0 && (
                 <Box sx={{ mt: 1, display: 'flex', justifyContent: 'center', height: '100px' }}>
                   <img
-                    src={currentBike.imageUrl}
+                    src={getImagePath(currentBike.imageUrl)}
                     alt="Bike preview"
                     style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }}
-                    onError={() => setImagePreviewError(true)}
+                    onError={(e) => {
+                      setImagePreviewError(true);
+                      // Replace with placeholder on error
+                      (e.target as HTMLImageElement).src = getPlaceholderImage();
+                      (e.target as HTMLImageElement).onerror = null; // Prevent infinite loops
+                    }}
                     onLoad={() => setImagePreviewError(false)}
                   />
                 </Box>
               )}
             </Box>
+            
+            <TextField
+              label="Product Link"
+              name="link"
+              value={currentBike.link}
+              onChange={handleInputChange}
+              fullWidth
+              sx={{ width: '97%' }}
+              helperText="Enter the URL to the product page"
+            />
             
             <TextField
               label="Location"
@@ -885,30 +1106,39 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
             />
             
             <TextField
-              label="Retail Price (CZK)"
+              label="Retail Price (Kč)"
               name="priceRetail"
               type="number"
-              value={currentBike.priceRetail}
+              value={currentBike.priceRetail || ''}
               onChange={handleInputChange}
               helperText="Common for stores inc. VAT"
+              InputProps={{
+                inputProps: { min: 0 }
+              }}
             />
             
             <TextField
-              label="Action Price (CZK)"
+              label="Action Price (Kč)"
               name="priceAction"
               type="number"
-              value={currentBike.priceAction}
+              value={currentBike.priceAction || ''}
               onChange={handleInputChange}
               helperText="Special price for us"
+              InputProps={{
+                inputProps: { min: 0 }
+              }}
             />
             
             <TextField
-              label="Reseller Price (CZK)"
+              label="Reseller Price (Kč)"
               name="priceReseller"
               type="number"
-              value={currentBike.priceReseller}
+              value={currentBike.priceReseller || ''}
               onChange={handleInputChange}
               helperText="Normal price for resellers"
+              InputProps={{
+                inputProps: { min: 0 }
+              }}
             />
             
             <TextField

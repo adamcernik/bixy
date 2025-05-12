@@ -14,8 +14,45 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+  
+  body {
+    color: rgb(var(--foreground-rgb));
+    background: linear-gradient(
+      to bottom,
+      rgb(var(--background-start-rgb)),
+      rgb(var(--background-end-rgb))
+    );
+  }
+
+  /* Keep data grid white and readable in dark mode */
+  .MuiDataGrid-root {
+    background-color: transparent !important;
+    color: white !important;
+  }
+  
+  .MuiDataGrid-columnHeader, 
+  .MuiDataGrid-cell {
+    color: white !important;
+  }
+  
+  .MuiDataGrid-row:not(.custom-row-selected) {
+    background-color: rgba(255, 255, 255, 0.04) !important;
+  }
+  
+  .MuiDataGrid-row:not(.custom-row-selected):hover {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+  }
+  
+  .MuiDataGrid-row.custom-row-selected {
+    background-color: rgba(25, 118, 210, 0.16) !important;
+  }
+  
+  .MuiDataGrid-row.custom-row-selected:hover {
+    background-color: rgba(25, 118, 210, 0.24) !important;
   }
 }
 
@@ -23,4 +60,37 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Override Material UI components to always have dark text regardless of theme */
+.MuiDataGrid-panel,
+.MuiPopover-paper,
+.MuiDialog-paper,
+.MuiMenu-paper,
+.MuiAutocomplete-paper,
+.MuiDataGrid-columnsPanel,
+.MuiMenuItem-root,
+.MuiCheckbox-root + span,
+.MuiFormControlLabel-label,
+.MuiInputBase-input,
+.MuiInputLabel-root,
+.MuiTypography-root,
+.MuiListItemText-primary,
+.MuiListItemText-secondary {
+  color: #000 !important;
+}
+
+/* Ensure text within column panels is dark */
+.MuiDataGrid-columnsPanelRow * {
+  color: #000 !important;
+}
+
+/* Only buttons should keep their original styling */
+button.MuiButtonBase-root:not(.MuiSwitch-switchBase):not(.MuiCheckbox-root) * {
+  color: inherit;
+}
+
+/* Keep Switch component styling */
+.MuiSwitch-switchBase * {
+  color: inherit;
 }

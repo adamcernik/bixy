@@ -159,6 +159,15 @@ export default function CsvImporter() {
             bike.modelName = value;
             hasModelName = true;
             break;
+          case 'modelnumber':
+          case 'model_number':
+          case 'model-number':
+          case 'productcode':
+          case 'product_code':
+          case 'product-code':
+          case 'code':
+            bike.modelNumber = value;
+            break;
           case 'year':
           case 'modelyear':
             bike.modelYear = parseInt(value) || new Date().getFullYear();
@@ -176,7 +185,19 @@ export default function CsvImporter() {
           case 'imageurl':
           case 'img':
           case 'url':
-            bike.imageUrl = value;
+          case 'imagenumber':
+          case 'image_number':
+          case 'image-number':
+            bike.imageUrl = parseInt(value) || 0;
+            break;
+          case 'link':
+          case 'productlink':
+          case 'product_link':
+          case 'product-link':
+          case 'producturl':
+          case 'product_url':
+          case 'product-url':
+            bike.link = value;
             break;
           case 'location':
           case 'store':
@@ -222,19 +243,19 @@ export default function CsvImporter() {
           case 'retail':
           case 'price':
           case 'msrp':
-            bike.priceRetail = parseInt(value.replace(/[^\d]/g, '')) || 0;
+            bike.priceRetail = parseFloat(value.replace(/[, ]/g, '')) || 0;
             break;
           case 'priceaction':
           case 'action':
           case 'sale':
           case 'discount':
-            bike.priceAction = parseInt(value.replace(/[^\d]/g, '')) || 0;
+            bike.priceAction = parseFloat(value.replace(/[, ]/g, '')) || 0;
             break;
           case 'pricereseller':
           case 'reseller':
           case 'wholesale':
           case 'dealer':
-            bike.priceReseller = parseInt(value.replace(/[^\d]/g, '')) || 0;
+            bike.priceReseller = parseFloat(value.replace(/[, ]/g, '')) || 0;
             break;
           case 'note':
           case 'notes':
@@ -252,10 +273,12 @@ export default function CsvImporter() {
       const completeBike: Bike = {
         manufacturer: 'Bulls',
         modelName: bike.modelName || '',
+        modelNumber: bike.modelNumber || '',
         modelYear: bike.modelYear || new Date().getFullYear(),
         weight: bike.weight || 0,
         frameMaterial: bike.frameMaterial || '',
-        imageUrl: bike.imageUrl || '',
+        imageUrl: bike.imageUrl || 0,
+        link: bike.link || '',
         location: bike.location || '',
         battery: bike.battery || '',
         color: bike.color || '',
@@ -345,22 +368,22 @@ export default function CsvImporter() {
 
   const generateSampleCsv = () => {
     const headers = [
-      'modelName', 'modelYear', 'weight', 'frameMaterial', 
-      'imageUrl', 'location', 'battery', 'color', 'size', 
+      'modelName', 'modelNumber', 'modelYear', 'weight', 'frameMaterial', 
+      'imageUrl', 'link', 'location', 'battery', 'color', 'size', 
       'category', 'isEbike', 'pieces', 'priceRetail', 
       'priceAction', 'priceReseller', 'note'
     ];
     
     const sampleData = [
       [
-        'Wild Cross 1', '2023', '15.5', 'Aluminum', 
-        'https://example.com/bike1.jpg', 'Store A', 'Bosch PowerTube 625Wh', 'Red', 'M', 
+        'Wild Cross 1', 'WC1-2023', '2023', '15.5', 'Aluminum', 
+        '1234', 'https://bulls.com/wild-cross-1', 'Store A', 'Bosch PowerTube 625Wh', 'Red', 'M', 
         'MTB', 'true', '2', '59990', 
         '54990', '49990', 'Demo model with slight wear'
       ],
       [
-        'Lacuba EVO 8', '2024', '22.3', 'Carbon', 
-        'https://example.com/bike2.jpg', 'Warehouse', 'Bosch PowerTube 750Wh', 'Black', 'L', 
+        'Lacuba EVO 8', 'LE8-2024', '2024', '22.3', 'Carbon', 
+        'https://example.com/bike2.jpg', 'https://bulls.com/lacuba-evo-8', 'Warehouse', 'Bosch PowerTube 750Wh', 'Black', 'L', 
         'City', 'true', '1', '72990', 
         '68990', '62990', 'New arrival'
       ]
@@ -495,10 +518,12 @@ export default function CsvImporter() {
         </Typography>
         <ul>
           <li>modelName/model/name - Bike model name</li>
+          <li>modelNumber/model_number/code - Unique model identifier</li>
           <li>modelYear/year - Model year</li>
           <li>weight/kg - Weight in kg</li>
           <li>frameMaterial/material/frame - Frame material</li>
           <li>imageUrl/image/img/url - URL to bike image</li>
+          <li>link/product_link/product-url - Link to product page</li>
           <li>location/store/warehouse - Where the bike is stored</li>
           <li>battery/batt/wh - Battery specifications</li>
           <li>color/colour - Bike color</li>

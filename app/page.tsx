@@ -4,9 +4,14 @@ import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import ConnectionIndicator from './components/ConnectionIndicator';
-import { Box, Tabs, Tab, Button } from '@mui/material';
+import UserAvatar from './components/UserAvatar';
+import AccessDenied from './components/AccessDenied';
+import { Box, Tabs, Tab, Button, IconButton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import PeopleIcon from '@mui/icons-material/People';
 import { usePathname } from 'next/navigation';
+import { useAuth } from './context/AuthContext';
+import { getAssetPath } from './utils/pathUtils';
 
 // Dynamically import the BikeDataGrid component to avoid server-side rendering issues with Firebase
 const BikeDataGrid = dynamic(() => import('./components/BikeDataGrid'), {
@@ -20,12 +25,22 @@ const CsvImporter = dynamic(() => import('./components/CsvImporter'), {
   loading: () => <p>Loading CSV importer...</p>
 });
 
+// Dynamically import the UserManagement component
+const UserManagement = dynamic(() => import('./components/UserManagement'), {
+  ssr: false
+});
+
 export default function Home() {
   const [error, setError] = useState<Error | null>(null);
   const [activeTab, setActiveTab] = useState<number>(0);
   const [showBikeGrid, setShowBikeGrid] = useState(true);
   const [showCsvImporter, setShowCsvImporter] = useState(false);
   const [openAddDialog, setOpenAddDialog] = useState(false);
+  const [openUserManagement, setOpenUserManagement] = useState(false);
+
+  const { user, userData, loading } = useAuth();
+  const hasAccess = userData?.hasAccess || userData?.isAdmin;
+  const isAdmin = userData?.isAdmin;
 
   const pathname = usePathname();
   const basePath = process.env.NODE_ENV === 'production' ? '/bixy' : '';
@@ -63,14 +78,46 @@ export default function Home() {
     // This state change can be observed by child components
   };
 
+  const handleOpenUserManagement = () => {
+    setOpenUserManagement(true);
+  };
+
+  const handleCloseUserManagement = () => {
+    setOpenUserManagement(false);
+  };
+
+  if (loading) {
+    return (
+      <main className="flex min-h-screen flex-col p-6">
+        <div className="w-full">
+          <div className="flex items-center mb-4">
+            <div className="flex items-center flex-grow">
+              <img 
+                src={getAssetPath('/bixy-logo.svg')}
+                alt="Bixy Logo" 
+                width={80} 
+                height={64}
+                style={{ objectFit: 'contain' }}
+              />
+              <h1 className="text-3xl font-bold ml-4">Bixy Stock Management</h1>
+            </div>
+          </div>
+          <div className="flex justify-center items-center h-[calc(100vh-150px)]">
+            <p>Loading...</p>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
   if (error) {
     return (
       <main className="flex min-h-screen flex-col p-6">
         <div className="w-full">
           <div className="flex items-center mb-4">
-            <div className="flex items-center">
+            <div className="flex items-center flex-grow">
               <img 
-                src={`${basePath}/bixy-logo.svg`}
+                src={getAssetPath('/bixy-logo.svg')}
                 alt="Bixy Logo" 
                 width={80} 
                 height={64}
@@ -79,6 +126,9 @@ export default function Home() {
               <h1 className="text-3xl font-bold ml-4">Bixy Stock Management</h1>
               <div className="ml-2">
                 <ConnectionIndicator />
+              </div>
+              <div className="ml-auto">
+                <UserAvatar />
               </div>
             </div>
           </div>
@@ -92,22 +142,57 @@ export default function Home() {
     );
   }
 
+  // Show login screen or access denied if not authenticated or authorized
+  if (!user || (user && !hasAccess)) {
+    return (
+      <main className="flex min-h-screen flex-col p-6">
+        <div className="w-full">
+          {/* Header with logo and title */}
+          <div className="flex items-center mb-4">
+            <div className="flex items-center flex-grow">
+              <img 
+                src={getAssetPath('/bixy-logo.svg')}
+                alt="Bixy Logo" 
+                width={80} 
+                height={64}
+                style={{ objectFit: 'contain' }}
+              />
+              <h1 className="text-3xl font-bold ml-4">Bixy Stock Management</h1>
+              <div className="ml-2">
+                <ConnectionIndicator />
+              </div>
+              <div className="ml-auto">
+                <UserAvatar />
+              </div>
+            </div>
+          </div>
+          
+          {/* Show access denied if logged in but not authorized */}
+          {user && !hasAccess && <AccessDenied />}
+        </div>
+      </main>
+    );
+  }
+
   return (
-    <main className="flex min-h-screen flex-col p-6">
+    <main className="flex min-h-screen flex-col p-6 bg-gradient-to-b dark:from-gray-900 dark:to-black">
       <div className="w-full">
         {/* Header with logo and title */}
         <div className="flex items-center mb-4">
           <div className="flex items-center flex-grow">
             <img 
-              src={`${basePath}/bixy-logo.svg`}
+              src={getAssetPath('/bixy-logo.svg')}
               alt="Bixy Logo" 
               width={80} 
               height={64}
               style={{ objectFit: 'contain' }}
             />
-            <h1 className="text-3xl font-bold ml-4">Bixy Stock Management</h1>
+            <h1 className="text-3xl font-bold ml-4 dark:text-white">Bixy Stock Management</h1>
             <div className="ml-2">
               <ConnectionIndicator />
+            </div>
+            <div className="ml-auto">
+              <UserAvatar />
             </div>
           </div>
         </div>
@@ -119,7 +204,13 @@ export default function Home() {
             width: '100%', 
             alignItems: 'center',
             borderBottom: 1, 
-            borderColor: 'divider'
+            borderColor: 'divider',
+            '.MuiTab-root': {
+              color: theme => theme.palette.mode === 'dark' ? '#999999' : '#555555',
+              '&.Mui-selected': { 
+                color: theme => theme.palette.mode === 'dark' ? '#ffffff' : '#1976d2' 
+              }
+            }
           }}>
             <Tabs 
               value={activeTab} 
@@ -127,28 +218,25 @@ export default function Home() {
               aria-label="inventory tabs"
               sx={{ 
                 flexGrow: 1,
-                '& .MuiTab-root': { 
-                  color: '#555555',
-                  '&.Mui-selected': { color: '#1976d2' } 
-                }
               }}
             >
               <Tab label="View Inventory" />
               <Tab label="Import from CSV" />
             </Tabs>
             
-            {/* Only show Add New Bike button when on the inventory tab */}
-            {activeTab === 0 && (
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<AddIcon />}
-                onClick={handleAddNewBike}
-                sx={{ ml: 2 }}
-              >
-                Add New Bike
-              </Button>
-            )}
+            {/* Admin actions */}
+            <Box sx={{ ml: 2, display: 'flex', gap: 1 }}>
+              {isAdmin && (
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={handleOpenUserManagement}
+                  startIcon={<PeopleIcon />}
+                >
+                  Users
+                </Button>
+              )}
+            </Box>
           </Box>
         </div>
         
@@ -167,6 +255,12 @@ export default function Home() {
           )}
         </div>
       </div>
+      
+      {/* User Management Dialog */}
+      <UserManagement 
+        open={openUserManagement} 
+        onClose={handleCloseUserManagement} 
+      />
     </main>
   );
 }
