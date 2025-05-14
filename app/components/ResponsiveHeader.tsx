@@ -113,15 +113,6 @@ export default function ResponsiveHeader({
         <Typography variant="h6" component="div">
           Bixy Stock
         </Typography>
-        <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center' }}>
-          <FiberManualRecordIcon 
-            sx={{ 
-              fontSize: 12, 
-              color: dbConnected ? 'success.main' : 'error.main',
-              mr: 1
-            }} 
-          />
-        </Box>
       </Box>
       <Divider />
       <List>
@@ -179,16 +170,6 @@ export default function ResponsiveHeader({
           >
             Bixy Stock
           </Typography>
-          
-          {/* Connection indicator */}
-          <Box sx={{ ml: 1, display: 'flex', alignItems: 'center' }}>
-            <FiberManualRecordIcon 
-              sx={{ 
-                fontSize: 12, 
-                color: dbConnected ? 'success.main' : 'error.main'
-              }} 
-            />
-          </Box>
         </Box>
 
         {/* Desktop Menu */}
