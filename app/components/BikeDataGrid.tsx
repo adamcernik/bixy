@@ -209,18 +209,16 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog, onEditBi
   const handleCellClick = (params: GridCellParams) => {
     const field = params.field;
     const id = params.id;
-    
     // Don't enter edit mode for these fields or if we're clicking on a checkbox
     if (field === 'actions' || field === 'manufacturer' || field === 'isEbike' || field === 'imageUrl' || field === '__check__') {
       return;
     }
-    
-    // Enter edit mode for the clicked cell without affecting column widths
+    // Always set the clicked cell to edit mode
     setCellModesModel(prevModel => ({
       ...prevModel,
       [id]: {
         ...prevModel[id],
-        [field]: { mode: GridCellModes.Edit }
+        [field]: { mode: 'edit' as any }
       }
     }));
   };
@@ -618,13 +616,28 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog, onEditBi
               return newModifiedCells;
             });
           }, 3000);
-          // Set cellModesModel for changed fields to view mode
+          // Set only the edited cell(s) to view mode and clear their cellModesModel entry
           setCellModesModel(prev => {
             const updated = { ...prev };
             if (!updated[newRow.id!]) updated[newRow.id!] = {};
             changedFields.forEach(field => {
               updated[newRow.id!][field] = { mode: 'view' as any };
             });
+            // Clear the cellModesModel for this row after a short delay to allow UI update
+            setTimeout(() => {
+              setCellModesModel(prev2 => {
+                const cleared = { ...prev2 };
+                if (cleared[newRow.id!]) {
+                  changedFields.forEach(field => {
+                    delete cleared[newRow.id!][field];
+                  });
+                  if (Object.keys(cleared[newRow.id!]).length === 0) {
+                    delete cleared[newRow.id!];
+                  }
+                }
+                return cleared;
+              });
+            }, 100);
             return updated;
           });
         } else {
