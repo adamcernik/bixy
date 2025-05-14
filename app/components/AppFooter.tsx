@@ -14,6 +14,10 @@ export default function AppFooter() {
     statusColor = '#ef4444';
   }
 
+  const version = process.env.NEXT_PUBLIC_VERSION;
+  const commit = process.env.NEXT_PUBLIC_COMMIT;
+  const buildDate = process.env.NEXT_PUBLIC_BUILD_DATE;
+
   return (
     <Box
       sx={{
@@ -41,6 +45,9 @@ export default function AppFooter() {
           {statusText}
         </Typography>
       </Box>
+      <Typography variant="body2" sx={{ color: '#666', fontSize: 13, textAlign: 'center', flex: 1 }}>
+        v{version} | {commit} | {buildDate}
+      </Typography>
       <Typography variant="body2" sx={{ color: '#666', fontSize: 13 }}>
         Admin: <Link href="mailto:adam.cernik@gmail.com" sx={{ color: '#4285F4', textDecoration: 'none' }}>adam.cernik@gmail.com</Link>
       </Typography>
