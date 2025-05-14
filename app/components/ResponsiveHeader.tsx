@@ -104,7 +104,7 @@ export default function ResponsiveHeader({
     <Box sx={{ width: 250 }} role="presentation">
       <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
         <img 
-          src={getAssetPath('/bixy-logo.svg')}
+          src={getAssetPath('/bixy-logo-black.svg')}
           alt="Bixy Logo" 
           width={40} 
           height={32}
@@ -155,15 +155,15 @@ export default function ResponsiveHeader({
       position="sticky" 
       elevation={2} 
       sx={{ 
-        backgroundColor: theme => theme.palette.mode === 'dark' ? '#1a1a1a' : '#fff',
-        color: theme => theme.palette.mode === 'dark' ? '#fff' : 'inherit'
+        backgroundColor: '#fff',
+        color: 'inherit'
       }}
     >
       <Toolbar sx={{ justifyContent: 'space-between' }}>
         {/* Logo and app name */}
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <img 
-            src={getAssetPath('/bixy-logo.svg')}
+            src={getAssetPath('/bixy-logo-black.svg')}
             alt="Bixy Logo" 
             width={40} 
             height={32}
@@ -198,8 +198,12 @@ export default function ResponsiveHeader({
             onClick={() => onTabChange(0)}
             sx={{ 
               fontWeight: activeTab === 0 ? 'bold' : 'normal',
-              borderBottom: activeTab === 0 ? '2px solid' : 'none',
-              color: theme => theme.palette.mode === 'dark' ? '#fff' : 'inherit'
+              backgroundColor: activeTab === 0 ? 'rgba(0, 0, 0, 0.05)' : 'transparent',
+              borderRadius: '4px',
+              '&:hover': {
+                backgroundColor: activeTab === 0 ? 'rgba(0, 0, 0, 0.1)' : 'rgba(0, 0, 0, 0.04)'
+              },
+              color: 'inherit'
             }}
             startIcon={<InventoryIcon />}
           >
@@ -210,8 +214,12 @@ export default function ResponsiveHeader({
             onClick={() => onTabChange(1)}
             sx={{ 
               fontWeight: activeTab === 1 ? 'bold' : 'normal',
-              borderBottom: activeTab === 1 ? '2px solid' : 'none',
-              color: theme => theme.palette.mode === 'dark' ? '#fff' : 'inherit'
+              backgroundColor: activeTab === 1 ? 'rgba(0, 0, 0, 0.05)' : 'transparent',
+              borderRadius: '4px',
+              '&:hover': {
+                backgroundColor: activeTab === 1 ? 'rgba(0, 0, 0, 0.1)' : 'rgba(0, 0, 0, 0.04)'
+              },
+              color: 'inherit'
             }}
             startIcon={<UploadFileIcon />}
           >

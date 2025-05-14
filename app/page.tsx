@@ -6,6 +6,7 @@ import Image from 'next/image';
 import ConnectionIndicator from './components/ConnectionIndicator';
 import UserAvatar from './components/UserAvatar';
 import AccessDenied from './components/AccessDenied';
+import SignInMessage from './components/SignInMessage';
 import ResponsiveHeader from './components/ResponsiveHeader';
 import { Box, Tabs, Tab, Button, IconButton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
@@ -13,6 +14,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import { usePathname } from 'next/navigation';
 import { useAuth } from './context/AuthContext';
 import { getAssetPath } from './utils/pathUtils';
+import { Bike } from './models/Bike';
 
 // Dynamically import the BikeDataGrid component to avoid server-side rendering issues with Firebase
 const BikeDataGrid = dynamic(() => import('./components/BikeDataGrid'), {
@@ -31,6 +33,11 @@ const UserManagement = dynamic(() => import('./components/UserManagement'), {
   ssr: false
 });
 
+// Dynamically import the AddBikeModal component
+const AddBikeModal = dynamic(() => import('./components/AddBikeModal'), {
+  ssr: false
+});
+
 export default function Home() {
   const [error, setError] = useState<Error | null>(null);
   const [activeTab, setActiveTab] = useState<number>(0);
@@ -39,6 +46,7 @@ export default function Home() {
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [openUserManagement, setOpenUserManagement] = useState(false);
   const [dbConnected, setDbConnected] = useState(false);
+  const [editingBike, setEditingBike] = useState<Bike | undefined>(undefined);
 
   const { user, userData, loading } = useAuth();
   const hasAccess = userData?.hasAccess || userData?.isAdmin;
@@ -92,7 +100,25 @@ export default function Home() {
 
   // Function to handle Add New Bike button click
   const handleAddNewBike = () => {
+    setEditingBike(undefined); // Clear any editing bike
     setOpenAddDialog(true);
+  };
+
+  const handleCloseAddBikeModal = () => {
+    setOpenAddDialog(false);
+    setEditingBike(undefined); // Clear the editing bike when closing
+  };
+
+  const handleEditBike = (bike: Bike) => {
+    setEditingBike(bike);
+    setOpenAddDialog(true);
+  };
+
+  const handleBikeAddSuccess = () => {
+    // If we're on the data grid page, refresh it
+    if (showBikeGrid && activeTab === 0) {
+      // The BikeDataGrid will handle its own refresh when the modal is closed
+    }
   };
 
   const handleOpenUserManagement = () => {
@@ -169,14 +195,14 @@ export default function Home() {
           </div>
           
           {/* Show access denied if logged in but not authorized */}
-          {user && !hasAccess && <AccessDenied />}
+          {user && !hasAccess ? <AccessDenied /> : <SignInMessage />}
         </div>
       </main>
     );
   }
 
   return (
-    <main className="flex min-h-screen flex-col bg-gradient-to-b dark:from-gray-900 dark:to-black">
+    <main className="flex min-h-screen flex-col bg-white">
       <ResponsiveHeader 
         dbConnected={dbConnected}
         onTabChange={handleTabChange}
@@ -190,7 +216,11 @@ export default function Home() {
         <div>
           {showBikeGrid && (
             <div className="h-[calc(100vh-100px)]">
-              <BikeDataGrid openAddDialog={openAddDialog} setOpenAddDialog={setOpenAddDialog} />
+              <BikeDataGrid 
+                openAddDialog={false} 
+                setOpenAddDialog={setOpenAddDialog} 
+                onEditBike={handleEditBike}
+              />
             </div>
           )}
           
@@ -201,6 +231,14 @@ export default function Home() {
           )}
         </div>
       </div>
+      
+      {/* Global Add Bike Modal */}
+      <AddBikeModal 
+        open={openAddDialog} 
+        onClose={handleCloseAddBikeModal} 
+        onSuccess={handleBikeAddSuccess}
+        editBike={editingBike}
+      />
       
       {/* User Management Dialog */}
       <UserManagement 

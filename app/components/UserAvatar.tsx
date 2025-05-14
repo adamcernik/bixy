@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { AccountCircle } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
+import GoogleIcon from '@mui/icons-material/Google';
 
 export default function UserAvatar() {
   const { user, userData, loginWithGoogle, logout } = useAuth();
@@ -43,20 +44,18 @@ export default function UserAvatar() {
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
       {!user ? (
         <Button
-          variant="outlined"
-          color="inherit"
+          variant="contained"
+          color="primary"
           onClick={loginWithGoogle}
-          startIcon={<AccountCircle />}
+          startIcon={<GoogleIcon />}
           sx={{ 
-            color: '#fff',
-            borderColor: '#fff',
+            backgroundColor: '#4285F4',
             '&:hover': { 
-              backgroundColor: 'rgba(255, 255, 255, 0.1)',
-              borderColor: '#fff' 
+              backgroundColor: '#357ABD'
             }
           }}
         >
-          Sign In
+          Sign in with Google
         </Button>
       ) : (
         <>

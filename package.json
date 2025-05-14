@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "predeploy": "npm run build && mkdir -p out && cp .nojekyll out/ || true",
+    "predeploy": "GITHUB_PAGES=true npm run build && mkdir -p out && cp .nojekyll out/ || true",
     "deploy": "gh-pages -d out --dotfiles"
   },
   "dependencies": {

@@ -39,6 +39,7 @@ import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import { getBikes, addBike, updateBike, deleteBike } from '../services/bikeService';
 import { Bike } from '../models/Bike';
 import { getAssetPath } from '../utils/pathUtils';
+import ImageViewerModal from './ImageViewerModal';
 
 const initialBikeState: Bike = {
   manufacturer: 'Bulls', // Default value
@@ -105,6 +106,7 @@ const categoryOptions = ['MTB', 'Road', 'Gravel', 'City', 'Trekking', 'Kids', 'O
 interface BikeDataGridProps {
   openAddDialog?: boolean;
   setOpenAddDialog?: React.Dispatch<React.SetStateAction<boolean>>;
+  onEditBike?: (bike: Bike) => void;
 }
 
 // Add this helper function near the top of the file
@@ -118,13 +120,11 @@ const getPlaceholderImage = (): string => {
   return getAssetPath('/bixy-logo.svg');
 };
 
-export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDataGridProps) {
+export default function BikeDataGrid({ openAddDialog, setOpenAddDialog, onEditBike }: BikeDataGridProps) {
   const [bikes, setBikes] = useState<Bike[]>([]);
   const [loading, setLoading] = useState(true);
-  const [open, setOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [currentBike, setCurrentBike] = useState<Bike>(initialBikeState);
-  const [imagePreviewError, setImagePreviewError] = useState(false);
   const [snackbar, setSnackbar] = useState<{ open: boolean, message: string, severity: 'success' | 'error' }>({
     open: false,
     message: '',
@@ -134,6 +134,9 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
   const [editedValue, setEditedValue] = useState<any>(null);
   const [modifiedCells, setModifiedCells] = useState<Record<string, Set<string>>>({});
+  const [imageViewerOpen, setImageViewerOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<number>(0);
+  const [selectedBike, setSelectedBike] = useState<Bike | null>(null);
 
   const fetchBikes = async () => {
     setLoading(true);
@@ -155,17 +158,6 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
   useEffect(() => {
     fetchBikes();
   }, []);
-
-  // Effect to handle openAddDialog prop
-  useEffect(() => {
-    if (openAddDialog) {
-      handleOpen();
-      // Reset the parent state
-      if (setOpenAddDialog) {
-        setOpenAddDialog(false);
-      }
-    }
-  }, [openAddDialog, setOpenAddDialog]);
 
   const handleCellModesModelChange = (newCellModesModel: GridCellModesModel) => {
     setCellModesModel(newCellModesModel);
@@ -205,57 +197,345 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
     }
   };
 
-  const handleOpen = (bike?: Bike) => {
-    if (bike) {
-      setCurrentBike(bike);
-      setEditMode(true);
-    } else {
-      setCurrentBike(initialBikeState);
-      setEditMode(false);
+  const handleColumnResize = (params: any) => {
+    setColumnWidths(prev => ({
+      ...prev,
+      [params.colDef.field]: params.width
+    }));
+  };
+
+  const handleCellClick = (params: GridCellParams) => {
+    const field = params.field;
+    const id = params.id;
+    
+    // Don't enter edit mode for these fields or if we're clicking on a checkbox
+    if (field === 'actions' || field === 'manufacturer' || field === 'isEbike' || field === 'imageUrl' || field === '__check__') {
+      return;
     }
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    setCurrentBike(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : 
-              type === 'number' ? Number(value) : value
-    }));
-  };
-
-  const handleImageUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    setCurrentBike(prev => ({
-      ...prev,
-      imageUrl: parseInt(value) || 0
-    }));
-  };
-
-  const handleAddNewBike = async () => {
-    try {
-      if (editMode && currentBike.id) {
-        await updateBike(currentBike.id, currentBike);
-      } else {
-        await addBike(currentBike);
+    
+    // Enter edit mode for the clicked cell without affecting column widths
+    setCellModesModel(prevModel => ({
+      ...prevModel,
+      [id]: {
+        ...prevModel[id],
+        [field]: { mode: GridCellModes.Edit }
       }
-      fetchBikes();
-      handleClose();
-      setSnackbar({
-        open: true,
-        message: `Bike ${editMode ? 'updated' : 'added'} successfully`,
-        severity: 'success'
-      });
+    }));
+  };
+
+  // Add a color selection component
+  const ColorCell = (props: GridRenderCellParams) => {
+    const { value } = props;
+    
+    if (!value) return <span>No color</span>;
+    
+    const colorCode = getColorCode(value);
+    
+    return (
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box 
+          sx={{ 
+            width: 18, 
+            height: 18, 
+            borderRadius: '50%', 
+            backgroundColor: colorCode,
+            border: '1px solid #AAAAAA',
+            display: 'inline-block'
+          }} 
+        />
+        <span>{value}</span>
+      </Box>
+    );
+  };
+
+  // Custom edit component for colors with color swatches
+  const ColorEditCell = (props: any) => {
+    const { id, value, field, api } = props;
+    
+    // Simplified handler to fix AbortError issues
+    const handleValueChange = (event: any) => {
+      const newValue = event.target.value;
+      if (api && api.setEditCellValue) {
+        api.setEditCellValue({ id, field, value: newValue });
+      }
+    };
+    
+    // Fall back to a regular input if rendering fails
+    try {
+      return (
+        <Select
+          value={value || ''}
+          onChange={handleValueChange}
+          fullWidth
+          variant="standard"
+          sx={{ 
+            height: '100%',
+            '& .MuiSelect-select': { 
+              display: 'flex', 
+              alignItems: 'center',
+              paddingY: 0,
+              height: '100%'
+            }
+          }}
+        >
+          {colorOptions.map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box 
+                  sx={{ 
+                    width: 16, 
+                    height: 16, 
+                    borderRadius: '50%', 
+                    backgroundColor: option.color,
+                    border: '1px solid #AAAAAA' 
+                  }} 
+                />
+                <span>{option.value}</span>
+              </Box>
+            </MenuItem>
+          ))}
+        </Select>
+      );
+    } catch (e) {
+      console.error('Error rendering ColorEditCell:', e);
+      // Fallback to basic text input if Select fails
+      return (
+        <input
+          type="text"
+          value={value || ''}
+          onChange={handleValueChange}
+          style={{ width: '100%', height: '100%', padding: '0 8px' }}
+        />
+      );
+    }
+  };
+
+  // Add a function to check if a cell has been modified
+  const isCellModified = (id: string, field: string): boolean => {
+    return modifiedCells[id]?.has(field) || false;
+  };
+
+  // Add function to handle image click
+  const handleImageClick = (bike: Bike) => {
+    if (bike.imageUrl) {
+      setSelectedImage(bike.imageUrl);
+      setSelectedBike(bike);
+      setImageViewerOpen(true);
+    }
+  };
+
+  const columns: GridColDef[] = [
+    { field: 'modelNumber', headerName: 'Model Number', width: columnWidths.modelNumber || 100 },
+    { 
+      field: 'modelName', 
+      headerName: 'Model', 
+      width: columnWidths.modelName || 150, 
+      editable: true,
+      renderCell: (params: GridRenderCellParams) => {
+        return (
+          <Box
+            sx={{
+              cursor: 'pointer',
+              '&:hover': {
+                textDecoration: 'underline',
+                color: 'primary.main'
+              }
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onEditBike) {
+                onEditBike(params.row as Bike);
+              }
+            }}
+          >
+            {params.value}
+          </Box>
+        );
+      }
+    },
+    { 
+      field: 'modelYear', 
+      headerName: 'Year', 
+      width: columnWidths.modelYear || 80, 
+      type: 'number', 
+      editable: true,
+      renderCell: (params) => {
+        if (params.value != null) {
+          return String(params.value);
+        }
+        return '';
+      }
+    },
+    { field: 'weight', headerName: 'Weight (kg)', width: columnWidths.weight || 100, type: 'number', editable: true },
+    { field: 'frameMaterial', headerName: 'Frame Material', width: columnWidths.frameMaterial || 130, editable: true },
+    { 
+      field: 'imageUrl', 
+      headerName: 'Image', 
+      width: columnWidths.imageUrl || 120,
+      editable: true,
+      type: 'number',
+      renderCell: (params: GridRenderCellParams) => {
+        if (!params.value) return 'No image';
+        const imagePath = getImagePath(params.value as number);
+        const bike = params.row as Bike;
+        
+        return (
+          <Box 
+            sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              width: '100%',
+              cursor: 'pointer',
+              '&:hover': {
+                opacity: 0.8,
+              }
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleImageClick(bike);
+            }}
+          >
+            <img 
+              src={imagePath} 
+              alt="Bike" 
+              style={{ 
+                width: '100%', 
+                height: 'auto', 
+                maxHeight: '40px', 
+                objectFit: 'contain',
+                marginBottom: '4px'
+              }} 
+              onError={(e) => {
+                // Replace with placeholder on error
+                (e.target as HTMLImageElement).src = getPlaceholderImage();
+                (e.target as HTMLImageElement).onerror = null; // Prevent infinite loops
+              }}
+            />
+            <span style={{ fontSize: '11px' }}>
+              {params.value}
+            </span>
+          </Box>
+        );
+      }
+    },
+    { field: 'location', headerName: 'Location', width: columnWidths.location || 120, editable: true },
+    { field: 'battery', headerName: 'Battery', width: columnWidths.battery || 150, editable: true },
+    { 
+      field: 'color', 
+      headerName: 'Color', 
+      width: columnWidths.color || 120, 
+      editable: true,
+      type: 'singleSelect',
+      valueOptions: colorOptions.map(option => option.value),
+      renderCell: ColorCell,
+      renderEditCell: ColorEditCell
+    },
+    { field: 'size', headerName: 'Size', width: columnWidths.size || 80, editable: true },
+    { 
+      field: 'category', 
+      headerName: 'Category', 
+      width: columnWidths.category || 100, 
+      editable: true,
+      type: 'singleSelect',
+      valueOptions: ['', ...categoryOptions],
+      renderCell: (params) => {
+        return params.value || 'No category';
+      }
+    },
+    { 
+      field: 'isEbike', 
+      headerName: 'E-Bike', 
+      width: columnWidths.isEbike || 100,
+      type: 'boolean',
+      editable: false,
+      renderCell: (params: GridRenderCellParams) => {
+        return (
+          <Switch
+            checked={params.value}
+            onChange={(e) => handleToggleEbike(params.row.id as string, params.value as boolean)}
+            onClick={(e) => e.stopPropagation()}
+            color="primary"
+            size="small"
+          />
+        );
+      }
+    },
+    { field: 'pieces', headerName: 'Pieces', width: columnWidths.pieces || 80, type: 'number', editable: true },
+    { 
+      field: 'priceRetail', 
+      headerName: 'Retail Price (CZK)', 
+      width: columnWidths.priceRetail || 140, 
+      type: 'number',
+      editable: true,
+      renderCell: (params) => {
+        if (params.value != null && params.value !== '') {
+          return `${Number(params.value).toLocaleString()} CZK`;
+        }
+        return '';
+      }
+    },
+    { 
+      field: 'priceAction', 
+      headerName: 'Action Price (CZK)', 
+      width: columnWidths.priceAction || 140, 
+      type: 'number',
+      editable: true,
+      renderCell: (params) => {
+        if (params.value != null && params.value !== '') {
+          return `${Number(params.value).toLocaleString()} CZK`;
+        }
+        return '';
+      }
+    },
+    { 
+      field: 'priceReseller', 
+      headerName: 'Reseller Price (CZK)', 
+      width: columnWidths.priceReseller || 140, 
+      type: 'number',
+      editable: true,
+      renderCell: (params) => {
+        if (params.value != null && params.value !== '') {
+          return `${Number(params.value).toLocaleString()} CZK`;
+        }
+        return '';
+      }
+    },
+    { field: 'note', headerName: 'Note', width: columnWidths.note || 200, editable: true },
+    {
+      field: 'actions',
+      type: 'actions',
+      headerName: 'Actions',
+      width: columnWidths.actions || 70,
+      getActions: ({ id }) => [
+        <GridActionsCellItem
+          icon={<DeleteIcon />}
+          label="Delete"
+          onClick={handleDeleteClick(id as string)}
+          color="inherit"
+        />
+      ],
+    }
+  ];
+
+  const handleToggleEbike = async (id: string, currentValue: boolean) => {
+    try {
+      const bikeToUpdate = bikes.find(bike => bike.id === id);
+      if (bikeToUpdate) {
+        const updatedBike = { ...bikeToUpdate, isEbike: !currentValue };
+        await updateBike(id, updatedBike);
+        fetchBikes();
+        setSnackbar({
+          open: true,
+          message: `E-bike status ${!currentValue ? 'enabled' : 'disabled'}`,
+          severity: 'success'
+        });
+      }
     } catch (error) {
-      console.error("Error saving bike:", error);
+      console.error("Error toggling e-bike status:", error);
       setSnackbar({
         open: true,
-        message: `Error ${editMode ? 'updating' : 'adding'} bike`,
+        message: 'Error updating e-bike status',
         severity: 'error'
       });
     }
@@ -363,285 +643,6 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
     }
   };
 
-  const handleToggleEbike = async (id: string, currentValue: boolean) => {
-    try {
-      const bikeToUpdate = bikes.find(bike => bike.id === id);
-      if (bikeToUpdate) {
-        const updatedBike = { ...bikeToUpdate, isEbike: !currentValue };
-        await updateBike(id, updatedBike);
-        fetchBikes();
-        setSnackbar({
-          open: true,
-          message: `E-bike status ${!currentValue ? 'enabled' : 'disabled'}`,
-          severity: 'success'
-        });
-      }
-    } catch (error) {
-      console.error("Error toggling e-bike status:", error);
-      setSnackbar({
-        open: true,
-        message: 'Error updating e-bike status',
-        severity: 'error'
-      });
-    }
-  };
-
-  const priceFormatter = (params: any) => {
-    return params.value ? `${params.value.toLocaleString()} CZK` : '';
-  };
-
-  const yearFormatter = (params: any) => {
-    return params.value;
-  };
-
-  const handleRowClick = (params: GridRowParams) => {
-    // Open the full edit dialog on double-click
-    const bike = params.row as Bike;
-    if (bike) {
-      handleOpen(bike);
-    }
-  };
-
-  const handleColumnResize = (params: any) => {
-    setColumnWidths(prev => ({
-      ...prev,
-      [params.colDef.field]: params.width
-    }));
-  };
-
-  const handleCellClick = (params: GridCellParams) => {
-    const field = params.field;
-    const id = params.id;
-    
-    // Don't enter edit mode for these fields
-    if (field === 'actions' || field === 'manufacturer' || field === 'isEbike' || field === 'imageUrl') {
-      return;
-    }
-    
-    // Enter edit mode for the clicked cell without affecting column widths
-    setCellModesModel(prevModel => ({
-      ...prevModel,
-      [id]: {
-        ...prevModel[id],
-        [field]: { mode: GridCellModes.Edit }
-      }
-    }));
-  };
-
-  // Add a color selection component
-  const ColorCell = (props: GridRenderCellParams) => {
-    const { value } = props;
-    
-    if (!value) return <span>No color</span>;
-    
-    const colorCode = getColorCode(value);
-    
-    return (
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <Box 
-          sx={{ 
-            width: 18, 
-            height: 18, 
-            borderRadius: '50%', 
-            backgroundColor: colorCode,
-            border: '1px solid #AAAAAA',
-            display: 'inline-block'
-          }} 
-        />
-        <span>{value}</span>
-      </Box>
-    );
-  };
-
-  // Custom edit component for colors with color swatches
-  const ColorEditCell = (props: any) => {
-    const { id, value, field, api } = props;
-    
-    // Simplified handler to fix AbortError issues
-    const handleValueChange = (event: any) => {
-      const newValue = event.target.value;
-      if (api && api.setEditCellValue) {
-        api.setEditCellValue({ id, field, value: newValue });
-      }
-    };
-    
-    // Fall back to a regular input if rendering fails
-    try {
-      return (
-        <Select
-          value={value || ''}
-          onChange={handleValueChange}
-          fullWidth
-          variant="standard"
-          sx={{ 
-            height: '100%',
-            '& .MuiSelect-select': { 
-              display: 'flex', 
-              alignItems: 'center',
-              paddingY: 0,
-              height: '100%'
-            }
-          }}
-        >
-          {colorOptions.map((option) => (
-            <MenuItem key={option.value} value={option.value}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Box 
-                  sx={{ 
-                    width: 16, 
-                    height: 16, 
-                    borderRadius: '50%', 
-                    backgroundColor: option.color,
-                    border: '1px solid #AAAAAA' 
-                  }} 
-                />
-                <span>{option.value}</span>
-              </Box>
-            </MenuItem>
-          ))}
-        </Select>
-      );
-    } catch (e) {
-      console.error('Error rendering ColorEditCell:', e);
-      // Fallback to basic text input if Select fails
-      return (
-        <input
-          type="text"
-          value={value || ''}
-          onChange={handleValueChange}
-          style={{ width: '100%', height: '100%', padding: '0 8px' }}
-        />
-      );
-    }
-  };
-
-  // Add a function to check if a cell has been modified
-  const isCellModified = (id: string, field: string): boolean => {
-    return modifiedCells[id]?.has(field) || false;
-  };
-
-  const columns: GridColDef[] = [
-    { field: 'manufacturer', headerName: 'Manufacturer', width: columnWidths.manufacturer || 100 },
-    { field: 'modelName', headerName: 'Model', width: columnWidths.modelName || 150, editable: true },
-    { field: 'modelYear', headerName: 'Year', width: columnWidths.modelYear || 80, type: 'number', editable: true, valueFormatter: yearFormatter },
-    { field: 'weight', headerName: 'Weight (kg)', width: columnWidths.weight || 100, type: 'number', editable: true },
-    { field: 'frameMaterial', headerName: 'Frame Material', width: columnWidths.frameMaterial || 130, editable: true },
-    { 
-      field: 'imageUrl', 
-      headerName: 'Image', 
-      width: columnWidths.imageUrl || 120,
-      editable: true,
-      type: 'number',
-      renderCell: (params: GridRenderCellParams) => {
-        if (!params.value) return 'No image';
-        const imagePath = getImagePath(params.value as number);
-        
-        return (
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-            <img 
-              src={imagePath} 
-              alt="Bike" 
-              style={{ 
-                width: '100%', 
-                height: 'auto', 
-                maxHeight: '40px', 
-                objectFit: 'contain',
-                marginBottom: '4px'
-              }} 
-              onError={(e) => {
-                // Replace with placeholder on error
-                (e.target as HTMLImageElement).src = getPlaceholderImage();
-                (e.target as HTMLImageElement).onerror = null; // Prevent infinite loops
-              }}
-            />
-            <span style={{ fontSize: '11px' }}>
-              {params.value}
-            </span>
-          </Box>
-        );
-      }
-    },
-    { field: 'location', headerName: 'Location', width: columnWidths.location || 120, editable: true },
-    { field: 'battery', headerName: 'Battery', width: columnWidths.battery || 150, editable: true },
-    { 
-      field: 'color', 
-      headerName: 'Color', 
-      width: columnWidths.color || 120, 
-      editable: true,
-      type: 'singleSelect',
-      valueOptions: colorOptions.map(option => option.value),
-      renderCell: ColorCell,
-      renderEditCell: ColorEditCell
-    },
-    { field: 'size', headerName: 'Size', width: columnWidths.size || 80, editable: true },
-    { 
-      field: 'category', 
-      headerName: 'Category', 
-      width: columnWidths.category || 100, 
-      editable: true,
-      type: 'singleSelect',
-      valueOptions: categoryOptions
-    },
-    { 
-      field: 'isEbike', 
-      headerName: 'E-Bike', 
-      width: columnWidths.isEbike || 100,
-      type: 'boolean',
-      editable: false,
-      renderCell: (params: GridRenderCellParams) => {
-        return (
-          <Switch
-            checked={params.value}
-            onChange={() => handleToggleEbike(params.row.id as string, params.value as boolean)}
-            onClick={(e) => e.stopPropagation()}
-            color="primary"
-            size="small"
-          />
-        );
-      }
-    },
-    { field: 'pieces', headerName: 'Pieces', width: columnWidths.pieces || 80, type: 'number', editable: true },
-    { 
-      field: 'priceRetail', 
-      headerName: 'Retail Price (CZK)', 
-      width: columnWidths.priceRetail || 140, 
-      type: 'number',
-      editable: true,
-      valueFormatter: priceFormatter
-    },
-    { 
-      field: 'priceAction', 
-      headerName: 'Action Price (CZK)', 
-      width: columnWidths.priceAction || 140, 
-      type: 'number',
-      editable: true,
-      valueFormatter: priceFormatter
-    },
-    { 
-      field: 'priceReseller', 
-      headerName: 'Reseller Price (CZK)', 
-      width: columnWidths.priceReseller || 140, 
-      type: 'number',
-      editable: true,
-      valueFormatter: priceFormatter
-    },
-    { field: 'note', headerName: 'Note', width: columnWidths.note || 200, editable: true },
-    {
-      field: 'actions',
-      type: 'actions',
-      headerName: 'Actions',
-      width: columnWidths.actions || 70,
-      getActions: ({ id }) => [
-        <GridActionsCellItem
-          icon={<DeleteIcon />}
-          label="Delete"
-          onClick={handleDeleteClick(id as string)}
-          color="inherit"
-        />
-      ],
-    }
-  ];
-
   return (
     <Box sx={{ width: '100%', height: '100%' }}>
       <DataGrid
@@ -658,7 +659,7 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
         columnVisibilityModel={{}}
         processRowUpdate={processRowUpdate}
         onProcessRowUpdateError={(error) => console.error("Error processing row update:", error)}
-        onRowDoubleClick={handleRowClick}
+        onRowDoubleClick={undefined}
         initialState={{
           pagination: {
             paginationModel: { page: 0, pageSize: 50 },
@@ -672,9 +673,26 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
         }}
         pageSizeOptions={[10, 20, 50, 100]}
         checkboxSelection
-        disableRowSelectionOnClick
+        disableRowSelectionOnClick={true}
+        onRowClick={(params, event) => {
+          // Don't trigger row selection when clicking on checkboxes or action cells
+          const target = event.target as HTMLElement;
+          if (target.closest('.MuiDataGrid-checkboxInput') || 
+              target.closest('.MuiDataGrid-actionsCell')) {
+            return;
+          }
+          
+          // Don't select row when clicking on editable cells
+          const cellElement = target.closest('.MuiDataGrid-cell');
+          if (cellElement) {
+            const field = cellElement.getAttribute('data-field');
+            if (field && field !== 'actions' && field !== 'modelNumber' && field !== 'isEbike' && field !== 'imageUrl') {
+              event.defaultMuiPrevented = true;
+            }
+          }
+        }}
         isCellEditable={(params) => {
-          return params.field !== 'actions' && params.field !== 'manufacturer' && params.field !== 'isEbike' && params.field !== 'imageUrl';
+          return params.field !== 'actions' && params.field !== 'modelNumber' && params.field !== 'isEbike' && params.field !== 'imageUrl';
         }}
         getCellClassName={(params) => {
           // Apply yellow background to modified cells
@@ -683,38 +701,17 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
           }
           return '';
         }}
-        sx={{ 
-          height: 'calc(100vh - 150px)',
-          '& .modified-cell': {
-            backgroundColor: 'rgba(255, 250, 160, 0.2)',
-            transition: 'background-color 1.5s ease-out',
+        sx={{
+          '.modified-cell': {
+            backgroundColor: 'rgba(255, 217, 102, 0.2)', // Light yellow
           },
-          '& .MuiDataGrid-cell--editing': {
-            backgroundColor: 'rgba(255, 231, 98, 0.25)', // More visible yellow for the entire cell
-            padding: '0 !important',
-            '& .MuiInputBase-root': {
-              height: '100%',
-              width: '100%',
-              padding: 0,
-              '.MuiInputBase-input': {
-                padding: '0 8px',
-                height: '100%',
-              }
-            },
-            '& .MuiSelect-select': {
-              height: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              padding: '0 8px',
-            }
+          '& .MuiDataGrid-cell:focus, & .MuiDataGrid-cell:focus-within': {
+            outline: 'none',
           },
-          // Enhanced style for clickable cells
-          '& .MuiDataGrid-cell:not(.MuiDataGrid-cell--editing):not([data-field="actions"]):not([data-field="manufacturer"]):not([data-field="isEbike"]):not([data-field="imageUrl"]):hover': {
-            cursor: 'text',
-            backgroundColor: 'rgba(0, 0, 0, 0.04)'
-          }
         }}
-        slots={{ toolbar: GridToolbar }}
+        slots={{
+          toolbar: GridToolbar,
+        }}
         slotProps={{
           toolbar: {
             showQuickFilter: true,
@@ -722,227 +719,13 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog }: BikeDa
         }}
       />
 
-      <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-        <DialogTitle>{editMode ? 'Edit Bike' : 'Add New Bike'}</DialogTitle>
-        <DialogContent>
-          <Box
-            component="form"
-            sx={{
-              '& .MuiTextField-root': { m: 1, width: '47%' },
-              display: 'flex',
-              flexWrap: 'wrap',
-              mt: 1
-            }}
-            noValidate
-            autoComplete="off"
-          >
-            <TextField
-              label="Manufacturer"
-              name="manufacturer"
-              value={currentBike.manufacturer}
-              onChange={handleInputChange}
-              disabled={true} // Since it will always be Bulls
-            />
-            
-            <TextField
-              label="Model Name"
-              name="modelName"
-              value={currentBike.modelName}
-              onChange={handleInputChange}
-              required
-            />
-            
-            <TextField
-              label="Model Year"
-              name="modelYear"
-              type="number"
-              value={currentBike.modelYear}
-              onChange={handleInputChange}
-              required
-            />
-            
-            <TextField
-              label="Weight (kg)"
-              name="weight"
-              type="number"
-              value={currentBike.weight}
-              onChange={handleInputChange}
-            />
-            
-            <TextField
-              label="Frame Material"
-              name="frameMaterial"
-              value={currentBike.frameMaterial}
-              onChange={handleInputChange}
-            />
-            
-            <Box sx={{ m: 1, width: '97%' }}>
-              <TextField
-                label="Image Number"
-                name="imageUrl"
-                type="number"
-                value={currentBike.imageUrl}
-                onChange={handleImageUrlChange}
-                placeholder="Enter image number"
-                fullWidth
-                helperText="Enter the number of the JPEG file in the jpeg folder"
-                InputProps={{
-                  endAdornment: currentBike.imageUrl ? (
-                    <a
-                      href={getImagePath(currentBike.imageUrl)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ marginLeft: '8px', color: '#1976d2', textDecoration: 'none' }}
-                    >
-                      View image
-                    </a>
-                  ) : null
-                }}
-              />
-              {currentBike.imageUrl > 0 && (
-                <Box sx={{ mt: 1, display: 'flex', justifyContent: 'center', height: '100px' }}>
-                  <img
-                    src={getImagePath(currentBike.imageUrl)}
-                    alt="Bike preview"
-                    style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }}
-                    onError={(e) => {
-                      setImagePreviewError(true);
-                      // Replace with placeholder on error
-                      (e.target as HTMLImageElement).src = getPlaceholderImage();
-                      (e.target as HTMLImageElement).onerror = null; // Prevent infinite loops
-                    }}
-                    onLoad={() => setImagePreviewError(false)}
-                  />
-                </Box>
-              )}
-            </Box>
-            
-            <TextField
-              label="Location"
-              name="location"
-              value={currentBike.location}
-              onChange={handleInputChange}
-            />
-            
-            <TextField
-              label="Battery"
-              name="battery"
-              value={currentBike.battery}
-              onChange={handleInputChange}
-              placeholder="Brand and Wh power"
-            />
-            
-            <TextField
-              label="Color"
-              name="color"
-              select
-              value={currentBike.color}
-              onChange={handleInputChange}
-            >
-              {colorOptions.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Box 
-                      sx={{ 
-                        width: 16, 
-                        height: 16, 
-                        borderRadius: '50%', 
-                        backgroundColor: option.color,
-                        border: '1px solid #AAAAAA' 
-                      }} 
-                    />
-                    <span>{option.value}</span>
-                  </Box>
-                </MenuItem>
-              ))}
-            </TextField>
-            
-            <TextField
-              label="Size"
-              name="size"
-              value={currentBike.size}
-              onChange={handleInputChange}
-              helperText="Last two digits form the Product code"
-            />
-            
-            <TextField
-              label="Category"
-              name="category"
-              select
-              value={currentBike.category}
-              onChange={handleInputChange}
-            >
-              {categoryOptions.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </TextField>
-            
-            <Box sx={{ m: 1, width: '47%', display: 'flex', alignItems: 'center' }}>
-              <FormControlLabel
-                control={
-                  <Switch
-                    name="isEbike"
-                    checked={currentBike.isEbike}
-                    onChange={handleInputChange}
-                  />
-                }
-                label="E-Bike"
-              />
-            </Box>
-            
-            <TextField
-              label="Pieces"
-              name="pieces"
-              type="number"
-              value={currentBike.pieces}
-              onChange={handleInputChange}
-            />
-            
-            <TextField
-              label="Retail Price (CZK)"
-              name="priceRetail"
-              type="number"
-              value={currentBike.priceRetail}
-              onChange={handleInputChange}
-              helperText="Common for stores inc. VAT"
-            />
-            
-            <TextField
-              label="Action Price (CZK)"
-              name="priceAction"
-              type="number"
-              value={currentBike.priceAction}
-              onChange={handleInputChange}
-              helperText="Special price for us"
-            />
-            
-            <TextField
-              label="Reseller Price (CZK)"
-              name="priceReseller"
-              type="number"
-              value={currentBike.priceReseller}
-              onChange={handleInputChange}
-              helperText="Normal price for resellers"
-            />
-            
-            <TextField
-              label="Note"
-              name="note"
-              value={currentBike.note}
-              onChange={handleInputChange}
-              multiline
-              rows={2}
-              sx={{ width: '97%' }}
-            />
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleAddNewBike} variant="contained">Save</Button>
-        </DialogActions>
-      </Dialog>
+      <ImageViewerModal
+        open={imageViewerOpen}
+        onClose={() => setImageViewerOpen(false)}
+        imageNumber={selectedImage}
+        modelName={selectedBike?.modelName || ''}
+        productLink={selectedBike?.link}
+      />
 
       <Snackbar 
         open={snackbar.open} 

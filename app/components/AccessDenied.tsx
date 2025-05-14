@@ -5,7 +5,8 @@ import {
   Typography,
   Paper,
   Avatar,
-  Button
+  Button,
+  CircularProgress
 } from '@mui/material';
 import { LockOutlined as LockIcon } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
@@ -39,7 +40,7 @@ export default function AccessDenied() {
         <Avatar 
           sx={{ 
             m: 1, 
-            bgcolor: 'error.main',
+            bgcolor: 'primary.main',
             width: 56,
             height: 56
           }}
@@ -48,22 +49,24 @@ export default function AccessDenied() {
         </Avatar>
         
         <Typography variant="h5" component="h1" sx={{ mb: 2, mt: 2, fontWeight: 'bold' }}>
-          Access Restricted
+          Registration Successful
         </Typography>
         
         <Typography variant="body1" align="center" sx={{ mb: 3 }}>
           Hello <strong>{userData?.displayName || 'User'}</strong>,
           <br />
-          Your account needs approval before you can access this inventory system.
+          Your account has been registered successfully.
         </Typography>
         
-        <Typography variant="body2" align="center" color="text.secondary" sx={{ mb: 3 }}>
-          The administrator has been notified about your registration. Once your access is
-          approved, you will be able to view and manage the inventory.
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+          <CircularProgress size={20} sx={{ mr: 2 }} />
+          <Typography variant="body2" color="text.secondary">
+            Waiting for administrator approval. This usually takes a short while.
+          </Typography>
+        </Box>
         
         <Button
-          variant="contained"
+          variant="outlined"
           color="primary"
           onClick={logout}
           sx={{ mt: 2 }}

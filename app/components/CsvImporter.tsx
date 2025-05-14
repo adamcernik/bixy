@@ -411,41 +411,27 @@ export default function CsvImporter() {
   };
 
   return (
-    <Box sx={{ mt: 4, mb: 4 }}>
-      <Typography variant="h6" sx={{ mb: 2 }}>Import Bikes from CSV</Typography>
+    <Box sx={{ 
+      p: 3, 
+      backgroundColor: 'white', 
+      borderRadius: '8px',
+      boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+      mb: 3,
+      color: 'black'
+    }}>
+      <Typography variant="h5" component="h2" sx={{ mb: 3, color: 'black' }}>
+        CSV Importer
+      </Typography>
       
-      <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
-        <Box sx={{ flexGrow: 1, mr: 2 }}>
-          <input
-            id="csv-file-input"
-            type="file"
-            accept=".csv,.txt"
-            onChange={handleFileChange}
-            style={{ display: 'none' }}
-          />
-          <Button
-            variant="outlined"
-            component="label"
-            htmlFor="csv-file-input"
-            sx={{ mr: 2 }}
-            disabled={isLoading}
-          >
-            Select CSV File
-          </Button>
-          <Typography variant="body2" sx={{ mt: 1 }}>
-            {file ? `Selected: ${file.name}` : 'No file selected'}
-          </Typography>
-        </Box>
-        
-        <FormControl sx={{ minWidth: 120 }}>
-          <InputLabel id="delimiter-label">Delimiter</InputLabel>
+      <Box sx={{ mb: 3 }}>
+        <FormControl sx={{ minWidth: 200, color: 'black' }}>
+          <InputLabel id="delimiter-label" sx={{ color: 'black' }}>CSV Delimiter</InputLabel>
           <Select
             labelId="delimiter-label"
             value={delimiter}
-            label="Delimiter"
             onChange={handleDelimiterChange}
-            disabled={isLoading}
-            size="small"
+            label="CSV Delimiter"
+            sx={{ color: 'black' }}
           >
             <MenuItem value="auto">Auto-detect</MenuItem>
             <MenuItem value=",">Comma (,)</MenuItem>
@@ -455,91 +441,104 @@ export default function CsvImporter() {
         </FormControl>
       </Box>
       
-      <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleSubmit}
-          disabled={!file || isLoading}
+      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center', mb: 3 }}>
+        <Button 
+          variant="outlined" 
+          component="label" 
+          sx={{ 
+            borderColor: 'primary.main',
+            color: 'primary.main' 
+          }}
         >
-          {isLoading ? 'Importing...' : 'Import Data'}
+          Select CSV File
+          <input
+            type="file"
+            accept=".csv"
+            onChange={handleFileChange}
+            hidden
+          />
         </Button>
         
-        <Button
-          variant="outlined"
-          color="secondary"
-          onClick={downloadSampleCsv}
-          disabled={isLoading}
+        <Typography variant="body1" color="textSecondary" sx={{ color: 'black' }}>
+          {file ? file.name : 'No file selected'}
+        </Typography>
+        
+        <Button 
+          onClick={downloadSampleCsv} 
+          variant="outlined" 
+          sx={{ 
+            ml: 'auto',
+            borderColor: 'primary.main',
+            color: 'primary.main'
+          }}
         >
           Download Sample CSV
         </Button>
       </Box>
       
+      <Button 
+        onClick={handleSubmit} 
+        variant="contained" 
+        disabled={!file || isLoading}
+        sx={{ mb: 3 }}
+      >
+        {isLoading ? 'Importing...' : 'Import Data'}
+      </Button>
+      
       {isLoading && (
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-          <CircularProgress size={24} sx={{ mr: 2 }} />
-          <Typography variant="body2">
-            Importing... {progress}%
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+          <CircularProgress variant="determinate" value={progress} size={24} />
+          <Typography variant="body2" color="textSecondary" sx={{ color: 'black' }}>
+            Importing {progress}%
           </Typography>
         </Box>
       )}
       
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
+        <Alert severity="error" sx={{ mb: 3 }}>
           {error}
         </Alert>
       )}
       
       {success && (
-        <Alert severity="success" sx={{ mb: 2 }}>
+        <Alert severity="success" sx={{ mb: 3 }}>
           {success}
         </Alert>
       )}
-
-      {debugInfo.skipped > 0 && (
-        <Alert severity="info" sx={{ mb: 2 }}>
-          <Typography variant="subtitle2">Debug Information:</Typography>
-          <Typography variant="body2">
-            Skipped {debugInfo.skipped} rows out of {debugInfo.total} total rows in CSV
-          </Typography>
-          <Typography variant="subtitle2" sx={{ mt: 1 }}>Reasons for skipping:</Typography>
-          <ul>
-            {Object.entries(debugInfo.reasons).map(([reason, count]) => (
-              <li key={reason}>{reason}: {count} rows</li>
-            ))}
-          </ul>
-        </Alert>
-      )}
       
-      <Box sx={{ mt: 4 }}>
-        <Typography variant="subtitle2">CSV Format Instructions:</Typography>
-        <Typography variant="body2">
-          Your CSV file should include headers. Recognized headers (case-insensitive):
-        </Typography>
-        <ul>
-          <li>modelName/model/name - Bike model name</li>
-          <li>modelNumber/model_number/code - Unique model identifier</li>
-          <li>modelYear/year - Model year</li>
-          <li>weight/kg - Weight in kg</li>
-          <li>frameMaterial/material/frame - Frame material</li>
-          <li>imageUrl/image/img/url - URL to bike image</li>
-          <li>link/product_link/product-url - Link to product page</li>
-          <li>location/store/warehouse - Where the bike is stored</li>
-          <li>battery/batt/wh - Battery specifications</li>
-          <li>color/colour - Bike color</li>
-          <li>size/frameSize - Size of the bike</li>
-          <li>category/cat/type - MTB, Road, etc.</li>
-          <li>isEbike/eBike/electric/e-bike - true/false, yes/no, y/n, or 1/0</li>
-          <li>pieces/quantity/amount/count/qty - Number of pieces</li>
-          <li>priceRetail/retail/price/msrp - Retail price in CZK</li>
-          <li>priceAction/action/sale/discount - Action price in CZK</li>
-          <li>priceReseller/reseller/wholesale/dealer - Reseller price in CZK</li>
-          <li>note/notes/description/desc/comment - Additional notes</li>
-        </ul>
-        <Typography variant="body2">
-          Note: Manufacturer will always be set to "Bulls"
-        </Typography>
-      </Box>
+      {debugInfo.total > 0 && (
+        <Box sx={{ mt: 3, p: 2, backgroundColor: '#f9f9f9', borderRadius: 1, color: 'black' }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1, color: 'black' }}>
+            Import Summary
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'black' }}>
+            Total rows: {debugInfo.total}
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'black' }}>
+            Successfully imported: {debugInfo.total - debugInfo.skipped}
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'black' }}>
+            Skipped rows: {debugInfo.skipped}
+          </Typography>
+          
+          {Object.keys(debugInfo.reasons).length > 0 && (
+            <Box sx={{ mt: 1 }}>
+              <Typography variant="body2" sx={{ fontWeight: 'bold', color: 'black' }}>
+                Reasons for skipped rows:
+              </Typography>
+              <ul style={{ margin: '4px 0 0 20px', padding: 0 }}>
+                {Object.entries(debugInfo.reasons).map(([reason, count]) => (
+                  <li key={reason}>
+                    <Typography variant="body2" sx={{ color: 'black' }}>
+                      {reason}: {count}
+                    </Typography>
+                  </li>
+                ))}
+              </ul>
+            </Box>
+          )}
+        </Box>
+      )}
     </Box>
   );
 } 
