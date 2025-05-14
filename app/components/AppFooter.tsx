@@ -1,3 +1,4 @@
+'use client';
 import { Box, Typography, Link } from '@mui/material';
 import ConnectionIndicator, { useDbStatus } from './ConnectionIndicator';
 
