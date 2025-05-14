@@ -1,14 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',  // Static HTML export
-  basePath: process.env.NODE_ENV === 'production' ? '/bixy' : '',
-  assetPrefix: process.env.NODE_ENV === 'production' ? '/bixy' : '',
   images: {
-    unoptimized: true, // Required for static export
+    unoptimized: true, // Optional: only if you want static images
   },
-  // Disable certain features that aren't needed for static export
   reactStrictMode: true,
-  trailingSlash: true, // Required for GitHub Pages
-}
+  trailingSlash: true, // Optional: if you want trailing slashes
+};
 
-module.exports = nextConfig 
+module.exports = nextConfig; 
