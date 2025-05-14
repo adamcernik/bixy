@@ -39,6 +39,7 @@ try {
   // Initialize Authentication
   auth = getAuth(app);
   googleProvider = new GoogleAuthProvider();
+  googleProvider.setCustomParameters({ prompt: 'select_account' });
   console.log("Firebase Auth initialized successfully");
   
 } catch (error) {
