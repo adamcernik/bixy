@@ -17,7 +17,8 @@ import {
   GridCellModes,
   useGridApiContext,
   GridCellEditStopParams,
-  GridCellParams
+  GridCellParams,
+  useGridApiRef
 } from '@mui/x-data-grid';
 import { 
   Box, 
@@ -137,6 +138,7 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog, onEditBi
   const [imageViewerOpen, setImageViewerOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<number>(0);
   const [selectedBike, setSelectedBike] = useState<Bike | null>(null);
+  const apiRef = useGridApiRef();
 
   const fetchBikes = async () => {
     setLoading(true);
@@ -545,7 +547,7 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog, onEditBi
     setSnackbar({ ...snackbar, open: false });
   };
 
-  const processRowUpdate = async (newRow: Bike) => {
+  const processRowUpdate = async (newRow: Bike, oldRow?: Bike) => {
     try {
       // Find the original row in the bikes array
       const originalRow = bikes.find(bike => bike.id === newRow.id);
@@ -597,15 +599,11 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog, onEditBi
         if (valueChanged) {
           console.log("Value changed, updating Firebase");
           await updateBike(newRow.id, newRow);
-          
-          // Show success notification
           setSnackbar({
             open: true,
             message: 'Bike updated successfully',
             severity: 'success'
           });
-          
-          // Set timeout to clear the modified cells highlighting after 5 seconds
           setTimeout(() => {
             setModifiedCells(prev => {
               const newModifiedCells = { ...prev };
@@ -613,15 +611,22 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog, onEditBi
                 changedFields.forEach(field => {
                   newModifiedCells[newRow.id!].delete(field);
                 });
-                
-                // If there are no more modified fields for this row, remove the row entry
                 if (newModifiedCells[newRow.id!].size === 0) {
                   delete newModifiedCells[newRow.id!];
                 }
               }
               return newModifiedCells;
             });
-          }, 3000); // 3 seconds fade-out
+          }, 3000);
+          // Set cellModesModel for changed fields to view mode
+          setCellModesModel(prev => {
+            const updated = { ...prev };
+            if (!updated[newRow.id!]) updated[newRow.id!] = {};
+            changedFields.forEach(field => {
+              updated[newRow.id!][field] = { mode: 'view' as any };
+            });
+            return updated;
+          });
         } else {
           console.log("No value changed, skipping update");
         }
@@ -717,6 +722,7 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog, onEditBi
             showQuickFilter: true,
           },
         }}
+        apiRef={apiRef}
       />
 
       <ImageViewerModal
