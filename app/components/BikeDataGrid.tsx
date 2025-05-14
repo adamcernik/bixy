@@ -40,6 +40,7 @@ import { getBikes, addBike, updateBike, deleteBike } from '../services/bikeServi
 import { Bike } from '../models/Bike';
 import { getAssetPath } from '../utils/pathUtils';
 import ImageViewerModal from './ImageViewerModal';
+import ConnectionIndicator from './ConnectionIndicator';
 
 const initialBikeState: Bike = {
   manufacturer: 'Bulls', // Default value
@@ -711,6 +712,11 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog, onEditBi
         }}
         slots={{
           toolbar: GridToolbar,
+          footer: () => (
+            <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', pl: 2 }}>
+              <ConnectionIndicator />
+            </Box>
+          ),
         }}
         slotProps={{
           toolbar: {
