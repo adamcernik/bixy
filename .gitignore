@@ -37,3 +37,4 @@ next-env.d.ts
 # analysis files
 analysis.html
 analysis-o3.html
+scripts/service-account.json
