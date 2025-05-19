@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 
 export default function RetailPage() {
   const [bikes, setBikes] = useState<any[]>([]);
+  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetch('/retail-bikes.json')
@@ -18,6 +19,40 @@ export default function RetailPage() {
     }).format(price);
   }
 
+  function getImageUrl(bike: any) {
+    if (imageErrors.has(bike.id)) {
+      return '/retail-images/placeholder.jpeg';
+    }
+
+    const imageNumber = typeof bike.imageUrl === 'string' 
+      ? bike.imageUrl 
+      : bike.imageUrl.toString();
+
+    // Map of known image numbers to their correct filenames
+    const imageMap: { [key: string]: string } = {
+      '847045': '84704944', // SONIC EVO TR - I
+      '667082': '66705544', // SONIC EVO AMSL1
+      '840186': '84602541', // Sturmvogel EVO 5F
+      '666069': '68016541', // SONIC EVO EN1
+      '830529': '83061741', // Copperhead EVO 2
+      '84605041': '84605041', // SONIC EVO AM1
+      '84704944': '84704944', // SONIC EVO AM1 White
+      '83054237': '83054237', // Copperhead EVO 2 Wave
+      '83054337': '83054337', // Copperhead EVO 2 Wave
+      '68016741': '68016741', // SONIC EVO EN1
+      '84705744': '84705744', // SONIC EVO AM1
+      '84706144': '84706144', // SONIC EVO AM1
+      '84605841': '84605841', // SONIC EVO AM1
+    };
+
+    const correctImage = imageMap[imageNumber] || imageNumber;
+    return `/retail-images/${correctImage}.jpeg`;
+  }
+
+  function handleImageError(bikeId: string) {
+    setImageErrors(prev => new Set([...prev, bikeId]));
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <header className="text-center mb-8">
@@ -29,9 +64,10 @@ export default function RetailPage() {
           <div key={bike.id} className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
             <div className="aspect-[4/3] relative">
               <img 
-                src={typeof bike.imageUrl === 'string' ? bike.imageUrl : `/retail-images/${bike.imageUrl}.jpeg`} 
+                src={getImageUrl(bike)}
                 alt={bike.modelName}
                 className="w-full h-full object-contain"
+                onError={() => handleImageError(bike.id)}
               />
             </div>
             <div className="p-6">
