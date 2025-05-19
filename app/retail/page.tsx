@@ -3,8 +3,6 @@
 import { useEffect, useState } from 'react';
 
 export default function RetailPage() {
-  const [view, setView] = useState<'list' | 'card'>('list');
-
   const bikes = [
     {
         id: "1",
@@ -105,33 +103,16 @@ export default function RetailPage() {
         <h1 className="text-4xl font-bold text-blue-600 mb-4">Bixy E-Bikes Catalog</h1>
       </header>
 
-      <div className="flex justify-end gap-4 mb-8">
-        <button 
-          className={`px-4 py-2 border-2 border-blue-600 rounded-lg transition-colors ${
-            view === 'list' ? 'bg-blue-600 text-white' : 'text-blue-600'
-          }`}
-          onClick={() => setView('list')}
-        >
-          List View
-        </button>
-        <button 
-          className={`px-4 py-2 border-2 border-blue-600 rounded-lg transition-colors ${
-            view === 'card' ? 'bg-blue-600 text-white' : 'text-blue-600'
-          }`}
-          onClick={() => setView('card')}
-        >
-          Card View
-        </button>
-      </div>
-
-      <div className={`grid gap-4 ${view === 'list' ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {bikes.map(bike => (
           <div key={bike.id} className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
-            <img 
-              src={bike.imageUrl} 
-              alt={bike.modelName} 
-              className="w-full h-48 object-cover"
-            />
+            <div className="aspect-[4/3] relative">
+              <img 
+                src={bike.imageUrl} 
+                alt={bike.modelName} 
+                className="w-full h-full object-contain"
+              />
+            </div>
             <div className="p-6">
               <h2 className="text-xl font-semibold mb-2">{bike.modelName}</h2>
               <div className="flex justify-between items-center mt-4">
