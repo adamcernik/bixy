@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bixy E-Bikes Catalog</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --text-color: #1f2937;
+            --background-color: #f3f4f6;
+            --card-background: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .view-controls {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .view-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--primary-color);
+            background: none;
+            color: var(--primary-color);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .view-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .bikes-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .bikes-list.list-view {
+            grid-template-columns: 1fr;
+        }
+
+        .bikes-list.card-view {
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+
+        .bike-item {
+            background-color: var(--card-background);
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .bike-item:hover {
+            transform: translateY(-4px);
+        }
+
+        .bike-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .bike-info {
+            padding: 1.5rem;
+        }
+
+        .bike-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .bike-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .bike-price {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .bike-size {
+            background-color: var(--background-color);
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .bikes-list.card-view {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Bixy E-Bikes Catalog</h1>
+        </header>
+
+        <div class="view-controls">
+            <button class="view-btn active" data-view="list">List View</button>
+            <button class="view-btn" data-view="card">Card View</button>
+        </div>
+
+        <div class="bikes-list list-view" id="bikesList">
+            <!-- Bikes will be inserted here by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // Sample data - replace with your actual data
+        const bikes = [
+            {
+                id: "1",
+                modelName: "Bulls E-Core Evo 1",
+                size: "M",
+                priceRetail: 89990,
+                imageUrl: "83061741.jpeg"
+            },
+            {
+                id: "2",
+                modelName: "Bulls E-Core Evo 2",
+                size: "L",
+                priceRetail: 99990,
+                imageUrl: "83054337.jpeg"
+            },
+            {
+                id: "3",
+                modelName: "Bulls E-Core Evo 3",
+                size: "M",
+                priceRetail: 109990,
+                imageUrl: "83054237.jpeg"
+            },
+            {
+                id: "4",
+                modelName: "Bulls E-Core Evo 4",
+                size: "L",
+                priceRetail: 119990,
+                imageUrl: "68016741.jpeg"
+            },
+            {
+                id: "5",
+                modelName: "Bulls E-Core Evo 5",
+                size: "M",
+                priceRetail: 129990,
+                imageUrl: "68016541.jpeg"
+            },
+            {
+                id: "6",
+                modelName: "Bulls E-Core Evo 6",
+                size: "L",
+                priceRetail: 139990,
+                imageUrl: "66705544.jpeg"
+            },
+            {
+                id: "7",
+                modelName: "Bulls E-Core Evo 7",
+                size: "M",
+                priceRetail: 149990,
+                imageUrl: "84704944.jpeg"
+            },
+            {
+                id: "8",
+                modelName: "Bulls E-Core Evo 8",
+                size: "L",
+                priceRetail: 159990,
+                imageUrl: "84602541.jpeg"
+            },
+            {
+                id: "9",
+                modelName: "Bulls E-Core Evo 9",
+                size: "M",
+                priceRetail: 169990,
+                imageUrl: "84705744.jpeg"
+            },
+            {
+                id: "10",
+                modelName: "Bulls E-Core Evo 10",
+                size: "L",
+                priceRetail: 179990,
+                imageUrl: "84605841.jpeg"
+            },
+            {
+                id: "11",
+                modelName: "Bulls E-Core Evo 11",
+                size: "M",
+                priceRetail: 189990,
+                imageUrl: "84706144.jpeg"
+            },
+            {
+                id: "12",
+                modelName: "Bulls E-Core Evo 12",
+                size: "L",
+                priceRetail: 199990,
+                imageUrl: "84605041.jpeg"
+            }
+        ];
+
+        function formatPrice(price) {
+            return new Intl.NumberFormat('cs-CZ', {
+                style: 'currency',
+                currency: 'CZK'
+            }).format(price);
+        }
+
+        function renderBikes(view) {
+            const bikesList = document.getElementById('bikesList');
+            bikesList.className = `bikes-list ${view}-view`;
+            
+            bikesList.innerHTML = bikes.map(bike => `
+                <div class="bike-item">
+                    <img src="images/${bike.imageUrl}" alt="${bike.modelName}" class="bike-image">
+                    <div class="bike-info">
+                        <h2 class="bike-name">${bike.modelName}</h2>
+                        <div class="bike-details">
+                            <span class="bike-size">Size ${bike.size}</span>
+                            <span class="bike-price">${formatPrice(bike.priceRetail)}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // View switching
+        document.querySelectorAll('.view-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderBikes(btn.dataset.view);
+            });
+        });
+
+        // Initial render
+        renderBikes('list');
+    </script>
+</body>
+</html> 
