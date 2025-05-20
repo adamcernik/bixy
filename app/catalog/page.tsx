@@ -39,7 +39,17 @@ export default function CatalogPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [sortBy, setSortBy] = useState('price-asc');
-  const [showOnlyEbikes, setShowOnlyEbikes] = useState(false);
+  const [showOnlyEbikes, setShowOnlyEbikes] = useState(true);
+  const [selectedBattery, setSelectedBattery] = useState<string>('');
+
+  // Get unique battery types from bikes
+  const batteryOptions = useMemo(() => {
+    const batteries = new Set<string>();
+    bikes.forEach(bike => {
+      if (bike.battery) batteries.add(bike.battery);
+    });
+    return Array.from(batteries).sort();
+  }, [bikes]);
 
   useEffect(() => {
     const fetchBikes = async () => {
@@ -73,11 +83,13 @@ export default function CatalogPage() {
         bike.modelNumber.toLowerCase().includes(searchLower);
       // Category filter
       const matchesCategory = !selectedCategory || bike.category === selectedCategory;
+      // Battery filter
+      const matchesBattery = !selectedBattery || bike.battery === selectedBattery;
       // E-bike filter
       const matchesEbike = !showOnlyEbikes || bike.isEbike;
-      return matchesSearch && matchesCategory && matchesEbike;
+      return matchesSearch && matchesCategory && matchesBattery && matchesEbike;
     });
-  }, [bikes, searchQuery, selectedCategory, showOnlyEbikes]);
+  }, [bikes, searchQuery, selectedCategory, selectedBattery, showOnlyEbikes]);
 
   // Group filtered bikes by model prefix
   const groupedBikes = useMemo(() => groupBikesByModel(filteredBikes), [filteredBikes]);
@@ -131,7 +143,7 @@ export default function CatalogPage() {
       
       {/* Filters and Search */}
       <div className="bg-white p-4 rounded-lg shadow-sm mb-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Search */}
           <div>
             <input
@@ -157,6 +169,20 @@ export default function CatalogPage() {
             </select>
           </div>
 
+          {/* Battery Filter */}
+          <div>
+            <select
+              value={selectedBattery}
+              onChange={(e) => setSelectedBattery(e.target.value)}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">All Batteries</option>
+              {batteryOptions.map(battery => (
+                <option key={battery} value={battery}>{battery}</option>
+              ))}
+            </select>
+          </div>
+
           {/* Sort */}
           <div>
             <select
@@ -171,7 +197,7 @@ export default function CatalogPage() {
           </div>
 
           {/* E-bike Toggle */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 col-span-full lg:col-span-1">
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
@@ -248,7 +274,7 @@ export default function CatalogPage() {
             onClick={() => {
               setSearchQuery('');
               setSelectedCategory('');
-              setShowOnlyEbikes(false);
+              setShowOnlyEbikes(true);
             }}
             className="mt-4 text-blue-600 hover:text-blue-800"
           >
