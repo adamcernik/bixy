@@ -161,7 +161,7 @@ export default function CatalogPage() {
             key={bike.id}
             className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
           >
-            <div className="relative aspect-[4/3] bg-white flex items-center justify-center">
+            <div className="relative aspect-square bg-white flex items-center justify-center">
               <img
                 src={getImageUrl(bike)}
                 alt={bike.modelName}
