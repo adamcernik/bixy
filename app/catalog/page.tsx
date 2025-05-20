@@ -19,6 +19,20 @@ const sortOptions = [
   { value: 'size-desc', label: 'Size: Large to Small' },
 ];
 
+// Helper to get model prefix (model number without last two digits)
+const getModelPrefix = (modelNumber: string) => modelNumber.slice(0, -2);
+
+// Group bikes by model prefix
+const groupBikesByModel = (bikes: Bike[]) => {
+  const groups: Record<string, Bike[]> = {};
+  bikes.forEach(bike => {
+    const prefix = getModelPrefix(bike.modelNumber);
+    if (!groups[prefix]) groups[prefix] = [];
+    groups[prefix].push(bike);
+  });
+  return Object.values(groups);
+};
+
 export default function CatalogPage() {
   const [bikes, setBikes] = useState<Bike[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,56 +62,60 @@ export default function CatalogPage() {
     return getAssetPath(`/jpeg/${imageNumber}.jpeg`);
   };
 
-  // Filter and sort bikes
-  const filteredAndSortedBikes = useMemo(() => {
-    return bikes
-      .filter(bike => {
-        // Search filter
-        const searchLower = searchQuery.toLowerCase();
-        const matchesSearch = 
-          bike.modelName.toLowerCase().includes(searchLower) ||
-          bike.manufacturer.toLowerCase().includes(searchLower) ||
-          bike.modelNumber.toLowerCase().includes(searchLower);
+  // Filter and sort bikes (before grouping)
+  const filteredBikes = useMemo(() => {
+    return bikes.filter(bike => {
+      // Search filter
+      const searchLower = searchQuery.toLowerCase();
+      const matchesSearch = 
+        bike.modelName.toLowerCase().includes(searchLower) ||
+        bike.manufacturer.toLowerCase().includes(searchLower) ||
+        bike.modelNumber.toLowerCase().includes(searchLower);
+      // Category filter
+      const matchesCategory = !selectedCategory || bike.category === selectedCategory;
+      // E-bike filter
+      const matchesEbike = !showOnlyEbikes || bike.isEbike;
+      return matchesSearch && matchesCategory && matchesEbike;
+    });
+  }, [bikes, searchQuery, selectedCategory, showOnlyEbikes]);
 
-        // Category filter
-        const matchesCategory = !selectedCategory || bike.category === selectedCategory;
+  // Group filtered bikes by model prefix
+  const groupedBikes = useMemo(() => groupBikesByModel(filteredBikes), [filteredBikes]);
 
-        // E-bike filter
-        const matchesEbike = !showOnlyEbikes || bike.isEbike;
-
-        return matchesSearch && matchesCategory && matchesEbike;
-      })
-      .sort((a, b) => {
-        switch (sortBy) {
-          case 'price-asc':
-            return (a.priceAction || 0) - (b.priceAction || 0);
-          case 'price-desc':
-            return (b.priceAction || 0) - (a.priceAction || 0);
-          case 'name-asc':
-            return a.modelName.localeCompare(b.modelName);
-          case 'name-desc':
-            return b.modelName.localeCompare(a.modelName);
-          case 'size-asc': {
-            // Sort by size (string, but try to parse as number if possible)
-            const aSize = parseInt(a.size) || 0;
-            const bSize = parseInt(b.size) || 0;
-            return aSize - bSize;
-          }
-          case 'size-desc': {
-            const aSize = parseInt(a.size) || 0;
-            const bSize = parseInt(b.size) || 0;
-            return bSize - aSize;
-          }
-          default:
-            return 0;
+  // Sort groups by the first bike in each group
+  const sortedGroupedBikes = useMemo(() => {
+    return groupedBikes.sort((a, b) => {
+      const firstA = a[0];
+      const firstB = b[0];
+      switch (sortBy) {
+        case 'price-asc':
+          return (firstA.priceAction || 0) - (firstB.priceAction || 0);
+        case 'price-desc':
+          return (firstB.priceAction || 0) - (firstA.priceAction || 0);
+        case 'name-asc':
+          return firstA.modelName.localeCompare(firstB.modelName);
+        case 'name-desc':
+          return firstB.modelName.localeCompare(firstA.modelName);
+        case 'size-asc': {
+          const aSize = Math.min(...a.map(bike => parseInt(bike.size) || 0));
+          const bSize = Math.min(...b.map(bike => parseInt(bike.size) || 0));
+          return aSize - bSize;
         }
-      });
-  }, [bikes, searchQuery, selectedCategory, sortBy, showOnlyEbikes]);
+        case 'size-desc': {
+          const aSize = Math.max(...a.map(bike => parseInt(bike.size) || 0));
+          const bSize = Math.max(...b.map(bike => parseInt(bike.size) || 0));
+          return bSize - aSize;
+        }
+        default:
+          return 0;
+      }
+    });
+  }, [groupedBikes, sortBy]);
 
-  // Calculate total pieces (sum of pieces for all filtered bikes)
+  // Calculate total pieces (sum of pieces for all grouped bikes)
   const totalPieces = useMemo(() => {
-    return filteredAndSortedBikes.reduce((sum, bike) => sum + (bike.pieces || 0), 0);
-  }, [filteredAndSortedBikes]);
+    return sortedGroupedBikes.reduce((sum, group) => sum + group.reduce((gSum, bike) => gSum + (bike.pieces || 0), 0), 0);
+  }, [sortedGroupedBikes]);
 
   if (loading) {
     return (
@@ -170,56 +188,60 @@ export default function CatalogPage() {
 
       {/* Results count */}
       <div className="mb-4 text-gray-600 flex flex-wrap gap-4 items-center">
-        <span>Showing {filteredAndSortedBikes.length} of {bikes.length} bikes</span>
+        <span>Showing {sortedGroupedBikes.length} of {groupBikesByModel(bikes).length} models</span>
         <span className="font-semibold">Total in stock: {totalPieces}</span>
       </div>
       
       {/* Bike Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredAndSortedBikes.map((bike) => (
-          <div
-            key={bike.id}
-            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
-          >
-            <div className="relative aspect-square bg-white flex items-center justify-center">
-              <img
-                src={getImageUrl(bike)}
-                alt={bike.modelName}
-                className="w-full h-auto"
-                onError={(e) => {
-                  // Fallback to placeholder if image fails to load
-                  (e.target as HTMLImageElement).src = getAssetPath('/jpeg/placeholder.jpeg');
-                }}
-              />
-              {bike.isEbike && (
-                <div className="absolute top-2 right-2 bg-blue-600 text-white px-2 py-1 rounded-md text-sm">
-                  E-bike
+        {sortedGroupedBikes.map((group) => {
+          const firstBike = group[0];
+          const sizes = group.map(b => b.size).filter(Boolean).sort((a, b) => (parseInt(a) || 0) - (parseInt(b) || 0));
+          const totalGroupPieces = group.reduce((sum, b) => sum + (b.pieces || 0), 0);
+          return (
+            <div
+              key={firstBike.modelNumber.slice(0, -2)}
+              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+            >
+              <div className="relative aspect-square bg-white flex items-center justify-center">
+                <img
+                  src={getImageUrl(firstBike)}
+                  alt={firstBike.modelName}
+                  className="w-full h-auto"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = getAssetPath('/jpeg/placeholder.jpeg');
+                  }}
+                />
+                {firstBike.isEbike && (
+                  <div className="absolute top-2 right-2 bg-blue-600 text-white px-2 py-1 rounded-md text-sm">
+                    E-bike
+                  </div>
+                )}
+              </div>
+              <div className="p-4">
+                <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                  {firstBike.modelName}
+                </h2>
+                <p className="text-gray-600 mb-2">{firstBike.manufacturer}</p>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">Sizes: {sizes.join(', ') || '-'}</span>
+                  <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">Pieces: {totalGroupPieces}</span>
                 </div>
-              )}
-            </div>
-            <div className="p-4">
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                {bike.modelName}
-              </h2>
-              <p className="text-gray-600 mb-2">{bike.manufacturer}</p>
-              <div className="flex flex-wrap gap-2 mb-2">
-                <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">Sizes: {bike.size || '-'}</span>
-                <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">Pieces: {bike.pieces ?? '-'}</span>
-              </div>
-              <div className="flex justify-end items-center">
-                <Link href={`/catalog/${bike.id}`} legacyBehavior>
-                  <a className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300 block text-center">
-                    View Details
-                  </a>
-                </Link>
+                <div className="flex justify-end items-center">
+                  <Link href={`/catalog/${firstBike.id}`} legacyBehavior>
+                    <a className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300 block text-center">
+                      View Details
+                    </a>
+                  </Link>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* No results message */}
-      {filteredAndSortedBikes.length === 0 && (
+      {sortedGroupedBikes.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">No bikes found matching your criteria</p>
           <button
