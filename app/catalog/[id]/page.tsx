@@ -110,7 +110,7 @@ export default function BikeDetailPage() {
             </div>
             <div>
               <div className="text-gray-500 text-sm">Sizes</div>
-              <div className="text-gray-900 font-medium">{bike.size || '-'}</div>
+              <div className="text-gray-900 font-medium">{groupedBikes.length > 1 ? 'more' : (bike.size || '-')}</div>
             </div>
             <div>
               <div className="text-gray-500 text-sm">Pieces</div>
