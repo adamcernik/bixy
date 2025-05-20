@@ -101,6 +101,14 @@ export default function BikeDetailPage() {
               <div className="text-gray-500 text-sm">Battery</div>
               <div className="text-gray-900 font-medium">{bike.battery}</div>
             </div>
+            <div>
+              <div className="text-gray-500 text-sm">Sizes</div>
+              <div className="text-gray-900 font-medium">{bike.size || '-'}</div>
+            </div>
+            <div>
+              <div className="text-gray-500 text-sm">Pieces</div>
+              <div className="text-gray-900 font-medium">{bike.pieces ?? '-'}</div>
+            </div>
           </div>
           {bike.note && (
             <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded mb-4">

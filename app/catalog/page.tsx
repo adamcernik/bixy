@@ -183,6 +183,10 @@ export default function CatalogPage() {
                 {bike.modelName}
               </h2>
               <p className="text-gray-600 mb-2">{bike.manufacturer}</p>
+              <div className="flex flex-wrap gap-2 mb-2">
+                <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">Sizes: {bike.size || '-'}</span>
+                <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">Pieces: {bike.pieces ?? '-'}</span>
+              </div>
               <div className="flex justify-end items-center">
                 <Link href={`/catalog/${bike.id}`} legacyBehavior>
                   <a className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300 block text-center">
