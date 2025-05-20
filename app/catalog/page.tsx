@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { getBikes } from '../services/bikeService';
 import { Bike } from '../models/Bike';
 import { getAssetPath } from '../utils/pathUtils';
+import Link from 'next/link';
 
 // Available categories for filtering
 const categories = ['MTB', 'Road', 'Gravel', 'City', 'Trekking', 'Kids', 'Other'];
@@ -183,9 +184,11 @@ export default function CatalogPage() {
               </h2>
               <p className="text-gray-600 mb-2">{bike.manufacturer}</p>
               <div className="flex justify-end items-center">
-                <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300">
-                  View Details
-                </button>
+                <Link href={`/catalog/${bike.id}`} legacyBehavior>
+                  <a className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300 block text-center">
+                    View Details
+                  </a>
+                </Link>
               </div>
             </div>
           </div>
