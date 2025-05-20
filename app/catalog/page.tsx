@@ -248,15 +248,15 @@ export default function CatalogPage() {
                   }}
                 />
                 <div className="absolute top-2 right-2 flex gap-2">
-                  {firstBike.isEbike && (
-                    <span className="bg-pink-100 text-pink-600 px-2 py-1 rounded-full text-xs font-bold flex items-center justify-center" title="E-bike">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-                        <path d="M11.3 1.046A1 1 0 0 1 13 2v5h3a1 1 0 0 1 .8 1.6l-7 10A1 1 0 0 1 8 18v-5H5a1 1 0 0 1-.8-1.6l7-10a1 1 0 0 1 .1-.094z" />
-                      </svg>
-                    </span>
-                  )}
                   {firstBike.battery && (
-                    <span className={`${getBatteryColor(firstBike.battery)} text-white px-2 py-1 rounded text-xs font-semibold`}>{firstBike.battery}</span>
+                    <span className={`${getBatteryColor(firstBike.battery)} text-white px-2 py-1 rounded text-xs font-semibold flex items-center gap-1`}>
+                      {firstBike.isEbike && (
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="white" className="w-4 h-4 inline-block">
+                          <path d="M11.3 1.046A1 1 0 0 1 13 2v5h3a1 1 0 0 1 .8 1.6l-7 10A1 1 0 0 1 8 18v-5H5a1 1 0 0 1-.8-1.6l7-10a1 1 0 0 1 .1-.094z" />
+                        </svg>
+                      )}
+                      {firstBike.battery}
+                    </span>
                   )}
                 </div>
               </div>
