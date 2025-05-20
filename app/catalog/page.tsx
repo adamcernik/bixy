@@ -238,11 +238,14 @@ export default function CatalogPage() {
                     (e.target as HTMLImageElement).src = getAssetPath('/jpeg/placeholder.jpeg');
                   }}
                 />
-                {firstBike.isEbike && (
-                  <div className="absolute top-2 right-2 bg-blue-600 text-white px-2 py-1 rounded-md text-sm">
-                    E-bike
-                  </div>
-                )}
+                <div className="absolute top-2 right-2 flex gap-2">
+                  {firstBike.isEbike && (
+                    <span className="bg-pink-500 text-white px-2 py-1 rounded text-xs font-bold">E-bike</span>
+                  )}
+                  {firstBike.battery && (
+                    <span className="bg-green-500 text-white px-2 py-1 rounded text-xs font-semibold">{firstBike.battery}</span>
+                  )}
+                </div>
               </div>
               <div className="p-4">
                 <h2 className="text-xl font-semibold text-gray-900 mb-2">
