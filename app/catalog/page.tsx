@@ -42,7 +42,7 @@ export default function CatalogPage() {
   const getImageUrl = (bike: Bike) => {
     // Convert imageUrl to string and use it directly as the filename
     const imageNumber = bike.imageUrl.toString();
-    return getAssetPath(`/retail-images/${imageNumber}.jpeg`);
+    return getAssetPath(`/jpeg/${imageNumber}.jpeg`);
   };
 
   // Filter and sort bikes
@@ -168,7 +168,7 @@ export default function CatalogPage() {
                 className="w-full h-full object-cover"
                 onError={(e) => {
                   // Fallback to placeholder if image fails to load
-                  (e.target as HTMLImageElement).src = getAssetPath('/retail-images/placeholder.jpeg');
+                  (e.target as HTMLImageElement).src = getAssetPath('/jpeg/placeholder.jpeg');
                 }}
               />
               {bike.isEbike && (
