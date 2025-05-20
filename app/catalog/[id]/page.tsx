@@ -12,6 +12,7 @@ export default function BikeDetailPage() {
   const { id } = params;
   const [bike, setBike] = useState<Bike | null>(null);
   const [loading, setLoading] = useState(true);
+  const [groupedBikes, setGroupedBikes] = useState<Bike[]>([]);
 
   useEffect(() => {
     const fetchBike = async () => {
@@ -19,8 +20,14 @@ export default function BikeDetailPage() {
         const bikes = await getBikes();
         const found = bikes.find((b) => b.id === id);
         setBike(found || null);
+        if (found) {
+          const modelPrefix = found.modelNumber.slice(0, -2);
+          const sameModelBikes = bikes.filter(b => b.modelNumber.startsWith(modelPrefix));
+          setGroupedBikes(sameModelBikes);
+        }
       } catch (error) {
         setBike(null);
+        setGroupedBikes([]);
       } finally {
         setLoading(false);
       }
@@ -110,6 +117,31 @@ export default function BikeDetailPage() {
               <div className="text-gray-900 font-medium">{bike.pieces ?? '-'}</div>
             </div>
           </div>
+          {/* Sizes Table */}
+          {groupedBikes.length > 1 && (
+            <div className="mb-4">
+              <div className="text-gray-700 font-semibold mb-2">Available Sizes</div>
+              <table className="min-w-full text-sm border rounded">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="px-3 py-2 text-left">Size</th>
+                    <th className="px-3 py-2 text-left">Pieces</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {groupedBikes
+                    .map(b => ({ size: b.size, pieces: b.pieces }))
+                    .sort((a, b) => (parseInt(a.size) || 0) - (parseInt(b.size) || 0))
+                    .map(({ size, pieces }) => (
+                      <tr key={size}>
+                        <td className="px-3 py-2">{size}</td>
+                        <td className="px-3 py-2">{pieces}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          )}
           {bike.note && (
             <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded mb-4">
               <div className="text-yellow-800 font-semibold mb-1">Note</div>
