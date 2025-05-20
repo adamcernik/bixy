@@ -5,32 +5,6 @@ import { getBikes } from '../services/bikeService';
 import { Bike } from '../models/Bike';
 import { getAssetPath } from '../utils/pathUtils';
 
-// Map of known image numbers to their correct filenames
-const imageMap: { [key: string]: string } = {
-  // SONIC EVO series
-  '847045': '84704944', // SONIC EVO TR - I
-  '84704944': '84704944', // SONIC EVO AM1 White
-  '84705744': '84705744', // SONIC EVO AM2 Carbon Blue
-  '84706144': '84706144', // SONIC EVO AM3 Black
-  '84605041': '84605041', // SONIC EVO AM1 Green
-  '84605841': '84605841', // SONIC EVO AM2 Carbon Orange
-  '84602541': '84602541', // SONIC EVO TR1 Blue
-  '66705544': '66705544', // SONIC EVO AM2 Carbon
-  '667082': '66705544', // SONIC EVO AMSL1
-  
-  // Copperhead series
-  '83061741': '83061741', // Copperhead EVO AM2
-  '83054237': '83054237', // Copperhead EVO 2 Wave
-  '83054337': '83054337', // Copperhead EVO 2 Wave
-  
-  // E-Stream series
-  '68016541': '68016541', // E-Stream EVO AM 4
-  '68016741': '68016741', // E-Stream EVO AM 4
-  
-  // Sturmvogel series
-  '840186': '84602541', // Sturmvogel EVO 5F
-};
-
 // Available categories for filtering
 const categories = ['MTB', 'Road', 'Gravel', 'City', 'Trekking', 'Kids', 'Other'];
 
@@ -66,25 +40,9 @@ export default function CatalogPage() {
   }, []);
 
   const getImageUrl = (bike: Bike) => {
-    const imageNumber = typeof bike.imageUrl === 'string' 
-      ? bike.imageUrl 
-      : bike.imageUrl.toString();
-    
-    // First try to get the mapped image
-    const mappedImage = imageMap[imageNumber];
-    if (mappedImage) {
-      return getAssetPath(`/retail-images/${mappedImage}.jpeg`);
-    }
-
-    // If no mapping exists, try to use the original number
-    // but only if it matches one of the available images
-    const availableImages = Object.values(imageMap);
-    if (availableImages.includes(imageNumber)) {
-      return getAssetPath(`/retail-images/${imageNumber}.jpeg`);
-    }
-
-    // If no match is found, use placeholder
-    return getAssetPath('/retail-images/placeholder.jpeg');
+    // Convert imageUrl to string and use it directly as the filename
+    const imageNumber = bike.imageUrl.toString();
+    return getAssetPath(`/retail-images/${imageNumber}.jpeg`);
   };
 
   // Filter and sort bikes
