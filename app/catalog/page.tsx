@@ -161,11 +161,11 @@ export default function CatalogPage() {
             key={bike.id}
             className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
           >
-            <div className="relative aspect-[4/3]">
+            <div className="relative aspect-[4/3] bg-gray-100">
               <img
                 src={getImageUrl(bike)}
                 alt={bike.modelName}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain p-2"
                 onError={(e) => {
                   // Fallback to placeholder if image fails to load
                   (e.target as HTMLImageElement).src = getAssetPath('/jpeg/placeholder.jpeg');
