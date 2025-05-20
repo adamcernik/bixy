@@ -7,19 +7,28 @@ import { getAssetPath } from '../utils/pathUtils';
 
 // Map of known image numbers to their correct filenames
 const imageMap: { [key: string]: string } = {
+  // SONIC EVO series
   '847045': '84704944', // SONIC EVO TR - I
-  '667082': '66705544', // SONIC EVO AMSL1
-  '840186': '84602541', // Sturmvogel EVO 5F
-  '666069': '68016541', // SONIC EVO EN1
-  '830529': '83061741', // Copperhead EVO 2
-  '84605041': '84605041', // SONIC EVO AM1
   '84704944': '84704944', // SONIC EVO AM1 White
+  '84705744': '84705744', // SONIC EVO AM2 Carbon Blue
+  '84706144': '84706144', // SONIC EVO AM3 Black
+  '84605041': '84605041', // SONIC EVO AM1 Green
+  '84605841': '84605841', // SONIC EVO AM2 Carbon Orange
+  '84602541': '84602541', // SONIC EVO TR1 Blue
+  '66705544': '66705544', // SONIC EVO AM2 Carbon
+  '667082': '66705544', // SONIC EVO AMSL1
+  
+  // Copperhead series
+  '83061741': '83061741', // Copperhead EVO AM2
   '83054237': '83054237', // Copperhead EVO 2 Wave
   '83054337': '83054337', // Copperhead EVO 2 Wave
-  '68016741': '68016741', // SONIC EVO EN1
-  '84705744': '84705744', // SONIC EVO AM1
-  '84706144': '84706144', // SONIC EVO AM1
-  '84605841': '84605841', // SONIC EVO AM1
+  
+  // E-Stream series
+  '68016541': '68016541', // E-Stream EVO AM 4
+  '68016741': '68016741', // E-Stream EVO AM 4
+  
+  // Sturmvogel series
+  '840186': '84602541', // Sturmvogel EVO 5F
 };
 
 // Available categories for filtering
@@ -40,21 +49,12 @@ export default function CatalogPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [sortBy, setSortBy] = useState('price-asc');
   const [showOnlyEbikes, setShowOnlyEbikes] = useState(false);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 200000]);
 
   useEffect(() => {
     const fetchBikes = async () => {
       try {
         const bikesData = await getBikes();
         setBikes(bikesData);
-        
-        // Set initial price range based on available bikes
-        if (bikesData.length > 0) {
-          const prices = bikesData.map(bike => bike.priceAction || 0);
-          const minPrice = Math.floor(Math.min(...prices) / 1000) * 1000;
-          const maxPrice = Math.ceil(Math.max(...prices) / 1000) * 1000;
-          setPriceRange([minPrice, maxPrice]);
-        }
       } catch (error) {
         console.error('Error fetching bikes:', error);
       } finally {
@@ -70,8 +70,21 @@ export default function CatalogPage() {
       ? bike.imageUrl 
       : bike.imageUrl.toString();
     
-    const correctImage = imageMap[imageNumber] || imageNumber;
-    return getAssetPath(`/retail-images/${correctImage}.jpeg`);
+    // First try to get the mapped image
+    const mappedImage = imageMap[imageNumber];
+    if (mappedImage) {
+      return getAssetPath(`/retail-images/${mappedImage}.jpeg`);
+    }
+
+    // If no mapping exists, try to use the original number
+    // but only if it matches one of the available images
+    const availableImages = Object.values(imageMap);
+    if (availableImages.includes(imageNumber)) {
+      return getAssetPath(`/retail-images/${imageNumber}.jpeg`);
+    }
+
+    // If no match is found, use placeholder
+    return getAssetPath('/retail-images/placeholder.jpeg');
   };
 
   // Filter and sort bikes
@@ -91,12 +104,7 @@ export default function CatalogPage() {
         // E-bike filter
         const matchesEbike = !showOnlyEbikes || bike.isEbike;
 
-        // Price range filter
-        const matchesPrice = 
-          (bike.priceAction || 0) >= priceRange[0] && 
-          (bike.priceAction || 0) <= priceRange[1];
-
-        return matchesSearch && matchesCategory && matchesEbike && matchesPrice;
+        return matchesSearch && matchesCategory && matchesEbike;
       })
       .sort((a, b) => {
         switch (sortBy) {
@@ -112,7 +120,7 @@ export default function CatalogPage() {
             return 0;
         }
       });
-  }, [bikes, searchQuery, selectedCategory, sortBy, showOnlyEbikes, priceRange]);
+  }, [bikes, searchQuery, selectedCategory, sortBy, showOnlyEbikes]);
 
   if (loading) {
     return (
@@ -128,7 +136,7 @@ export default function CatalogPage() {
       
       {/* Filters and Search */}
       <div className="bg-white p-4 rounded-lg shadow-sm mb-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Search */}
           <div>
             <input
@@ -179,31 +187,6 @@ export default function CatalogPage() {
               <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
               <span className="ml-3 text-sm font-medium text-gray-900">E-bikes only</span>
             </label>
-          </div>
-        </div>
-
-        {/* Price Range Slider */}
-        <div className="mt-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Price Range: {priceRange[0].toLocaleString()} - {priceRange[1].toLocaleString()} CZK
-          </label>
-          <div className="flex items-center space-x-4">
-            <input
-              type="range"
-              min={priceRange[0]}
-              max={priceRange[1]}
-              value={priceRange[0]}
-              onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
-              className="w-full"
-            />
-            <input
-              type="range"
-              min={priceRange[0]}
-              max={priceRange[1]}
-              value={priceRange[1]}
-              onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
-              className="w-full"
-            />
           </div>
         </div>
       </div>
@@ -263,7 +246,6 @@ export default function CatalogPage() {
               setSearchQuery('');
               setSelectedCategory('');
               setShowOnlyEbikes(false);
-              setPriceRange([0, 200000]);
             }}
             className="mt-4 text-blue-600 hover:text-blue-800"
           >
