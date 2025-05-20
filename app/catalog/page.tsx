@@ -161,11 +161,11 @@ export default function CatalogPage() {
             key={bike.id}
             className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
           >
-            <div className="relative aspect-[4/3] bg-gray-100">
+            <div className="relative aspect-[4/3] bg-white">
               <img
                 src={getImageUrl(bike)}
                 alt={bike.modelName}
-                className="w-full h-full object-contain p-2"
+                className="w-full h-full object-cover"
                 onError={(e) => {
                   // Fallback to placeholder if image fails to load
                   (e.target as HTMLImageElement).src = getAssetPath('/jpeg/placeholder.jpeg');
@@ -182,10 +182,7 @@ export default function CatalogPage() {
                 {bike.modelName}
               </h2>
               <p className="text-gray-600 mb-2">{bike.manufacturer}</p>
-              <div className="flex justify-between items-center">
-                <span className="text-lg font-bold text-gray-900">
-                  {bike.priceAction?.toLocaleString()} CZK
-                </span>
+              <div className="flex justify-end items-center">
                 <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300">
                   View Details
                 </button>
