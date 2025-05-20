@@ -1,19 +1,60 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { getBikes } from '../services/bikeService';
 import { Bike } from '../models/Bike';
 import { getAssetPath } from '../utils/pathUtils';
 
+// Map of known image numbers to their correct filenames
+const imageMap: { [key: string]: string } = {
+  '847045': '84704944', // SONIC EVO TR - I
+  '667082': '66705544', // SONIC EVO AMSL1
+  '840186': '84602541', // Sturmvogel EVO 5F
+  '666069': '68016541', // SONIC EVO EN1
+  '830529': '83061741', // Copperhead EVO 2
+  '84605041': '84605041', // SONIC EVO AM1
+  '84704944': '84704944', // SONIC EVO AM1 White
+  '83054237': '83054237', // Copperhead EVO 2 Wave
+  '83054337': '83054337', // Copperhead EVO 2 Wave
+  '68016741': '68016741', // SONIC EVO EN1
+  '84705744': '84705744', // SONIC EVO AM1
+  '84706144': '84706144', // SONIC EVO AM1
+  '84605841': '84605841', // SONIC EVO AM1
+};
+
+// Available categories for filtering
+const categories = ['MTB', 'Road', 'Gravel', 'City', 'Trekking', 'Kids', 'Other'];
+
+// Sort options
+const sortOptions = [
+  { value: 'price-asc', label: 'Price: Low to High' },
+  { value: 'price-desc', label: 'Price: High to Low' },
+  { value: 'name-asc', label: 'Name: A to Z' },
+  { value: 'name-desc', label: 'Name: Z to A' },
+];
+
 export default function CatalogPage() {
   const [bikes, setBikes] = useState<Bike[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [sortBy, setSortBy] = useState('price-asc');
+  const [showOnlyEbikes, setShowOnlyEbikes] = useState(false);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 200000]);
 
   useEffect(() => {
     const fetchBikes = async () => {
       try {
         const bikesData = await getBikes();
         setBikes(bikesData);
+        
+        // Set initial price range based on available bikes
+        if (bikesData.length > 0) {
+          const prices = bikesData.map(bike => bike.priceAction || 0);
+          const minPrice = Math.floor(Math.min(...prices) / 1000) * 1000;
+          const maxPrice = Math.ceil(Math.max(...prices) / 1000) * 1000;
+          setPriceRange([minPrice, maxPrice]);
+        }
       } catch (error) {
         console.error('Error fetching bikes:', error);
       } finally {
@@ -23,6 +64,55 @@ export default function CatalogPage() {
 
     fetchBikes();
   }, []);
+
+  const getImageUrl = (bike: Bike) => {
+    const imageNumber = typeof bike.imageUrl === 'string' 
+      ? bike.imageUrl 
+      : bike.imageUrl.toString();
+    
+    const correctImage = imageMap[imageNumber] || imageNumber;
+    return getAssetPath(`/retail-images/${correctImage}.jpeg`);
+  };
+
+  // Filter and sort bikes
+  const filteredAndSortedBikes = useMemo(() => {
+    return bikes
+      .filter(bike => {
+        // Search filter
+        const searchLower = searchQuery.toLowerCase();
+        const matchesSearch = 
+          bike.modelName.toLowerCase().includes(searchLower) ||
+          bike.manufacturer.toLowerCase().includes(searchLower) ||
+          bike.modelNumber.toLowerCase().includes(searchLower);
+
+        // Category filter
+        const matchesCategory = !selectedCategory || bike.category === selectedCategory;
+
+        // E-bike filter
+        const matchesEbike = !showOnlyEbikes || bike.isEbike;
+
+        // Price range filter
+        const matchesPrice = 
+          (bike.priceAction || 0) >= priceRange[0] && 
+          (bike.priceAction || 0) <= priceRange[1];
+
+        return matchesSearch && matchesCategory && matchesEbike && matchesPrice;
+      })
+      .sort((a, b) => {
+        switch (sortBy) {
+          case 'price-asc':
+            return (a.priceAction || 0) - (b.priceAction || 0);
+          case 'price-desc':
+            return (b.priceAction || 0) - (a.priceAction || 0);
+          case 'name-asc':
+            return a.modelName.localeCompare(b.modelName);
+          case 'name-desc':
+            return b.modelName.localeCompare(a.modelName);
+          default:
+            return 0;
+        }
+      });
+  }, [bikes, searchQuery, selectedCategory, sortBy, showOnlyEbikes, priceRange]);
 
   if (loading) {
     return (
@@ -36,18 +126,115 @@ export default function CatalogPage() {
     <div>
       <h1 className="text-3xl font-bold text-gray-900 mb-8">Our Bikes</h1>
       
+      {/* Filters and Search */}
+      <div className="bg-white p-4 rounded-lg shadow-sm mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Search */}
+          <div>
+            <input
+              type="text"
+              placeholder="Search bikes..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* Category Filter */}
+          <div>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">All Categories</option>
+              {categories.map(category => (
+                <option key={category} value={category}>{category}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Sort */}
+          <div>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {sortOptions.map(option => (
+                <option key={option.value} value={option.value}>{option.label}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* E-bike Toggle */}
+          <div className="flex items-center space-x-2">
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={showOnlyEbikes}
+                onChange={(e) => setShowOnlyEbikes(e.target.checked)}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              <span className="ml-3 text-sm font-medium text-gray-900">E-bikes only</span>
+            </label>
+          </div>
+        </div>
+
+        {/* Price Range Slider */}
+        <div className="mt-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Price Range: {priceRange[0].toLocaleString()} - {priceRange[1].toLocaleString()} CZK
+          </label>
+          <div className="flex items-center space-x-4">
+            <input
+              type="range"
+              min={priceRange[0]}
+              max={priceRange[1]}
+              value={priceRange[0]}
+              onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
+              className="w-full"
+            />
+            <input
+              type="range"
+              min={priceRange[0]}
+              max={priceRange[1]}
+              value={priceRange[1]}
+              onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
+              className="w-full"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Results count */}
+      <div className="mb-4 text-gray-600">
+        Showing {filteredAndSortedBikes.length} of {bikes.length} bikes
+      </div>
+      
+      {/* Bike Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {bikes.map((bike) => (
+        {filteredAndSortedBikes.map((bike) => (
           <div
             key={bike.id}
             className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
           >
             <div className="relative aspect-[4/3]">
               <img
-                src={getAssetPath(`/retail-images/${bike.imageUrl}.jpg`)}
+                src={getImageUrl(bike)}
                 alt={bike.modelName}
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  // Fallback to placeholder if image fails to load
+                  (e.target as HTMLImageElement).src = getAssetPath('/retail-images/placeholder.jpeg');
+                }}
               />
+              {bike.isEbike && (
+                <div className="absolute top-2 right-2 bg-blue-600 text-white px-2 py-1 rounded-md text-sm">
+                  E-bike
+                </div>
+              )}
             </div>
             <div className="p-4">
               <h2 className="text-xl font-semibold text-gray-900 mb-2">
@@ -66,6 +253,24 @@ export default function CatalogPage() {
           </div>
         ))}
       </div>
+
+      {/* No results message */}
+      {filteredAndSortedBikes.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-gray-500 text-lg">No bikes found matching your criteria</p>
+          <button
+            onClick={() => {
+              setSearchQuery('');
+              setSelectedCategory('');
+              setShowOnlyEbikes(false);
+              setPriceRange([0, 200000]);
+            }}
+            className="mt-4 text-blue-600 hover:text-blue-800"
+          >
+            Clear all filters
+          </button>
+        </div>
+      )}
     </div>
   );
 } 
