@@ -15,6 +15,8 @@ const sortOptions = [
   { value: 'price-desc', label: 'Price: High to Low' },
   { value: 'name-asc', label: 'Name: A to Z' },
   { value: 'name-desc', label: 'Name: Z to A' },
+  { value: 'size-asc', label: 'Size: Small to Large' },
+  { value: 'size-desc', label: 'Size: Large to Small' },
 ];
 
 export default function CatalogPage() {
@@ -75,11 +77,27 @@ export default function CatalogPage() {
             return a.modelName.localeCompare(b.modelName);
           case 'name-desc':
             return b.modelName.localeCompare(a.modelName);
+          case 'size-asc': {
+            // Sort by size (string, but try to parse as number if possible)
+            const aSize = parseInt(a.size) || 0;
+            const bSize = parseInt(b.size) || 0;
+            return aSize - bSize;
+          }
+          case 'size-desc': {
+            const aSize = parseInt(a.size) || 0;
+            const bSize = parseInt(b.size) || 0;
+            return bSize - aSize;
+          }
           default:
             return 0;
         }
       });
   }, [bikes, searchQuery, selectedCategory, sortBy, showOnlyEbikes]);
+
+  // Calculate total pieces (sum of pieces for all filtered bikes)
+  const totalPieces = useMemo(() => {
+    return filteredAndSortedBikes.reduce((sum, bike) => sum + (bike.pieces || 0), 0);
+  }, [filteredAndSortedBikes]);
 
   if (loading) {
     return (
@@ -151,8 +169,9 @@ export default function CatalogPage() {
       </div>
 
       {/* Results count */}
-      <div className="mb-4 text-gray-600">
-        Showing {filteredAndSortedBikes.length} of {bikes.length} bikes
+      <div className="mb-4 text-gray-600 flex flex-wrap gap-4 items-center">
+        <span>Showing {filteredAndSortedBikes.length} of {bikes.length} bikes</span>
+        <span className="font-semibold">Total in stock: {totalPieces}</span>
       </div>
       
       {/* Bike Grid */}
