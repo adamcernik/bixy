@@ -13,8 +13,6 @@ export default function BikeDetailPage() {
   const [bike, setBike] = useState<Bike | null>(null);
   const [loading, setLoading] = useState(true);
   const [groupedBikes, setGroupedBikes] = useState<Bike[]>([]);
-  const [specs, setSpecs] = useState<Record<string, string> | null>(null);
-  const [specsError, setSpecsError] = useState(false);
 
   useEffect(() => {
     const fetchBike = async () => {
@@ -36,20 +34,6 @@ export default function BikeDetailPage() {
     };
     if (id) fetchBike();
   }, [id]);
-
-  useEffect(() => {
-    if (bike && bike.modelNumber) {
-      fetch(`/specs/${bike.modelNumber}.json`)
-        .then((res) => {
-          if (!res.ok) throw new Error('No specs');
-          return res.json();
-        })
-        .then((data) => {
-          setSpecs(data.specs || null);
-        })
-        .catch(() => setSpecsError(true));
-    }
-  }, [id, bike]);
 
   if (loading) {
     return (
@@ -150,22 +134,6 @@ export default function BikeDetailPage() {
                         <td className="px-3 py-2">{pieces}</td>
                       </tr>
                     ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-          {/* Technical Specs */}
-          {specs && (
-            <div className="mb-6">
-              <div className="text-gray-700 font-semibold mb-2 text-lg">Technical Specifications</div>
-              <table className="min-w-full text-sm border rounded bg-gray-50">
-                <tbody>
-                  {Object.entries(specs).map(([key, value]) => (
-                    <tr key={key} className="border-b last:border-b-0">
-                      <td className="px-3 py-2 font-medium text-gray-600 whitespace-nowrap">{key}</td>
-                      <td className="px-3 py-2 text-gray-900">{value}</td>
-                    </tr>
-                  ))}
                 </tbody>
               </table>
             </div>
