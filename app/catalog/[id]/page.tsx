@@ -110,7 +110,7 @@ export default function BikeDetailPage() {
             </div>
             <div>
               <div className="text-gray-500 text-sm">Pieces</div>
-              <div className="text-gray-900 font-medium">{bike.pieces ?? '-'}</div>
+              <div className="text-gray-900 font-medium">{groupedBikes.reduce((sum, b) => sum + (b.pieces || 0), 0)}</div>
             </div>
           </div>
           {/* Sizes Table */}
