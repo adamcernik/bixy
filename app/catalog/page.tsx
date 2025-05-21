@@ -234,9 +234,11 @@ export default function CatalogPage() {
           const sizes = group.map(b => b.size).filter(Boolean).sort((a, b) => (parseInt(a) || 0) - (parseInt(b) || 0));
           const totalGroupPieces = group.reduce((sum, b) => sum + (b.pieces || 0), 0);
           return (
-            <div
+            <Link
               key={firstBike.modelNumber.slice(0, -2)}
-              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+              href={`/catalog/${firstBike.id}`}
+              className="group bg-white rounded-lg shadow-md overflow-hidden transition-shadow duration-300 hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 block cursor-pointer"
+              style={{ textDecoration: 'none' }}
             >
               <div className="relative aspect-square bg-white flex items-center justify-center">
                 <img
@@ -273,19 +275,12 @@ export default function CatalogPage() {
                   {firstBike.priceRetail > 0 && (
                     <span className="text-gray-400 text-sm line-through mb-1">{firstBike.priceRetail.toLocaleString()} CZK</span>
                   )}
-                  {firstBike.priceReseller > 0 && (
-                    <span className="text-2xl font-bold text-green-700">{firstBike.priceReseller.toLocaleString()} CZK</span>
+                  {firstBike.priceAction > 0 && (
+                    <span className="text-2xl font-bold text-green-700">{firstBike.priceAction.toLocaleString()} CZK</span>
                   )}
                 </div>
-                <div className="flex justify-end items-center">
-                  <Link href={`/catalog/${firstBike.id}`} legacyBehavior>
-                    <a className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300 block text-center">
-                      View Details
-                    </a>
-                  </Link>
-                </div>
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>
