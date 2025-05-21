@@ -47,7 +47,7 @@ export default function CatalogPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [sortBy, setSortBy] = useState('price-asc');
+  const [sortBy, setSortBy] = useState('price-desc');
   const [showOnlyEbikes, setShowOnlyEbikes] = useState(true);
   const [selectedBattery, setSelectedBattery] = useState<string>('');
 
