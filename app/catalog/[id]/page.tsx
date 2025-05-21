@@ -6,6 +6,8 @@ import { getBikes } from "../../services/bikeService";
 import { Bike } from "../../models/Bike";
 import { getAssetPath } from "../../utils/pathUtils";
 import SizeGuideModal from "../../components/SizeGuideModal";
+import ImageZoomModal from "../../components/ImageZoomModal";
+import ZoomInIcon from '@mui/icons-material/ZoomIn';
 
 export default function BikeDetailPage() {
   const router = useRouter();
@@ -15,6 +17,7 @@ export default function BikeDetailPage() {
   const [loading, setLoading] = useState(true);
   const [groupedBikes, setGroupedBikes] = useState<Bike[]>([]);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
+  const [imageModalOpen, setImageModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchBike = async () => {
@@ -44,6 +47,19 @@ export default function BikeDetailPage() {
   const handleCloseSizeGuide = () => {
     setSizeGuideOpen(false);
   };
+  
+  const handleOpenImageModal = () => {
+    setImageModalOpen(true);
+  };
+  
+  const handleCloseImageModal = () => {
+    setImageModalOpen(false);
+  };
+
+  const getImageUrl = (bike: Bike | null) => {
+    if (!bike) return '';
+    return getAssetPath(`/jpeg/${bike.imageUrl}.jpeg`);
+  };
 
   if (loading) {
     return (
@@ -71,18 +87,26 @@ export default function BikeDetailPage() {
     <div className="max-w-5xl mx-auto px-4 py-8 bg-white">
       <div className="flex flex-col lg:flex-row gap-8 items-start">
         {/* Image */}
-        <div className="w-full lg:w-1/2 flex justify-center items-center">
-          <div className="aspect-square w-full max-w-md flex items-center justify-center">
-            <img
-              src={getAssetPath(`/jpeg/${bike.imageUrl}.jpeg`)}
-              alt={bike.modelName}
-              className="w-full h-auto max-h-[500px] object-contain"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = getAssetPath('/jpeg/placeholder.jpeg');
-              }}
-            />
+        <div className="w-full lg:w-1/2">
+          <div className="relative w-full">
+            <div className="aspect-square w-full flex items-center justify-center bg-white cursor-pointer group" onClick={handleOpenImageModal}>
+              <img
+                src={getImageUrl(bike)}
+                alt={bike.modelName}
+                className="w-full h-auto object-contain"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = getAssetPath('/jpeg/placeholder.jpeg');
+                }}
+              />
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black bg-opacity-20">
+                <div className="bg-white bg-opacity-75 rounded-full p-2">
+                  <ZoomInIcon className="text-gray-800" fontSize="large" />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+        
         {/* Info */}
         <div className="w-full lg:w-1/2">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{bike.modelName}</h1>
@@ -184,6 +208,14 @@ export default function BikeDetailPage() {
       <SizeGuideModal 
         open={sizeGuideOpen} 
         onClose={handleCloseSizeGuide} 
+      />
+      
+      {/* Image Zoom Modal */}
+      <ImageZoomModal
+        open={imageModalOpen}
+        onClose={handleCloseImageModal}
+        imageSrc={getImageUrl(bike)}
+        imageAlt={bike?.modelName || 'Bike Image'}
       />
     </div>
   );
