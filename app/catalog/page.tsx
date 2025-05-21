@@ -269,6 +269,14 @@ export default function CatalogPage() {
                   <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">Sizes: {sizes.join(', ') || '-'}</span>
                   <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">Pieces: {totalGroupPieces}</span>
                 </div>
+                <div className="flex flex-col items-end mt-4">
+                  {firstBike.priceRetail > 0 && (
+                    <span className="text-gray-400 text-sm line-through mb-1">{firstBike.priceRetail.toLocaleString()} CZK</span>
+                  )}
+                  {firstBike.priceReseller > 0 && (
+                    <span className="text-2xl font-bold text-green-700">{firstBike.priceReseller.toLocaleString()} CZK</span>
+                  )}
+                </div>
                 <div className="flex justify-end items-center">
                   <Link href={`/catalog/${firstBike.id}`} legacyBehavior>
                     <a className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300 block text-center">

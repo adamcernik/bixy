@@ -148,6 +148,15 @@ export default function BikeDetailPage() {
               <div className="text-yellow-700 text-sm">{bike.note}</div>
             </div>
           )}
+          {/* Prices */}
+          <div className="flex flex-col items-end mb-4">
+            {bike.priceRetail > 0 && (
+              <span className="text-gray-400 text-base line-through mb-1">{bike.priceRetail.toLocaleString()} CZK</span>
+            )}
+            {bike.priceReseller > 0 && (
+              <span className="text-3xl font-bold text-green-700">{bike.priceReseller.toLocaleString()} CZK</span>
+            )}
+          </div>
           <button
             className="mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-300"
             onClick={() => router.back()}
