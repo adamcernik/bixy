@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import { getBikes } from "../../services/bikeService";
 import { Bike } from "../../models/Bike";
 import { getAssetPath } from "../../utils/pathUtils";
+import SizeGuideModal from "../../components/SizeGuideModal";
 
 export default function BikeDetailPage() {
   const router = useRouter();
@@ -13,6 +14,7 @@ export default function BikeDetailPage() {
   const [bike, setBike] = useState<Bike | null>(null);
   const [loading, setLoading] = useState(true);
   const [groupedBikes, setGroupedBikes] = useState<Bike[]>([]);
+  const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
 
   useEffect(() => {
     const fetchBike = async () => {
@@ -34,6 +36,14 @@ export default function BikeDetailPage() {
     };
     if (id) fetchBike();
   }, [id]);
+
+  const handleOpenSizeGuide = () => {
+    setSizeGuideOpen(true);
+  };
+
+  const handleCloseSizeGuide = () => {
+    setSizeGuideOpen(false);
+  };
 
   if (loading) {
     return (
@@ -106,7 +116,15 @@ export default function BikeDetailPage() {
             </div>
             <div>
               <div className="text-gray-500 text-sm">Sizes</div>
-              <div className="text-gray-900 font-medium">{groupedBikes.length > 1 ? 'more' : (bike.size || '-')}</div>
+              <div className="flex items-center">
+                <span className="text-gray-900 font-medium">{groupedBikes.length > 1 ? 'more' : (bike.size || '-')}</span>
+                <button 
+                  onClick={handleOpenSizeGuide}
+                  className="ml-2 text-xs text-blue-600 hover:text-blue-800 hover:underline"
+                >
+                  Size guide
+                </button>
+              </div>
             </div>
             <div>
               <div className="text-gray-500 text-sm">Pieces</div>
@@ -161,6 +179,12 @@ export default function BikeDetailPage() {
           </button>
         </div>
       </div>
+      
+      {/* Size Guide Modal */}
+      <SizeGuideModal 
+        open={sizeGuideOpen} 
+        onClose={handleCloseSizeGuide} 
+      />
     </div>
   );
 } 
