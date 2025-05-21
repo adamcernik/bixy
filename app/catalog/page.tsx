@@ -6,7 +6,6 @@ import { Bike } from '../models/Bike';
 import { getAssetPath } from '../utils/pathUtils';
 import Link from 'next/link';
 import { useAuth } from '../context/AuthContext';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material';
 
 // Available categories for filtering
 const categories = ['MTB', 'Road', 'Gravel', 'City', 'Trekking', 'Kids', 'Other'];
@@ -54,9 +53,6 @@ export default function CatalogPage() {
   const [selectedBattery, setSelectedBattery] = useState<string>('');
   const { userData } = useAuth();
   const isAdmin = userData?.isAdmin;
-  const [selectedBikeIds, setSelectedBikeIds] = useState<string[]>([]);
-  const [offerDialogOpen, setOfferDialogOpen] = useState(false);
-  const [offerNote, setOfferNote] = useState('');
 
   // Get unique battery types from bikes
   const batteryOptions = useMemo(() => {
@@ -144,29 +140,6 @@ export default function CatalogPage() {
   const totalPieces = useMemo(() => {
     return sortedGroupedBikes.reduce((sum, group) => sum + group.reduce((gSum, bike) => gSum + (bike.pieces || 0), 0), 0);
   }, [sortedGroupedBikes]);
-
-  // Helper to get all selected bikes
-  const selectedBikes = useMemo(() => {
-    return bikes.filter(bike => typeof bike.id === 'string' && selectedBikeIds.includes(bike.id));
-  }, [bikes, selectedBikeIds]);
-
-  // Handle card checkbox toggle
-  const handleCardCheckbox = (id?: string) => {
-    const safeId = id ?? '';
-    if (!safeId) return;
-    setSelectedBikeIds(prev => prev.includes(safeId) ? prev.filter(bid => bid !== safeId) : [...prev, safeId]);
-  };
-
-  // Handle Offer button click
-  const handleOfferClick = () => {
-    setOfferDialogOpen(true);
-  };
-
-  // Handle dialog close
-  const handleDialogClose = () => {
-    setOfferDialogOpen(false);
-    setOfferNote('');
-  };
 
   if (loading) {
     return (
@@ -257,15 +230,6 @@ export default function CatalogPage() {
         <span className="font-semibold">Total in stock: {totalPieces}</span>
       </div>
       
-      {/* Offer Button for Admin */}
-      {isAdmin && selectedBikeIds.length > 0 && (
-        <div className="mb-4 flex justify-end">
-          <Button variant="contained" color="primary" onClick={handleOfferClick}>
-            Offer
-          </Button>
-        </div>
-      )}
-      
       {/* Bike Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {sortedGroupedBikes.map((group) => {
@@ -274,16 +238,6 @@ export default function CatalogPage() {
           const totalGroupPieces = group.reduce((sum, b) => sum + (b.pieces || 0), 0);
           return (
             <div key={firstBike.modelNumber.slice(0, -2)} className="relative">
-              {/* Admin Checkbox */}
-              {isAdmin && typeof firstBike.id === 'string' && (
-                <input
-                  type="checkbox"
-                  className="absolute top-2 left-2 z-10 w-5 h-5"
-                  checked={selectedBikeIds.includes(firstBike.id)}
-                  onChange={() => handleCardCheckbox(firstBike.id)}
-                  onClick={e => e.stopPropagation()}
-                />
-              )}
               <Link
                 href={`/catalog/${firstBike.id}`}
                 className="group bg-white rounded-lg shadow-md overflow-hidden transition-shadow duration-300 hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 block cursor-pointer"
@@ -351,36 +305,6 @@ export default function CatalogPage() {
           </button>
         </div>
       )}
-
-      {/* Offer Dialog */}
-      <Dialog open={offerDialogOpen} onClose={handleDialogClose} maxWidth="sm" fullWidth>
-        <DialogTitle>Create Offer</DialogTitle>
-        <DialogContent>
-          <div className="mb-4">
-            <strong>Selected Bikes:</strong>
-            <ul className="list-disc ml-6">
-              {selectedBikes.map(bike => (
-                <li key={bike.id ?? ''}>{bike.modelName} ({bike.modelNumber})</li>
-              ))}
-            </ul>
-          </div>
-          <TextField
-            label="Note for Customer"
-            multiline
-            minRows={3}
-            fullWidth
-            value={offerNote}
-            onChange={e => setOfferNote(e.target.value)}
-            placeholder="Add a note for the customer..."
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDialogClose}>Cancel</Button>
-          <Button variant="contained" color="primary" disabled={selectedBikes.length === 0}>
-            Create Offer
-          </Button>
-        </DialogActions>
-      </Dialog>
     </div>
   );
 } 

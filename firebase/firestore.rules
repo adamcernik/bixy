@@ -29,6 +29,7 @@ service cloud.firestore {
       // Only authenticated users with access can create, update, delete
       allow create, update, delete: if hasAccess();
     }
+    
     match /{document=**} {
       allow read, write: if false;
     }
