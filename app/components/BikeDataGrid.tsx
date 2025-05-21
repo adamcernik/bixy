@@ -501,7 +501,33 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog, onEditBi
         return '';
       }
     },
-    { field: 'note', headerName: 'Note', width: columnWidths.note || 200, editable: true },
+    { 
+      field: 'note', 
+      headerName: 'Note', 
+      width: columnWidths.note || 200, 
+      editable: true,
+      renderCell: (params: GridRenderCellParams) => {
+        const resellerPrice = params.row.priceReseller;
+        const actionPrice = params.row.priceAction;
+        
+        if (resellerPrice && actionPrice && resellerPrice > 0) {
+          const discountPercentage = ((resellerPrice - actionPrice) / resellerPrice * 100).toFixed(1);
+          return (
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+              <Typography variant="body2" color="error.main" fontWeight="bold">
+                -{discountPercentage}% discount
+              </Typography>
+              {params.value && (
+                <Typography variant="caption" color="text.secondary">
+                  {params.value}
+                </Typography>
+              )}
+            </Box>
+          );
+        }
+        return params.value || '';
+      }
+    },
     {
       field: 'actions',
       type: 'actions',
