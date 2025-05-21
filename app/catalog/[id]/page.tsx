@@ -153,8 +153,8 @@ export default function BikeDetailPage() {
             {bike.priceRetail > 0 && (
               <span className="text-gray-400 text-base line-through mb-1">{bike.priceRetail.toLocaleString()} CZK</span>
             )}
-            {bike.priceReseller > 0 && (
-              <span className="text-3xl font-bold text-green-700">{bike.priceReseller.toLocaleString()} CZK</span>
+            {bike.priceAction > 0 && (
+              <span className="text-3xl font-bold text-green-700">{bike.priceAction.toLocaleString()} CZK</span>
             )}
           </div>
           <button
