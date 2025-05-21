@@ -30,6 +30,9 @@ export default function MarginPage() {
     );
   }
 
+  // Sort bikes by modelNumber ascending
+  const sortedBikes = bikes.slice().sort((a, b) => a.modelNumber.localeCompare(b.modelNumber));
+
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-6">Bike Margin Table</h1>
@@ -44,7 +47,7 @@ export default function MarginPage() {
             </tr>
           </thead>
           <tbody>
-            {bikes.map((bike) => (
+            {sortedBikes.map((bike) => (
               <tr key={bike.id} className="border-t">
                 <td className="px-4 py-2">{bike.modelName}</td>
                 <td className="px-4 py-2 text-right">{bike.priceReseller?.toLocaleString()} CZK</td>
