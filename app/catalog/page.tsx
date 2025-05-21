@@ -147,7 +147,7 @@ export default function CatalogPage() {
 
   // Helper to get all selected bikes
   const selectedBikes = useMemo(() => {
-    return bikes.filter(bike => selectedBikeIds.includes(bike.id));
+    return bikes.filter(bike => typeof bike.id === 'string' && selectedBikeIds.includes(bike.id));
   }, [bikes, selectedBikeIds]);
 
   // Handle card checkbox toggle
