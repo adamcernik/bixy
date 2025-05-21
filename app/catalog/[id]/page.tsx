@@ -97,10 +97,6 @@ export default function BikeDetailPage() {
               <div className="text-gray-900 font-medium">{bike.frameMaterial}</div>
             </div>
             <div>
-              <div className="text-gray-500 text-sm">Weight</div>
-              <div className="text-gray-900 font-medium">{bike.weight} kg</div>
-            </div>
-            <div>
               <div className="text-gray-500 text-sm">Color</div>
               <div className="text-gray-900 font-medium">{bike.color}</div>
             </div>
