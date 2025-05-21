@@ -507,11 +507,11 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog, onEditBi
       width: columnWidths.note || 200, 
       editable: true,
       renderCell: (params: GridRenderCellParams) => {
-        const resellerPrice = params.row.priceReseller;
+        const retailPrice = params.row.priceRetail;
         const actionPrice = params.row.priceAction;
         
-        if (resellerPrice && actionPrice && resellerPrice > 0) {
-          const discountPercentage = ((resellerPrice - actionPrice) / resellerPrice * 100).toFixed(1);
+        if (retailPrice && actionPrice && retailPrice > 0) {
+          const discountPercentage = ((retailPrice - actionPrice) / retailPrice * 100).toFixed(1);
           return (
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
               <Typography variant="body2" color="error.main" fontWeight="bold">
