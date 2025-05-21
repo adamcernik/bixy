@@ -75,7 +75,7 @@ export default function SizeGuideModal({ open, onClose }: SizeGuideModalProps) {
           </div>
           
           <p className="mt-4 text-sm text-gray-600">
-            This guide helps you find the right bike size based on your height. For the most accurate fit, we recommend visiting a store for a professional fitting.
+            This guide helps you find the right bike size based on your height.
           </p>
         </div>
       </DialogContent>
