@@ -490,7 +490,7 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog, onEditBi
     },
     { 
       field: 'priceReseller', 
-      headerName: 'Reseller Price (CZK)', 
+      headerName: 'Adam Price (CZK)', 
       width: columnWidths.priceReseller || 140, 
       type: 'number',
       editable: true,
