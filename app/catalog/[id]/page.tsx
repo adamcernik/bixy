@@ -7,7 +7,6 @@ import { Bike } from "../../models/Bike";
 import { getAssetPath } from "../../utils/pathUtils";
 import SizeGuideModal from "../../components/SizeGuideModal";
 import ImageZoomModal from "../../components/ImageZoomModal";
-import ZoomInIcon from '@mui/icons-material/ZoomIn';
 
 export default function BikeDetailPage() {
   const router = useRouter();
@@ -88,22 +87,15 @@ export default function BikeDetailPage() {
       <div className="flex flex-col lg:flex-row gap-8 items-start">
         {/* Image */}
         <div className="w-full lg:w-1/2">
-          <div className="relative w-full">
-            <div className="aspect-square w-full flex items-center justify-center bg-white cursor-pointer group" onClick={handleOpenImageModal}>
-              <img
-                src={getImageUrl(bike)}
-                alt={bike.modelName}
-                className="w-full h-auto object-contain"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = getAssetPath('/jpeg/placeholder.jpeg');
-                }}
-              />
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black bg-opacity-20">
-                <div className="bg-white bg-opacity-75 rounded-full p-2">
-                  <ZoomInIcon className="text-gray-800" fontSize="large" />
-                </div>
-              </div>
-            </div>
+          <div className="w-full" onClick={handleOpenImageModal}>
+            <img
+              src={getImageUrl(bike)}
+              alt={bike.modelName}
+              className="w-full h-auto object-contain cursor-pointer"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = getAssetPath('/jpeg/placeholder.jpeg');
+              }}
+            />
           </div>
         </div>
         
