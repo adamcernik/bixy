@@ -279,12 +279,24 @@ export default function CatalogPage() {
                         </tr>
                       </thead>
                       <tbody>
-                        {group.map(bike => (
-                          <tr key={bike.size}>
-                            <td className="py-1 px-2 border text-gray-700">{bike.size || '-'}</td>
-                            <td className="py-1 px-2 border text-gray-700">{bike.pieces || 0}</td>
-                          </tr>
-                        ))}
+                        {Object.entries(group.reduce((acc, bike) => {
+                          const size = bike.size || '-';
+                          if (!acc[size]) acc[size] = 0;
+                          acc[size] += bike.pieces || 0;
+                          return acc;
+                        }, {} as Record<string, number>))
+                          .sort(([sizeA], [sizeB]) => {
+                            const numA = parseInt(sizeA) || 0;
+                            const numB = parseInt(sizeB) || 0;
+                            return numA - numB;
+                          })
+                          .map(([size, pieces]) => (
+                            <tr key={size}>
+                              <td className="py-1 px-2 border text-gray-700">{size}</td>
+                              <td className="py-1 px-2 border text-gray-700">{pieces}</td>
+                            </tr>
+                          ))
+                        }
                       </tbody>
                     </table>
                   </div>

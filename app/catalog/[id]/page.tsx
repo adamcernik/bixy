@@ -159,10 +159,18 @@ export default function BikeDetailPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {groupedBikes
-                    .map(b => ({ size: b.size, pieces: b.pieces }))
-                    .sort((a, b) => (parseInt(a.size) || 0) - (parseInt(b.size) || 0))
-                    .map(({ size, pieces }) => (
+                  {Object.entries(groupedBikes.reduce((acc, bike) => {
+                    const size = bike.size || '-';
+                    if (!acc[size]) acc[size] = 0;
+                    acc[size] += bike.pieces || 0;
+                    return acc;
+                  }, {} as Record<string, number>))
+                    .sort(([sizeA], [sizeB]) => {
+                      const numA = parseInt(sizeA) || 0;
+                      const numB = parseInt(sizeB) || 0;
+                      return numA - numB;
+                    })
+                    .map(([size, pieces]) => (
                       <tr key={size}>
                         <td className="px-3 py-2">{size}</td>
                         <td className="px-3 py-2">{pieces}</td>
