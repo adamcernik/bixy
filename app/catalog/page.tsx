@@ -270,9 +270,23 @@ export default function CatalogPage() {
                     {firstBike.modelName}
                   </h2>
                   <p className="text-gray-600 mb-2">{firstBike.manufacturer}</p>
-                  <div className="flex flex-wrap gap-2 mb-2">
-                    <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">Sizes: {sizes.join(', ') || '-'}</span>
-                    <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">Pieces: {totalGroupPieces}</span>
+                  <div className="mb-2">
+                    <table className="w-full text-xs border-collapse">
+                      <thead className="bg-gray-100">
+                        <tr>
+                          <th className="py-1 px-2 text-left border text-gray-700">Size</th>
+                          <th className="py-1 px-2 text-left border text-gray-700">Pieces</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {group.map(bike => (
+                          <tr key={bike.size}>
+                            <td className="py-1 px-2 border text-gray-700">{bike.size || '-'}</td>
+                            <td className="py-1 px-2 border text-gray-700">{bike.pieces || 0}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                   <div className="flex flex-col items-end mt-4">
                     {firstBike.priceRetail > 0 && (
