@@ -4,6 +4,7 @@ import { AuthProvider } from "./context/AuthContext";
 import "./globals.css";
 import AppFooter from './components/AppFooter';
 import { Analytics } from '@vercel/analytics/next';
+import { usePathname } from 'next/navigation';
 
 const geist = Geist({
   subsets: ["latin"],
@@ -20,6 +21,9 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const isCatalogPage = pathname?.startsWith('/catalog');
+
   return (
     <html lang="en">
       <head>
@@ -28,7 +32,7 @@ export default function RootLayout({
       </head>
       <body className={`${geist.variable} font-sans`}>
         <AuthProvider>{children}</AuthProvider>
-        <AppFooter />
+        {!isCatalogPage && <AppFooter />}
         <Analytics />
       </body>
     </html>
