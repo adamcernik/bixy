@@ -41,6 +41,7 @@ import { getBikes, addBike, updateBike, deleteBike } from '../services/bikeServi
 import { Bike } from '../models/Bike';
 import { getAssetPath } from '../utils/pathUtils';
 import ImageViewerModal from './ImageViewerModal';
+import React from 'react';
 
 const initialBikeState: Bike = {
   manufacturer: 'Bulls', // Default value
@@ -120,6 +121,26 @@ const getImagePath = (imageNumber: number): string => {
 const getPlaceholderImage = (): string => {
   return getAssetPath('/bixy-logo.svg');
 };
+
+// ErrorBoundary component
+class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean, error: any}> {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error: any, errorInfo: any) {
+    console.error('ErrorBoundary caught an error', error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return <div style={{color: 'red', padding: 16}}>Error: {String(this.state.error)}</div>;
+    }
+    return this.props.children;
+  }
+}
 
 export default function BikeDataGrid({ openAddDialog, setOpenAddDialog, onEditBike }: BikeDataGridProps) {
   const [bikes, setBikes] = useState<Bike[]>([]);
@@ -225,43 +246,41 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog, onEditBi
 
   // Add a color selection component
   const ColorCell = (props: GridRenderCellParams) => {
-    const { value } = props;
-    
-    if (!value) return <span>No color</span>;
-    
-    const colorCode = getColorCode(value);
-    
-    return (
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <Box 
-          sx={{ 
-            width: 18, 
-            height: 18, 
-            borderRadius: '50%', 
-            backgroundColor: colorCode,
-            border: '1px solid #AAAAAA',
-            display: 'inline-block'
-          }} 
-        />
-        <span>{value}</span>
-      </Box>
-    );
+    try {
+      const { value } = props;
+      if (!value) return <span>No color</span>;
+      const colorCode = getColorCode(value);
+      return (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box 
+            sx={{ 
+              width: 18, 
+              height: 18, 
+              borderRadius: '50%', 
+              backgroundColor: colorCode,
+              border: '1px solid #AAAAAA',
+              display: 'inline-block'
+            }} 
+          />
+          <span>{value}</span>
+        </Box>
+      );
+    } catch (e) {
+      console.error('Error in ColorCell:', e, props);
+      return <span style={{color: 'red'}}>Error</span>;
+    }
   };
 
   // Custom edit component for colors with color swatches
   const ColorEditCell = (props: any) => {
-    const { id, value, field, api } = props;
-    
-    // Simplified handler to fix AbortError issues
-    const handleValueChange = (event: any) => {
-      const newValue = event.target.value;
-      if (api && api.setEditCellValue) {
-        api.setEditCellValue({ id, field, value: newValue });
-      }
-    };
-    
-    // Fall back to a regular input if rendering fails
     try {
+      const { id, value, field, api } = props;
+      const handleValueChange = (event: any) => {
+        const newValue = event.target.value;
+        if (api && api.setEditCellValue) {
+          api.setEditCellValue({ id, field, value: newValue });
+        }
+      };
       return (
         <Select
           value={value || ''}
@@ -297,16 +316,8 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog, onEditBi
         </Select>
       );
     } catch (e) {
-      console.error('Error rendering ColorEditCell:', e);
-      // Fallback to basic text input if Select fails
-      return (
-        <input
-          type="text"
-          value={value || ''}
-          onChange={handleValueChange}
-          style={{ width: '100%', height: '100%', padding: '0 8px' }}
-        />
-      );
+      console.error('Error in ColorEditCell:', e, props);
+      return <input type="text" value={props.value || ''} onChange={() => {}} style={{ width: '100%', height: '100%', padding: '0 8px' }} />;
     }
   };
 
@@ -688,104 +699,106 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog, onEditBi
   };
 
   return (
-    <Box sx={{ width: '100%', height: '100%' }}>
-      <DataGrid
-        rows={bikes}
-        columns={columns}
-        loading={loading}
-        editMode="cell"
-        cellModesModel={cellModesModel}
-        onCellModesModelChange={handleCellModesModelChange}
-        onCellEditStart={handleCellEditStart}
-        onCellEditStop={handleCellEditStop}
-        onCellClick={handleCellClick}
-        onColumnResize={handleColumnResize}
-        columnVisibilityModel={{}}
-        processRowUpdate={processRowUpdate}
-        onProcessRowUpdateError={(error) => console.error("Error processing row update:", error)}
-        onRowDoubleClick={undefined}
-        initialState={{
-          pagination: {
-            paginationModel: { page: 0, pageSize: 50 },
-          },
-          sorting: {
-            sortModel: [{ field: 'modelName', sort: 'asc' }],
-          },
-          columns: {
-            columnVisibilityModel: {},
-          }
-        }}
-        pageSizeOptions={[10, 20, 50, 100]}
-        checkboxSelection
-        disableRowSelectionOnClick={true}
-        onRowClick={(params, event) => {
-          // Don't trigger row selection when clicking on checkboxes or action cells
-          const target = event.target as HTMLElement;
-          if (target.closest('.MuiDataGrid-checkboxInput') || 
-              target.closest('.MuiDataGrid-actionsCell')) {
-            return;
-          }
-          
-          // Don't select row when clicking on editable cells
-          const cellElement = target.closest('.MuiDataGrid-cell');
-          if (cellElement) {
-            const field = cellElement.getAttribute('data-field');
-            if (field && field !== 'actions' && field !== 'modelNumber' && field !== 'isEbike' && field !== 'imageUrl') {
-              event.defaultMuiPrevented = true;
+    <ErrorBoundary>
+      <Box sx={{ width: '100%', height: '100%' }}>
+        <DataGrid
+          rows={bikes}
+          columns={columns}
+          loading={loading}
+          editMode="cell"
+          cellModesModel={cellModesModel}
+          onCellModesModelChange={handleCellModesModelChange}
+          onCellEditStart={handleCellEditStart}
+          onCellEditStop={handleCellEditStop}
+          onCellClick={handleCellClick}
+          onColumnResize={handleColumnResize}
+          columnVisibilityModel={{}}
+          processRowUpdate={processRowUpdate}
+          onProcessRowUpdateError={(error) => console.error("Error processing row update:", error)}
+          onRowDoubleClick={undefined}
+          initialState={{
+            pagination: {
+              paginationModel: { page: 0, pageSize: 50 },
+            },
+            sorting: {
+              sortModel: [{ field: 'modelName', sort: 'asc' }],
+            },
+            columns: {
+              columnVisibilityModel: {},
             }
-          }
-        }}
-        isCellEditable={(params) => {
-          return params.field !== 'actions' && params.field !== 'modelNumber' && params.field !== 'isEbike' && params.field !== 'imageUrl';
-        }}
-        getCellClassName={(params) => {
-          // Apply yellow background to modified cells
-          if (isCellModified(params.id.toString(), params.field)) {
-            return 'modified-cell';
-          }
-          return '';
-        }}
-        sx={{
-          '.modified-cell': {
-            backgroundColor: 'rgba(255, 217, 102, 0.2)', // Light yellow
-          },
-          '& .MuiDataGrid-cell:focus, & .MuiDataGrid-cell:focus-within': {
-            outline: 'none',
-          },
-        }}
-        slots={{
-          toolbar: GridToolbar,
-        }}
-        slotProps={{
-          toolbar: {
-            showQuickFilter: true,
-          },
-        }}
-        apiRef={apiRef}
-      />
+          }}
+          pageSizeOptions={[10, 20, 50, 100]}
+          checkboxSelection
+          disableRowSelectionOnClick={true}
+          onRowClick={(params, event) => {
+            // Don't trigger row selection when clicking on checkboxes or action cells
+            const target = event.target as HTMLElement;
+            if (target.closest('.MuiDataGrid-checkboxInput') || 
+                target.closest('.MuiDataGrid-actionsCell')) {
+              return;
+            }
+            
+            // Don't select row when clicking on editable cells
+            const cellElement = target.closest('.MuiDataGrid-cell');
+            if (cellElement) {
+              const field = cellElement.getAttribute('data-field');
+              if (field && field !== 'actions' && field !== 'modelNumber' && field !== 'isEbike' && field !== 'imageUrl') {
+                event.defaultMuiPrevented = true;
+              }
+            }
+          }}
+          isCellEditable={(params) => {
+            return params.field !== 'actions' && params.field !== 'modelNumber' && params.field !== 'isEbike' && params.field !== 'imageUrl';
+          }}
+          getCellClassName={(params) => {
+            // Apply yellow background to modified cells
+            if (isCellModified(params.id.toString(), params.field)) {
+              return 'modified-cell';
+            }
+            return '';
+          }}
+          sx={{
+            '.modified-cell': {
+              backgroundColor: 'rgba(255, 217, 102, 0.2)', // Light yellow
+            },
+            '& .MuiDataGrid-cell:focus, & .MuiDataGrid-cell:focus-within': {
+              outline: 'none',
+            },
+          }}
+          slots={{
+            toolbar: GridToolbar,
+          }}
+          slotProps={{
+            toolbar: {
+              showQuickFilter: true,
+            },
+          }}
+          apiRef={apiRef}
+        />
 
-      <ImageViewerModal
-        open={imageViewerOpen}
-        onClose={() => setImageViewerOpen(false)}
-        imageNumber={selectedImage}
-        modelName={selectedBike?.modelName || ''}
-        productLink={selectedBike?.link}
-      />
+        <ImageViewerModal
+          open={imageViewerOpen}
+          onClose={() => setImageViewerOpen(false)}
+          imageNumber={selectedImage}
+          modelName={selectedBike?.modelName || ''}
+          productLink={selectedBike?.link}
+        />
 
-      <Snackbar 
-        open={snackbar.open} 
-        autoHideDuration={5000} 
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-      >
-        <Alert 
-          onClose={handleCloseSnackbar} 
-          severity={snackbar.severity}
-          sx={{ width: '100%' }}
+        <Snackbar 
+          open={snackbar.open} 
+          autoHideDuration={5000} 
+          onClose={handleCloseSnackbar}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
-    </Box>
+          <Alert 
+            onClose={handleCloseSnackbar} 
+            severity={snackbar.severity}
+            sx={{ width: '100%' }}
+          >
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
+      </Box>
+    </ErrorBoundary>
   );
 } 
