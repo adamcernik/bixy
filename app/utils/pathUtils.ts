@@ -6,19 +6,14 @@
  * In development, this will be an empty string
  */
 export const getBasePath = (): string => {
-  // When rendered on the client
+  // Only use /bixy for GitHub Pages
   if (typeof window !== 'undefined') {
-    // Check if we're on GitHub Pages by URL
     const isGitHubPages = window.location.hostname.includes('github.io');
-    const basePath = isGitHubPages ? '/bixy' : '';
-    console.debug(`[getBasePath] Using base path: "${basePath}" (isGitHubPages: ${isGitHubPages})`);
-    return basePath;
+    return isGitHubPages ? '/bixy' : '';
   }
-  
-  // When rendered on the server
-  const basePath = process.env.NODE_ENV === 'production' ? '/bixy' : '';
-  console.debug(`[getBasePath] Using base path: "${basePath}" (server side, NODE_ENV: ${process.env.NODE_ENV})`);
-  return basePath;
+  // On the server, check for GitHub Actions or similar
+  if (process.env.GITHUB_PAGES === 'true') return '/bixy';
+  return '';
 };
 
 /**
