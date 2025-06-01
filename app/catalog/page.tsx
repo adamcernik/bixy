@@ -51,7 +51,6 @@ export default function CatalogPage() {
   const [sortBy, setSortBy] = useState('price-desc');
   const [showOnlyEbikes, setShowOnlyEbikes] = useState(true);
   const [selectedBattery, setSelectedBattery] = useState<string>('');
-  const [showFilters, setShowFilters] = useState(false);
   const { userData } = useAuth();
   const isAdmin = userData?.isAdmin;
 
@@ -156,24 +155,7 @@ export default function CatalogPage() {
       
       {/* Filters and Search */}
       <div className="bg-white p-4 rounded-lg shadow-sm mb-8">
-        {/* Mobile Filter Toggle Button */}
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className="md:hidden w-full flex items-center justify-between px-4 py-2 border rounded-md mb-4 bg-gray-50 hover:bg-gray-100"
-        >
-          <span className="font-medium">Filters</span>
-          <svg
-            className={`w-5 h-5 transform transition-transform ${showFilters ? 'rotate-180' : ''}`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-
-        {/* Filters Grid - Hidden on mobile unless showFilters is true */}
-        <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 ${!showFilters ? 'hidden md:grid' : ''}`}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Search */}
           <div>
             <input
