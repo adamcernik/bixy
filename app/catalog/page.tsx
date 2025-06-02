@@ -291,6 +291,11 @@ export default function CatalogPage() {
                         {firstBike.battery}
                       </span>
                     )}
+                    {firstBike.frameMaterial?.toLowerCase() === 'carbon' && (
+                      <span className="bg-gray-800 text-white px-2 py-1 rounded text-xs font-semibold">
+                        Carbon
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="p-4">
