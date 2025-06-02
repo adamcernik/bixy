@@ -156,7 +156,7 @@ export default function StockPage() {
   const handleSave = async (bike: Bike) => {
     try {
       if (bike.id) {
-        await updateBike(bike);
+        await updateBike(bike.id, bike);
       } else {
         await addBike(bike);
       }
