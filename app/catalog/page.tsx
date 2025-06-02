@@ -10,6 +10,25 @@ import { useAuth } from '../context/AuthContext';
 // Available categories for filtering
 const categories = ['MTB', 'Road', 'Gravel', 'City', 'Trekking', 'Kids', 'Other'];
 
+// Height range options
+const heightRanges = [
+  { value: '', label: 'All Heights' },
+  { value: '150-165', label: '150-165 cm' },
+  { value: '165-175', label: '165-175 cm' },
+  { value: '175-185', label: '175-185 cm' },
+  { value: '185-195', label: '185-195 cm' },
+  { value: '195+', label: '195+ cm' }
+];
+
+// Size to height range mapping
+const sizeToHeightRange: Record<string, string[]> = {
+  '150-165': ['XS', 'S'],
+  '165-175': ['S', 'M'],
+  '175-185': ['M', 'L'],
+  '185-195': ['L', 'XL'],
+  '195+': ['XL', 'XXL']
+};
+
 // Sort options
 const sortOptions = [
   { value: 'price-asc', label: 'Price: Low to High' },
@@ -48,6 +67,7 @@ export default function CatalogPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedHeightRange, setSelectedHeightRange] = useState<string>('');
   const [sortBy, setSortBy] = useState('price-desc');
   const [showOnlyEbikes, setShowOnlyEbikes] = useState(true);
   const [selectedBattery, setSelectedBattery] = useState<string>('');
@@ -93,15 +113,23 @@ export default function CatalogPage() {
         bike.modelName.toLowerCase().includes(searchLower) ||
         bike.manufacturer.toLowerCase().includes(searchLower) ||
         bike.modelNumber.toLowerCase().includes(searchLower);
+      
       // Category filter
       const matchesCategory = !selectedCategory || bike.category === selectedCategory;
+      
       // Battery filter
       const matchesBattery = !selectedBattery || bike.battery === selectedBattery;
+      
       // E-bike filter
       const matchesEbike = !showOnlyEbikes || bike.isEbike;
-      return matchesSearch && matchesCategory && matchesBattery && matchesEbike;
+
+      // Height range filter
+      const matchesHeight = !selectedHeightRange || 
+        (bike.size && sizeToHeightRange[selectedHeightRange]?.includes(bike.size));
+
+      return matchesSearch && matchesCategory && matchesBattery && matchesEbike && matchesHeight;
     });
-  }, [bikes, searchQuery, selectedCategory, selectedBattery, showOnlyEbikes]);
+  }, [bikes, searchQuery, selectedCategory, selectedBattery, showOnlyEbikes, selectedHeightRange]);
 
   // Group filtered bikes by model prefix
   const groupedBikes = useMemo(() => groupBikesByModel(filteredBikes), [filteredBikes]);
@@ -177,6 +205,19 @@ export default function CatalogPage() {
               <option value="">All Categories</option>
               {categories.map(category => (
                 <option key={category} value={category}>{category}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Height Range Filter */}
+          <div>
+            <select
+              value={selectedHeightRange}
+              onChange={(e) => setSelectedHeightRange(e.target.value)}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {heightRanges.map(range => (
+                <option key={range.value} value={range.value}>{range.label}</option>
               ))}
             </select>
           </div>
