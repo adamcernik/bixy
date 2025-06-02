@@ -22,6 +22,14 @@ export function middleware(request: NextRequest) {
     }
   }
 
+  // Get the pathname of the request
+  const path = request.nextUrl.pathname;
+
+  // If the path is /catalog, redirect to the homepage
+  if (path === '/catalog') {
+    return NextResponse.redirect(new URL('/', request.url));
+  }
+
   return NextResponse.next();
 }
 
