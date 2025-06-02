@@ -38,9 +38,6 @@ const AddBikeModal = dynamic(() => import('../components/AddBikeModal'), {
   ssr: false
 });
 
-// Dynamically import the DataGrid component
-const DataGrid = dynamic(() => import('../components/DataGrid'), { ssr: false });
-
 export default function StockPage() {
   const [error, setError] = useState<Error | null>(null);
   const [activeTab, setActiveTab] = useState<number>(0);
@@ -320,10 +317,10 @@ export default function StockPage() {
         <div>
           {showBikeGrid && (
             <div className="h-[calc(100vh-100px)]">
-              <DataGrid
-                bikes={bikes}
-                onSave={handleSave}
-                onDelete={handleDelete}
+              <BikeDataGrid 
+                openAddDialog={false} 
+                setOpenAddDialog={setOpenAddDialog} 
+                onEditBike={handleEditBike}
               />
             </div>
           )}
