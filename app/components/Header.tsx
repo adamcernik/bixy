@@ -27,9 +27,6 @@ export default function Header() {
             <Link href="/contact" className="text-gray-600 hover:text-gray-900">
               Contact
             </Link>
-            <Link href="/stock" className="text-gray-600 hover:text-gray-900">
-              Stock Management
-            </Link>
           </nav>
         </div>
       </div>
