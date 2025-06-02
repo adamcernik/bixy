@@ -103,7 +103,7 @@ export default function StockPage() {
   }, []);
 
   useEffect(() => {
-    if (!userData?.isAdmin) {
+    if (!user || (user && !hasAccess)) {
       router.push('/');
       return;
     }
@@ -120,7 +120,7 @@ export default function StockPage() {
     };
 
     fetchBikes();
-  }, [userData, router]);
+  }, [user, hasAccess, router]);
 
   // Function to handle Add New Bike button click
   const handleAddNewBike = () => {
