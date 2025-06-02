@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next/types";
 
 export const metadata: Metadata = {
-  title: "Bixy Stock Management",
+  title: "Adam Bikes Stock Management",
   description: "Inventory management system for Bulls bikes",
   manifest: "/site.webmanifest",
   icons: {

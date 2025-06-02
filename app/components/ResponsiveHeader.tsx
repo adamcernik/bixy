@@ -105,13 +105,13 @@ export default function ResponsiveHeader({
       <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
         <img 
           src={getAssetPath('/bixy-logo-black.svg')}
-          alt="Bixy Logo" 
+          alt="Adam Bikes Logo" 
           width={40} 
           height={32}
           style={{ objectFit: 'contain' }}
         />
         <Typography variant="h6" component="div">
-          Bixy Stock
+          Adam Bikes Stock
         </Typography>
       </Box>
       <Divider />
@@ -155,7 +155,7 @@ export default function ResponsiveHeader({
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <img 
             src={getAssetPath('/bixy-logo-black.svg')}
-            alt="Bixy Logo" 
+            alt="Adam Bikes Logo" 
             width={40} 
             height={32}
             style={{ objectFit: 'contain' }}
@@ -168,7 +168,7 @@ export default function ResponsiveHeader({
               display: { xs: 'none', sm: 'block' } 
             }}
           >
-            Bixy Stock
+            Adam Bikes Stock
           </Typography>
         </Box>
 

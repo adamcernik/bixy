@@ -33,7 +33,7 @@ export default function AboutPage() {
             >
               <img
                 src={getAssetPath('/bixy-logo.svg')}
-                alt="Bixy Logo"
+                alt="Adam Bikes Logo"
                 style={{
                   width: '100%',
                   height: '100%',
@@ -58,7 +58,7 @@ export default function AboutPage() {
               nothing makes me happier than connecting people with their ideal bicycles.
             </Typography>
             <Typography paragraph>
-              I founded Bixy with a simple mission: to make the process of finding, comparing, and choosing bikes more transparent, 
+              I founded Adam Bikes with a simple mission: to make the process of finding, comparing, and choosing bikes more transparent, 
               enjoyable, and rewarding. When I see the smile on someone's face as they ride away on a bike that perfectly suits them, 
               I know I've made a positive difference.
             </Typography>

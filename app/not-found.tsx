@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Page Not Found - Bixy Stock Management",
+  title: "Page Not Found - Adam Bikes Stock Management",
   description: "This page could not be found",
 };
 

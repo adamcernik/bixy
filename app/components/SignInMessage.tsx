@@ -31,7 +31,7 @@ export default function SignInMessage() {
         <GoogleIcon sx={{ fontSize: 48, color: '#4285F4', mb: 2 }} />
         
         <Typography variant="h5" component="h1" sx={{ mb: 2, fontWeight: 'bold' }}>
-          Welcome to Bixy Stock Management
+          Welcome to Adam Bikes Stock Management
         </Typography>
         
         <Typography variant="body1" align="center" sx={{ mb: 3 }}>
