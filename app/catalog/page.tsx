@@ -184,7 +184,6 @@ export default function CatalogPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Height Range Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Choose your height</label>
             <select
               value={selectedHeightRange}
               onChange={(e) => setSelectedHeightRange(e.target.value)}
