@@ -14,19 +14,21 @@ const categories = ['MTB', 'Road', 'Gravel', 'City', 'Trekking', 'Kids', 'Other'
 const heightRanges = [
   { value: '', label: 'All Heights' },
   { value: '150-165', label: '150-165 cm' },
-  { value: '165-175', label: '165-175 cm' },
-  { value: '175-185', label: '175-185 cm' },
-  { value: '185-195', label: '185-195 cm' },
-  { value: '195+', label: '195+ cm' }
+  { value: '160-175', label: '160-175 cm' },
+  { value: '170-185', label: '170-185 cm' },
+  { value: '180-195', label: '180-195 cm' },
+  { value: '190-205', label: '190-205 cm' },
+  { value: '200-210', label: '200-210 cm' }
 ];
 
 // Size to height range mapping
 const sizeToHeightRange: Record<string, string[]> = {
-  '150-165': ['XS', 'S'],
-  '165-175': ['S', 'M'],
-  '175-185': ['M', 'L'],
-  '185-195': ['L', 'XL'],
-  '195+': ['XL', 'XXL']
+  '150-165': ['33', '34', '35', '36', '37'],
+  '160-175': ['38', '39', '40', '41', '42', '43'],
+  '170-185': ['43', '44', '45', '46', '47'],
+  '180-195': ['47', '48', '49', '50', '51', '52'],
+  '190-205': ['51', '52', '53', '54', '55', '56'],
+  '200-210': ['53', '54', '55', '56', '57', '58', '59', '60']
 };
 
 // Sort options
@@ -125,7 +127,11 @@ export default function CatalogPage() {
 
       // Height range filter
       const matchesHeight = !selectedHeightRange || 
-        (bike.size && sizeToHeightRange[selectedHeightRange]?.includes(bike.size));
+        (bike.size && sizeToHeightRange[selectedHeightRange]?.some(size => {
+          const bikeSize = parseInt(bike.size);
+          const rangeSize = parseInt(size);
+          return !isNaN(bikeSize) && !isNaN(rangeSize) && bikeSize === rangeSize;
+        }));
 
       return matchesSearch && matchesCategory && matchesBattery && matchesEbike && matchesHeight;
     });
