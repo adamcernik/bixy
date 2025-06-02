@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import ConnectionIndicator from '../components/ConnectionIndicator';
 import UserAvatar from '../components/UserAvatar';
@@ -10,10 +10,11 @@ import ResponsiveHeader from '../components/ResponsiveHeader';
 import { Box, Tabs, Tab, Button, IconButton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import PeopleIcon from '@mui/icons-material/People';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '../context/AuthContext';
 import { getAssetPath } from '../utils/pathUtils';
 import { Bike } from '../models/Bike';
+import { getBikes, addBike, updateBike, deleteBike } from '../services/bikeService';
 
 // Dynamically import the BikeDataGrid component to avoid server-side rendering issues with Firebase
 const BikeDataGrid = dynamic(() => import('../components/BikeDataGrid'), {
@@ -37,6 +38,9 @@ const AddBikeModal = dynamic(() => import('../components/AddBikeModal'), {
   ssr: false
 });
 
+// Dynamically import the DataGrid component
+const DataGrid = dynamic(() => import('../components/DataGrid'), { ssr: false });
+
 export default function StockPage() {
   const [error, setError] = useState<Error | null>(null);
   const [activeTab, setActiveTab] = useState<number>(0);
@@ -46,13 +50,17 @@ export default function StockPage() {
   const [openUserManagement, setOpenUserManagement] = useState(false);
   const [dbConnected, setDbConnected] = useState(false);
   const [editingBike, setEditingBike] = useState<Bike | undefined>(undefined);
+  const [bikes, setBikes] = useState<Bike[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const { user, userData, loading } = useAuth();
+  const { user, userData, loading: authLoading } = useAuth();
   const hasAccess = userData?.hasAccess || userData?.isAdmin;
   const isAdmin = userData?.isAdmin;
 
   const pathname = usePathname();
   const basePath = process.env.NODE_ENV === 'production' ? '/bixy' : '';
+  const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleTabChange = (index: number) => {
     setActiveTab(index);
@@ -97,6 +105,26 @@ export default function StockPage() {
     return () => window.removeEventListener('error', handleGlobalError);
   }, []);
 
+  useEffect(() => {
+    if (!userData?.isAdmin) {
+      router.push('/');
+      return;
+    }
+
+    const fetchBikes = async () => {
+      try {
+        const bikesData = await getBikes();
+        setBikes(bikesData);
+      } catch (error) {
+        console.error('Error fetching bikes:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBikes();
+  }, [userData, router]);
+
   // Function to handle Add New Bike button click
   const handleAddNewBike = () => {
     setEditingBike(undefined); // Clear any editing bike
@@ -128,7 +156,45 @@ export default function StockPage() {
     setOpenUserManagement(false);
   };
 
-  if (loading) {
+  const handleSave = async (bike: Bike) => {
+    try {
+      if (bike.id) {
+        await updateBike(bike);
+      } else {
+        await addBike(bike);
+      }
+      const updatedBikes = await getBikes();
+      setBikes(updatedBikes);
+    } catch (error) {
+      console.error('Error saving bike:', error);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteBike(id);
+      setBikes(bikes.filter(bike => bike.id !== id));
+    } catch (error) {
+      console.error('Error deleting bike:', error);
+    }
+  };
+
+  const handleExport = () => {
+    // Implementation for exporting to Excel
+  };
+
+  const handleImport = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Implementation for importing from Excel
+    }
+  };
+
+  if (authLoading) {
     return (
       <main className="flex min-h-screen flex-col">
         <div className="w-full flex justify-center items-center h-screen">
@@ -200,6 +266,14 @@ export default function StockPage() {
     );
   }
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
   return (
     <main className="flex min-h-screen flex-col bg-white">
       <ResponsiveHeader 
@@ -211,14 +285,45 @@ export default function StockPage() {
       />
       
       <div className="w-full p-4">
+        <div className="mb-4 flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={handleAddNewBike}
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+            >
+              Add New Bike
+            </button>
+            <button
+              onClick={handleExport}
+              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors"
+            >
+              Export to Excel
+            </button>
+          </div>
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={handleImport}
+              className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition-colors"
+            >
+              Import from Excel
+            </button>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept=".xlsx"
+              className="hidden"
+            />
+          </div>
+        </div>
         {/* Content area */}
         <div>
           {showBikeGrid && (
             <div className="h-[calc(100vh-100px)]">
-              <BikeDataGrid 
-                openAddDialog={false} 
-                setOpenAddDialog={setOpenAddDialog} 
-                onEditBike={handleEditBike}
+              <DataGrid
+                bikes={bikes}
+                onSave={handleSave}
+                onDelete={handleDelete}
               />
             </div>
           )}

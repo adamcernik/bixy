@@ -5,7 +5,7 @@ import { getAssetPath } from '../utils/pathUtils';
 
 export default function Header() {
   return (
-    <header className="bg-white shadow-sm">
+    <header className="bg-white shadow-sm pt-4">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <div className="flex-shrink-0">
@@ -13,7 +13,7 @@ export default function Header() {
               <img 
                 src={getAssetPath('/adam-bikes-electric-cycling-logo.svg')}
                 alt="Adam Bikes Logo"
-                className="h-12 w-auto"
+                className="w-32 h-auto"
               />
             </Link>
           </div>

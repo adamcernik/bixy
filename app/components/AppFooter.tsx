@@ -1,56 +1,41 @@
 'use client';
-import { Box, Typography, Link } from '@mui/material';
-import ConnectionIndicator, { useDbStatus } from './ConnectionIndicator';
+
+import { usePathname } from 'next/navigation';
 
 export default function AppFooter() {
-  const { status } = useDbStatus();
-  let statusText = 'Checking...';
-  let statusColor = '#888';
-  if (status === 'connected') {
-    statusText = 'Database: Connected';
-    statusColor = '#22c55e';
-  } else if (status === 'error') {
-    statusText = 'Database: Error';
-    statusColor = '#ef4444';
+  const pathname = usePathname();
+  const isAdminPage = pathname === '/stock';
+
+  if (!isAdminPage) {
+    return (
+      <footer className="bg-white border-t mt-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center text-gray-500 text-sm">
+            © {new Date().getFullYear()} Adam Bikes. All rights reserved.
+          </div>
+        </div>
+      </footer>
+    );
   }
 
-  const version = process.env.NEXT_PUBLIC_VERSION;
-  const commit = process.env.NEXT_PUBLIC_COMMIT;
-  const buildDate = process.env.NEXT_PUBLIC_BUILD_DATE;
-
   return (
-    <Box
-      sx={{
-        position: 'fixed',
-        left: 0,
-        bottom: 0,
-        width: '100%',
-        height: 30,
-        bgcolor: '#f8fafc',
-        borderTop: '1px solid #e5e7eb',
-        display: 'flex',
-        alignItems: 'center',
-        px: 2,
-        zIndex: 1300,
-        fontSize: 14,
-        color: '#222',
-        justifyContent: 'space-between',
-        minHeight: 30,
-        maxHeight: 30,
-      }}
-    >
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <ConnectionIndicator />
-        <Typography variant="body2" sx={{ color: statusColor, fontWeight: 500, ml: 1 }}>
-          {statusText}
-        </Typography>
-      </Box>
-      <Typography variant="body2" sx={{ color: '#666', fontSize: 13, textAlign: 'center', flex: 1 }}>
-        v{version} | {commit} | {buildDate}
-      </Typography>
-      <Typography variant="body2" sx={{ color: '#666', fontSize: 13 }}>
-        Admin: <Link href="mailto:adam.cernik@gmail.com" sx={{ color: '#4285F4', textDecoration: 'none' }}>adam.cernik@gmail.com</Link>
-      </Typography>
-    </Box>
+    <footer className="bg-white border-t mt-auto">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="text-center text-gray-500 text-sm">
+          <div>© {new Date().getFullYear()} Adam Bikes. All rights reserved.</div>
+          <div className="mt-2">
+            <a href="mailto:adam@adambikes.cz" className="text-blue-600 hover:text-blue-800">
+              adam@adambikes.cz
+            </a>
+          </div>
+          <div className="mt-2">
+            Database: {process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL}
+          </div>
+          <div className="mt-1">
+            Version: {process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0'}
+          </div>
+        </div>
+      </div>
+    </footer>
   );
 } 
