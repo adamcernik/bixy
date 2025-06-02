@@ -103,7 +103,11 @@ export default function StockPage() {
   }, []);
 
   useEffect(() => {
-    if (!user || (user && !hasAccess)) {
+    if (!user) {
+      return; // Don't redirect if not signed in, let the user see the sign-in screen
+    }
+
+    if (user && !hasAccess) {
       router.push('/');
       return;
     }
