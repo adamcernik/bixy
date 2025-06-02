@@ -201,6 +201,16 @@ export default function BikeDetailPage() {
           >
             Back to Catalog
           </button>
+          {bike.link && (
+            <a
+              href={bike.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 ml-4 px-6 py-3 bg-transparent border border-blue-600 text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-colors duration-300"
+            >
+              Product Description
+            </a>
+          )}
         </div>
       </div>
       
