@@ -86,14 +86,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Current Sale Section */}
-      <section className="max-w-3xl mx-auto px-4 py-10 text-center">
-        <h2 className="text-2xl md:text-3xl font-bold mb-4 text-blue-800">Current Sale - Don't Miss Out!</h2>
-        <p className="text-lg md:text-xl mb-4 text-gray-800">Take advantage of our special pricing on premium ebikes. These aren't just great bikes - they're great bikes at exceptional prices.</p>
-        <p className="text-md md:text-lg mb-6 text-gray-700">Ready to ride electric? Browse our selection or contact me directly for personalized recommendations based on your specific needs.</p>
-        <p className="text-lg font-semibold text-gray-900">Your perfect ebike adventure starts here.</p>
-      </section>
-
       {/* Promoted Bikes Section */}
       <section className="max-w-6xl mx-auto px-4 py-12">
         <h2 className="text-3xl font-bold mb-8 text-center">Featured Bikes</h2>
