@@ -70,22 +70,6 @@ export default function HomePage() {
         </p>
       </section>
 
-      {/* Why Choose Us Section */}
-      <section className="max-w-4xl mx-auto px-4 py-8 grid md:grid-cols-3 gap-8 text-center">
-        <div className="bg-white rounded-lg shadow p-6 flex flex-col items-center">
-          <h3 className="text-xl font-bold mb-2 text-blue-700">Expertise You Can Trust</h3>
-          <p className="text-gray-700">With many years of hands-on experience in the cycling industry, I've helped countless customers choose the right bike for their needs. I understand that every rider is unique, and I'm passionate about matching you with an ebike that fits your lifestyle, budget, and riding goals.</p>
-        </div>
-        <div className="bg-white rounded-lg shadow p-6 flex flex-col items-center">
-          <h3 className="text-xl font-bold mb-2 text-blue-700">Bulls Brand Specialists</h3>
-          <p className="text-gray-700">As a specialist in Bulls ebikes, I have deep knowledge of their entire range - from urban commuters to rugged mountain bikes. Bulls has earned a reputation for quality, innovation, and reliability, and I can guide you to the perfect Bulls model for your adventures.</p>
-        </div>
-        <div className="bg-white rounded-lg shadow p-6 flex flex-col items-center">
-          <h3 className="text-xl font-bold mb-2 text-blue-700">Complete Service & Support</h3>
-          <p className="text-gray-700">Beyond sales, I'm equipped with professional-grade tools and equipment to keep your ebike running smoothly for years to come. From routine maintenance to complex repairs, you can count on expert service that keeps you riding with confidence.</p>
-        </div>
-      </section>
-
       {/* Promoted Bikes Section */}
       <section className="max-w-6xl mx-auto px-4 py-12">
         <h2 className="text-3xl font-bold mb-8 text-center">Featured Bikes</h2>
