@@ -115,7 +115,13 @@ export default function HomePage() {
                 />
                 <h3 className="text-xl font-semibold mb-2 text-center">{bike.modelName}</h3>
                 <p className="text-gray-600 mb-2 text-center">{bike.manufacturer}</p>
-                <p className="text-gray-800 font-bold mb-4 text-center">{bike.priceRetail ? `${bike.priceRetail} Kč` : 'Contact for price'}</p>
+                <p className="text-gray-800 font-bold mb-4 text-center">{
+                  typeof bike.priceAction === 'number' && bike.priceAction > 0
+                    ? `${bike.priceAction} Kč`
+                    : (typeof bike.priceRetail === 'number' && bike.priceRetail > 0
+                        ? `${bike.priceRetail} Kč`
+                        : 'Contact for price')
+                }</p>
                 <Link href={`/catalog/${bike.id}`} className="text-blue-600 hover:underline font-semibold">
                   View Details
                 </Link>
