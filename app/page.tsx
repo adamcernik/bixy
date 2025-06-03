@@ -51,7 +51,7 @@ export default function HomePage() {
           className="absolute inset-0 w-full h-full object-cover object-center opacity-60"
         />
         {/* Dark overlay */}
-        <div className="absolute inset-0 bg-black bg-opacity-30 z-10" />
+        <div className="absolute inset-0 z-10" style={{ background: 'rgba(0,0,0,0.3)' }} />
         <div className="relative z-20 text-center px-4">
           <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">Find Your Perfect Ebike - Now on Sale!</h1>
           <p className="text-lg md:text-2xl mb-6 text-white drop-shadow">Limited Time: Special Pricing on Premium Ebikes</p>
