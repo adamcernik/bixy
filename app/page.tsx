@@ -46,7 +46,7 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="relative w-full h-[400px] md:h-[500px] flex items-center justify-center bg-gray-100 overflow-hidden">
         <img
-          src={getAssetPath('/images/ebike-mtb-hero.jpeg')}
+          src={getAssetPath('/images/ebike-mtb-hero.jpg')}
           alt="Hero"
           className="absolute inset-0 w-full h-full object-cover object-center opacity-60"
         />
