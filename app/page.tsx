@@ -50,9 +50,11 @@ export default function HomePage() {
           alt="Hero"
           className="absolute inset-0 w-full h-full object-cover object-center opacity-60"
         />
-        <div className="relative z-10 text-center px-4">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-gray-900 drop-shadow-lg">Find Your Perfect Ebike - Now on Sale!</h1>
-          <p className="text-lg md:text-2xl mb-6 text-gray-700 drop-shadow">Limited Time: Special Pricing on Premium Ebikes</p>
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-black bg-opacity-60 z-10" />
+        <div className="relative z-20 text-center px-4">
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">Find Your Perfect Ebike - Now on Sale!</h1>
+          <p className="text-lg md:text-2xl mb-6 text-white drop-shadow">Limited Time: Special Pricing on Premium Ebikes</p>
           <Link href="/catalog">
             <button className="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold shadow hover:bg-blue-700 transition-colors">
               Show Me The Bikes
