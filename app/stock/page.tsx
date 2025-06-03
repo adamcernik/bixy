@@ -201,7 +201,7 @@ export default function StockPage() {
         <div className="w-full flex justify-center items-center h-screen">
           <div className="text-center">
             <img 
-              src={getAssetPath('/adam-bikes-electric-cycling-logo.svg')}
+              src={getAssetPath('/images/adam-bikes-electric-cycling-logo.svg')}
               alt="Adam Bikes Logo" 
               width={80} 
               height={64}
@@ -244,7 +244,7 @@ export default function StockPage() {
           <div className="flex items-center mb-4">
             <div className="flex items-center flex-grow">
               <img 
-                src={getAssetPath('/adam-bikes-electric-cycling-logo.svg')}
+                src={getAssetPath('/images/adam-bikes-electric-cycling-logo.svg')}
                 alt="Adam Bikes Logo" 
                 width={80} 
                 height={64}

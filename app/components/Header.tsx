@@ -10,10 +10,12 @@ export default function Header() {
         <div className="flex justify-between h-16 items-center">
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center">
-              <img 
-                src={getAssetPath('/adam-bikes-electric-cycling-logo.svg')}
+              <img
+                src={getAssetPath('/images/adam-bikes-electric-cycling-logo.svg')}
                 alt="Adam Bikes Logo"
-                className="w-32 h-auto"
+                width={128}
+                height={64}
+                style={{ objectFit: 'contain' }}
               />
             </Link>
           </div>
