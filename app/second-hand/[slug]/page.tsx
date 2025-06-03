@@ -61,13 +61,13 @@ export default function SecondHandDetailPage() {
               alt={bike.name}
               className="w-full max-w-xl rounded-lg object-cover max-h-[500px] mb-4"
             />
-            <div className="flex flex-row flex-wrap gap-2 justify-center w-full max-w-xl">
+            <div className="grid grid-cols-4 gap-2 w-full max-w-xl mt-2">
               {[bike.mainImage, ...bike.gallery].map((img, idx) => (
-                <div key={img} className="relative aspect-video w-32">
+                <div key={img} className="relative aspect-video">
                   <img
                     src={img}
                     alt={`Gallery image ${idx + 1}`}
-                    className={`absolute top-0 left-0 w-full h-full object-cover rounded cursor-pointer border border-gray-200 hover:border-blue-500 ${mainImg === img ? 'ring-2 ring-blue-500' : ''}`}
+                    className={`w-full h-16 object-cover rounded cursor-pointer border border-gray-200 hover:border-blue-500 ${mainImg === img ? 'ring-2 ring-blue-500' : ''}`}
                     onClick={() => setMainImg(img)}
                   />
                 </div>
