@@ -136,7 +136,7 @@ export default function BikeDetailPage() {
                 <span className="text-gray-900 font-medium">{groupedBikes.length > 1 ? 'more' : (bike.size || '-')}</span>
                 <button 
                   onClick={handleOpenSizeGuide}
-                  className="ml-2 text-xs text-blue-600 hover:text-blue-800 hover:underline"
+                  className="ml-2 text-xs text-blue-600 hover:text-blue-800 hover:underline text-sm font-semibold mb-2 cursor-pointer select-none"
                 >
                   Size guide
                 </button>

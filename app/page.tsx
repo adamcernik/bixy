@@ -56,7 +56,7 @@ export default function HomePage() {
           <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">Find Your Perfect Ebike - Now on Sale!</h1>
           <p className="text-lg md:text-2xl mb-6 text-white drop-shadow">Limited Time: Special Pricing on Premium Ebikes</p>
           <Link href="/catalog">
-            <button className="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold shadow hover:bg-blue-700 transition-colors">
+            <button className="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold shadow hover:bg-blue-700 transition-colors cursor-pointer select-none">
               Show Me The Bikes
             </button>
           </Link>
