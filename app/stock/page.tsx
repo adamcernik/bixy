@@ -41,12 +41,8 @@ const AddBikeModal = dynamic(() => import('../components/AddBikeModal'), {
 
 export default function StockPage() {
   const [error, setError] = useState<Error | null>(null);
-  const [activeTab, setActiveTab] = useState<number>(0);
-  const [showBikeGrid, setShowBikeGrid] = useState(true);
-  const [showCsvImporter, setShowCsvImporter] = useState(false);
+  const [activeSection, setActiveSection] = useState<string>('inventory');
   const [openAddDialog, setOpenAddDialog] = useState(false);
-  const [openUserManagement, setOpenUserManagement] = useState(false);
-  const [dbConnected, setDbConnected] = useState(false);
   const [editingBike, setEditingBike] = useState<Bike | undefined>(undefined);
   const [bikes, setBikes] = useState<Bike[]>([]);
   const [loading, setLoading] = useState(true);
@@ -60,12 +56,6 @@ export default function StockPage() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleTabChange = (index: number) => {
-    setActiveTab(index);
-    setShowBikeGrid(index === 0);
-    setShowCsvImporter(index === 1);
-  };
-
   // Check database connection
   useEffect(() => {
     const checkDbConnection = async () => {
@@ -74,10 +64,8 @@ export default function StockPage() {
         const { db } = await import('../firebase/config');
         const { collection, getDocs } = await import('firebase/firestore');
         await getDocs(collection(db, 'bikes'));
-        setDbConnected(true);
       } catch (err) {
         console.error("Firebase connection error:", err);
-        setDbConnected(false);
       }
     };
 
@@ -140,54 +128,8 @@ export default function StockPage() {
 
   const handleBikeAddSuccess = () => {
     // If we're on the data grid page, refresh it
-    if (showBikeGrid && activeTab === 0) {
+    if (activeSection === 'inventory') {
       // The BikeDataGrid will handle its own refresh when the modal is closed
-    }
-  };
-
-  const handleOpenUserManagement = () => {
-    setOpenUserManagement(true);
-  };
-
-  const handleCloseUserManagement = () => {
-    setOpenUserManagement(false);
-  };
-
-  const handleSave = async (bike: Bike) => {
-    try {
-      if (bike.id) {
-        await updateBike(bike.id, bike);
-      } else {
-        await addBike(bike);
-      }
-      const updatedBikes = await getBikes();
-      setBikes(updatedBikes);
-    } catch (error) {
-      console.error('Error saving bike:', error);
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    try {
-      await deleteBike(id);
-      setBikes(bikes.filter(bike => bike.id !== id));
-    } catch (error) {
-      console.error('Error deleting bike:', error);
-    }
-  };
-
-  const handleExport = () => {
-    // Implementation for exporting to Excel
-  };
-
-  const handleImport = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      // Implementation for importing from Excel
     }
   };
 
@@ -214,11 +156,9 @@ export default function StockPage() {
     return (
       <main className="flex min-h-screen flex-col">
         <ResponsiveHeader 
-          dbConnected={false}
-          onTabChange={handleTabChange}
-          activeTab={activeTab}
+          activeSection={activeSection}
+          setActiveSection={setActiveSection}
           onAddNewBike={handleAddNewBike}
-          onOpenUserManagement={handleOpenUserManagement}
         />
         <div className="p-6">
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
@@ -273,53 +213,38 @@ export default function StockPage() {
 
   return (
     <main className="flex min-h-screen flex-col bg-white">
-      <ResponsiveHeader 
-        dbConnected={dbConnected}
-        onTabChange={handleTabChange}
-        activeTab={activeTab}
+      <ResponsiveHeader
+        activeSection={activeSection}
+        setActiveSection={setActiveSection}
         onAddNewBike={handleAddNewBike}
-        onOpenUserManagement={handleOpenUserManagement}
       />
-      
       <div className="w-full p-4">
-        <Tabs value={activeTab} onChange={(_, idx) => handleTabChange(idx)}>
-          <Tab label="Inventory" />
-          <Tab label="CSV Upload" />
-          <Tab label="Promoted" />
-        </Tabs>
-        <div className="mt-4">
-          {activeTab === 0 && showBikeGrid && (
-            <div className="h-[calc(100vh-100px)]">
-              <BikeDataGrid 
-                openAddDialog={false} 
-                setOpenAddDialog={setOpenAddDialog} 
-                onEditBike={handleEditBike}
-              />
-            </div>
-          )}
-          {activeTab === 1 && showCsvImporter && (
-            <div>
-              <CsvImporter />
-            </div>
-          )}
-          {activeTab === 2 && (
-            <PromotedBikesAdmin bikes={bikes} />
-          )}
-        </div>
+        {activeSection === 'inventory' && (
+          <div className="h-[calc(100vh-100px)]">
+            <BikeDataGrid
+              openAddDialog={false}
+              setOpenAddDialog={setOpenAddDialog}
+              onEditBike={handleEditBike}
+            />
+          </div>
+        )}
+        {activeSection === 'csv' && (
+          <div>
+            <CsvImporter />
+          </div>
+        )}
+        {activeSection === 'promoted' && (
+          <PromotedBikesAdmin bikes={bikes} />
+        )}
+        {activeSection === 'users' && isAdmin && (
+          <UserManagement open={true} onClose={() => {}} />
+        )}
       </div>
-      
-      {/* Global Add Bike Modal */}
-      <AddBikeModal 
-        open={openAddDialog} 
-        onClose={handleCloseAddBikeModal} 
+      <AddBikeModal
+        open={openAddDialog}
+        onClose={handleCloseAddBikeModal}
         onSuccess={handleBikeAddSuccess}
         editBike={editingBike}
-      />
-      
-      {/* User Management Dialog */}
-      <UserManagement 
-        open={openUserManagement} 
-        onClose={handleCloseUserManagement} 
       />
     </main>
   );
