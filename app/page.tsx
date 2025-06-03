@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import { getBikes } from './services/bikeService';
+import { getPromotedBikes } from './services/promotedService';
 import { Bike } from './models/Bike';
 import { getAssetPath } from './utils/pathUtils';
 import Link from 'next/link';
@@ -66,6 +67,7 @@ const getBatteryColor = (battery: string) => {
 
 export default function HomePage() {
   const [bikes, setBikes] = useState<Bike[]>([]);
+  const [promotedModelNumbers, setPromotedModelNumbers] = useState<string[]>(['', '', '']);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedHeightRange, setSelectedHeightRange] = useState<string>('');
@@ -85,19 +87,33 @@ export default function HomePage() {
   }, [bikes]);
 
   useEffect(() => {
-    const fetchBikes = async () => {
-      try {
-        const bikesData = await getBikes();
-        setBikes(bikesData);
-      } catch (error) {
-        console.error('Error fetching bikes:', error);
-      } finally {
-        setLoading(false);
-      }
+    const fetchData = async () => {
+      setLoading(true);
+      const [allBikes, promoted] = await Promise.all([
+        getBikes(),
+        getPromotedBikes()
+      ]);
+      setBikes(allBikes);
+      setPromotedModelNumbers(promoted);
+      setLoading(false);
     };
-
-    fetchBikes();
+    fetchData();
   }, []);
+
+  // Get promoted bikes by model number, fallback to latest bikes
+  const promotedBikes = useMemo(() => {
+    const found = promotedModelNumbers
+      .map((modelNumber) => bikes.find((b) => b.modelNumber === modelNumber))
+      .filter(Boolean) as Bike[];
+    if (found.length < 3) {
+      // Fill with latest bikes (not already in found)
+      const latest = bikes
+        .filter((b) => !found.some((f) => f.modelNumber === b.modelNumber))
+        .slice(0, 3 - found.length);
+      return [...found, ...latest];
+    }
+    return found;
+  }, [bikes, promotedModelNumbers]);
 
   const getImageUrl = (bike: Bike) => {
     // Convert imageUrl to string and use it directly as the filename
@@ -176,193 +192,244 @@ export default function HomePage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Our Bikes</h1>
-      
+    <main className="min-h-screen bg-white">
+      {/* Hero Section */}
+      <section className="relative w-full h-[400px] md:h-[500px] flex items-center justify-center bg-gray-100 overflow-hidden">
+        <img
+          src={getAssetPath('/images/hero-placeholder.jpg')}
+          alt="Hero"
+          className="absolute inset-0 w-full h-full object-cover opacity-60"
+        />
+        <div className="relative z-10 text-center px-4">
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-gray-900 drop-shadow-lg">Headline</h1>
+          <p className="text-lg md:text-2xl mb-6 text-gray-700 drop-shadow">This is a short description of Adam Bikes. Edit this text to make it your own.</p>
+          <Link href="/catalog">
+            <button className="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold shadow hover:bg-blue-700 transition-colors">
+              Show Me The Bikes
+            </button>
+          </Link>
+        </div>
+      </section>
+
+      {/* Promoted Bikes Section */}
+      <section className="max-w-6xl mx-auto px-4 py-12">
+        <h2 className="text-3xl font-bold mb-8 text-center">Featured Bikes</h2>
+        {loading ? (
+          <div className="flex justify-center items-center h-40">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {promotedBikes.map((bike, idx) => (
+              <div key={bike.id || idx} className="bg-white rounded-lg shadow p-6 flex flex-col items-center">
+                <img
+                  src={getAssetPath(`/jpeg/${bike.imageUrl}.jpeg`)}
+                  alt={bike.modelName}
+                  className="w-full h-48 object-contain mb-4 bg-gray-50 rounded"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = getAssetPath('/jpeg/placeholder.jpeg');
+                  }}
+                />
+                <h3 className="text-xl font-semibold mb-2 text-center">{bike.modelName}</h3>
+                <p className="text-gray-600 mb-2 text-center">{bike.manufacturer}</p>
+                <p className="text-gray-800 font-bold mb-4 text-center">{bike.priceRetail ? `${bike.priceRetail} Kč` : 'Contact for price'}</p>
+                <Link href={`/catalog/${bike.id}`} className="text-blue-600 hover:underline font-semibold">
+                  View Details
+                </Link>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
       {/* Filters and Search */}
-      <div className="bg-white p-4 rounded-lg shadow-sm mb-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Height Range Filter */}
-          <div>
-            <select
-              value={selectedHeightRange}
-              onChange={(e) => setSelectedHeightRange(e.target.value)}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              {heightRanges.map(range => (
-                <option key={range.value} value={range.value}>{range.label}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Category Filter */}
-          <div>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">All Categories</option>
-              {categories.map(category => (
-                <option key={category} value={category}>{category}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Battery Filter */}
-          <div>
-            <select
-              value={selectedBattery}
-              onChange={(e) => setSelectedBattery(e.target.value)}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">All Batteries</option>
-              {batteryOptions.map(battery => (
-                <option key={battery} value={battery}>{battery}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Sort */}
-          <div>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              {sortOptions.map(option => (
-                <option key={option.value} value={option.value}>{option.label}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* E-bike Toggle */}
-          <div className="flex items-center space-x-2 col-span-full lg:col-span-1">
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={showOnlyEbikes}
-                onChange={(e) => setShowOnlyEbikes(e.target.checked)}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-              <span className="ml-3 text-sm font-medium text-gray-900">E-bikes only</span>
-            </label>
-          </div>
-        </div>
-      </div>
-
-      {/* Results count */}
-      <div className="mb-4 text-gray-600 flex flex-wrap gap-4 items-center">
-        <span>Showing {sortedGroupedBikes.length} of {groupBikesByModel(bikes).length} models</span>
-        <span className="font-semibold">Total in stock: {totalPieces}</span>
-      </div>
-      
-      {/* Bike Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {sortedGroupedBikes.map((group) => {
-          const firstBike = group[0];
-          const sizes = group.map(b => b.size).filter(Boolean).sort((a, b) => (parseInt(a) || 0) - (parseInt(b) || 0));
-          const totalGroupPieces = group.reduce((sum, b) => sum + (b.pieces || 0), 0);
-          return (
-            <div key={firstBike.modelNumber.slice(0, -2)} className="relative">
-              <Link
-                href={`/catalog/${firstBike.id}`}
-                className="group bg-white rounded-lg shadow-md overflow-hidden transition-shadow duration-300 hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 block cursor-pointer"
-                style={{ textDecoration: 'none' }}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">Our Bikes</h1>
+        
+        <div className="bg-white p-4 rounded-lg shadow-sm mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Height Range Filter */}
+            <div>
+              <select
+                value={selectedHeightRange}
+                onChange={(e) => setSelectedHeightRange(e.target.value)}
+                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <div className="relative aspect-square bg-white flex items-center justify-center">
-                  <img
-                    src={getImageUrl(firstBike)}
-                    alt={firstBike.modelName}
-                    className="w-full h-auto"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = getAssetPath('/jpeg/placeholder.jpeg');
-                    }}
-                  />
-                  <div className="absolute top-2 right-2 flex gap-2">
-                    {firstBike.battery && (
-                      <span className={`${getBatteryColor(firstBike.battery)} text-white px-2 py-1 rounded text-xs font-semibold flex items-center gap-1`}>
-                        {firstBike.isEbike && (
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="white" className="w-4 h-4 inline-block">
-                            <path d="M11.3 1.046A1 1 0 0 1 13 2v5h3a1 1 0 0 1 .8 1.6l-7 10A1 1 0 0 1 8 18v-5H5a1 1 0 0 1-.8-1.6l7-10a1 1 0 0 1 .1-.094z" />
-                          </svg>
-                        )}
-                        {firstBike.battery}
-                      </span>
-                    )}
-                    {firstBike.frameMaterial?.toLowerCase() === 'carbon' && (
-                      <span className="bg-gray-800 text-white px-2 py-1 rounded text-xs font-semibold">
-                        Carbon
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <div className="p-4">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                    {firstBike.modelName}
-                  </h2>
-                  <p className="text-gray-600 mb-2">{firstBike.manufacturer}</p>
-                  <div className="mb-2">
-                    <table className="w-full text-xs border-collapse">
-                      <thead className="bg-gray-100">
-                        <tr>
-                          <th className="py-1 px-2 text-left border text-gray-700">Size</th>
-                          <th className="py-1 px-2 text-left border text-gray-700">Pieces</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {Object.entries(group.reduce((acc, bike) => {
-                          const size = bike.size || '-';
-                          if (!acc[size]) acc[size] = 0;
-                          acc[size] += bike.pieces || 0;
-                          return acc;
-                        }, {} as Record<string, number>))
-                          .sort(([sizeA], [sizeB]) => {
-                            const numA = parseInt(sizeA) || 0;
-                            const numB = parseInt(sizeB) || 0;
-                            return numA - numB;
-                          })
-                          .map(([size, pieces]) => (
-                            <tr key={size}>
-                              <td className="py-1 px-2 border text-gray-700">{size}</td>
-                              <td className="py-1 px-2 border text-gray-700">{pieces}</td>
-                            </tr>
-                          ))
-                        }
-                      </tbody>
-                    </table>
-                  </div>
-                  <div className="flex flex-col items-end mt-4">
-                    {firstBike.priceRetail > 0 && (
-                      <span className="text-gray-400 text-sm line-through mb-1">{firstBike.priceRetail.toLocaleString()} CZK</span>
-                    )}
-                    {firstBike.priceAction > 0 && (
-                      <span className="text-2xl font-bold text-green-700">{firstBike.priceAction.toLocaleString()} CZK</span>
-                    )}
-                  </div>
-                </div>
-              </Link>
+                {heightRanges.map(range => (
+                  <option key={range.value} value={range.value}>{range.label}</option>
+                ))}
+              </select>
             </div>
-          );
-        })}
-      </div>
 
-      {/* No results message */}
-      {sortedGroupedBikes.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-gray-500 text-lg">No bikes found matching your criteria</p>
-          <button
-            onClick={() => {
-              setSelectedCategory('');
-              setShowOnlyEbikes(true);
-            }}
-            className="mt-4 text-blue-600 hover:text-blue-800"
-          >
-            Clear all filters
-          </button>
+            {/* Category Filter */}
+            <div>
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All Categories</option>
+                {categories.map(category => (
+                  <option key={category} value={category}>{category}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Battery Filter */}
+            <div>
+              <select
+                value={selectedBattery}
+                onChange={(e) => setSelectedBattery(e.target.value)}
+                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All Batteries</option>
+                {batteryOptions.map(battery => (
+                  <option key={battery} value={battery}>{battery}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Sort */}
+            <div>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {sortOptions.map(option => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* E-bike Toggle */}
+            <div className="flex items-center space-x-2 col-span-full lg:col-span-1">
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={showOnlyEbikes}
+                  onChange={(e) => setShowOnlyEbikes(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                <span className="ml-3 text-sm font-medium text-gray-900">E-bikes only</span>
+              </label>
+            </div>
+          </div>
         </div>
-      )}
-    </div>
+
+        {/* Results count */}
+        <div className="mb-4 text-gray-600 flex flex-wrap gap-4 items-center">
+          <span>Showing {sortedGroupedBikes.length} of {groupBikesByModel(bikes).length} models</span>
+          <span className="font-semibold">Total in stock: {totalPieces}</span>
+        </div>
+        
+        {/* Bike Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {sortedGroupedBikes.map((group) => {
+            const firstBike = group[0];
+            const sizes = group.map(b => b.size).filter(Boolean).sort((a, b) => (parseInt(a) || 0) - (parseInt(b) || 0));
+            const totalGroupPieces = group.reduce((sum, b) => sum + (b.pieces || 0), 0);
+            return (
+              <div key={firstBike.modelNumber.slice(0, -2)} className="relative">
+                <Link
+                  href={`/catalog/${firstBike.id}`}
+                  className="group bg-white rounded-lg shadow-md overflow-hidden transition-shadow duration-300 hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 block cursor-pointer"
+                  style={{ textDecoration: 'none' }}
+                >
+                  <div className="relative aspect-square bg-white flex items-center justify-center">
+                    <img
+                      src={getImageUrl(firstBike)}
+                      alt={firstBike.modelName}
+                      className="w-full h-auto"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = getAssetPath('/jpeg/placeholder.jpeg');
+                      }}
+                    />
+                    <div className="absolute top-2 right-2 flex gap-2">
+                      {firstBike.battery && (
+                        <span className={`${getBatteryColor(firstBike.battery)} text-white px-2 py-1 rounded text-xs font-semibold flex items-center gap-1`}>
+                          {firstBike.isEbike && (
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="white" className="w-4 h-4 inline-block">
+                              <path d="M11.3 1.046A1 1 0 0 1 13 2v5h3a1 1 0 0 1 .8 1.6l-7 10A1 1 0 0 1 8 18v-5H5a1 1 0 0 1-.8-1.6l7-10a1 1 0 0 1 .1-.094z" />
+                            </svg>
+                          )}
+                          {firstBike.battery}
+                        </span>
+                      )}
+                      {firstBike.frameMaterial?.toLowerCase() === 'carbon' && (
+                        <span className="bg-gray-800 text-white px-2 py-1 rounded text-xs font-semibold">
+                          Carbon
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                      {firstBike.modelName}
+                    </h2>
+                    <p className="text-gray-600 mb-2">{firstBike.manufacturer}</p>
+                    <div className="mb-2">
+                      <table className="w-full text-xs border-collapse">
+                        <thead className="bg-gray-100">
+                          <tr>
+                            <th className="py-1 px-2 text-left border text-gray-700">Size</th>
+                            <th className="py-1 px-2 text-left border text-gray-700">Pieces</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {Object.entries(group.reduce((acc, bike) => {
+                            const size = bike.size || '-';
+                            if (!acc[size]) acc[size] = 0;
+                            acc[size] += bike.pieces || 0;
+                            return acc;
+                          }, {} as Record<string, number>))
+                            .sort(([sizeA], [sizeB]) => {
+                              const numA = parseInt(sizeA) || 0;
+                              const numB = parseInt(sizeB) || 0;
+                              return numA - numB;
+                            })
+                            .map(([size, pieces]) => (
+                              <tr key={size}>
+                                <td className="py-1 px-2 border text-gray-700">{size}</td>
+                                <td className="py-1 px-2 border text-gray-700">{pieces}</td>
+                              </tr>
+                            ))
+                          }
+                        </tbody>
+                      </table>
+                    </div>
+                    <div className="flex flex-col items-end mt-4">
+                      {firstBike.priceRetail > 0 && (
+                        <span className="text-gray-400 text-sm line-through mb-1">{firstBike.priceRetail.toLocaleString()} CZK</span>
+                      )}
+                      {firstBike.priceAction > 0 && (
+                        <span className="text-2xl font-bold text-green-700">{firstBike.priceAction.toLocaleString()} CZK</span>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* No results message */}
+        {sortedGroupedBikes.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">No bikes found matching your criteria</p>
+            <button
+              onClick={() => {
+                setSelectedCategory('');
+                setShowOnlyEbikes(true);
+              }}
+              className="mt-4 text-blue-600 hover:text-blue-800"
+            >
+              Clear all filters
+            </button>
+          </div>
+        )}
+      </div>
+    </main>
   );
 }

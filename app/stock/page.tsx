@@ -15,6 +15,7 @@ import { useAuth } from '../context/AuthContext';
 import { getAssetPath } from '../utils/pathUtils';
 import { Bike } from '../models/Bike';
 import { getBikes, addBike, updateBike, deleteBike } from '../services/bikeService';
+import PromotedBikesAdmin from '../components/PromotedBikesAdmin';
 
 // Dynamically import the BikeDataGrid component to avoid server-side rendering issues with Firebase
 const BikeDataGrid = dynamic(() => import('../components/BikeDataGrid'), {
@@ -61,13 +62,8 @@ export default function StockPage() {
 
   const handleTabChange = (index: number) => {
     setActiveTab(index);
-    if (index === 0) {
-      setShowBikeGrid(true);
-      setShowCsvImporter(false);
-    } else {
-      setShowBikeGrid(false);
-      setShowCsvImporter(true);
-    }
+    setShowBikeGrid(index === 0);
+    setShowCsvImporter(index === 1);
   };
 
   // Check database connection
@@ -286,40 +282,13 @@ export default function StockPage() {
       />
       
       <div className="w-full p-4">
-        <div className="mb-4 flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={handleAddNewBike}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
-            >
-              Add New Bike
-            </button>
-            <button
-              onClick={handleExport}
-              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors"
-            >
-              Export to Excel
-            </button>
-          </div>
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={handleImport}
-              className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition-colors"
-            >
-              Import from Excel
-            </button>
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              accept=".xlsx"
-              className="hidden"
-            />
-          </div>
-        </div>
-        {/* Content area */}
-        <div>
-          {showBikeGrid && (
+        <Tabs value={activeTab} onChange={(_, idx) => handleTabChange(idx)}>
+          <Tab label="Inventory" />
+          <Tab label="CSV Upload" />
+          <Tab label="Promoted" />
+        </Tabs>
+        <div className="mt-4">
+          {activeTab === 0 && showBikeGrid && (
             <div className="h-[calc(100vh-100px)]">
               <BikeDataGrid 
                 openAddDialog={false} 
@@ -328,11 +297,13 @@ export default function StockPage() {
               />
             </div>
           )}
-          
-          {showCsvImporter && (
+          {activeTab === 1 && showCsvImporter && (
             <div>
               <CsvImporter />
             </div>
+          )}
+          {activeTab === 2 && (
+            <PromotedBikesAdmin bikes={bikes} />
           )}
         </div>
       </div>
