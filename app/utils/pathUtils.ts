@@ -22,37 +22,12 @@ export const getBasePath = (): string => {
 };
 
 /**
- * Get the full path for an asset, considering the base path
+ * Always return a root-relative path for assets, since the site is deployed at the root.
  */
 export const getAssetPath = (assetPath: string): string => {
-  const basePath = getBasePath();
-  
-  // First, normalize the incoming path to remove any incorrect prefixes
-  let cleanPath = assetPath;
-
-  // If we're in development mode and the path starts with '/bixy/', remove it
-  if (!basePath && cleanPath.startsWith('/bixy/')) {
-    console.debug(`[getAssetPath] Development mode: Removing "/bixy" prefix from path: ${assetPath}`);
-    cleanPath = cleanPath.substring(5); // Remove '/bixy' prefix
+  // Ensure the path starts with a single leading slash
+  if (!assetPath.startsWith('/')) {
+    return '/' + assetPath.replace(/^\/+/, '');
   }
-  
-  // If we already have a production path with /bixy and are in production, avoid duplicating
-  if (basePath && cleanPath.startsWith(`${basePath}/`)) {
-    console.debug(`[getAssetPath] Production: Path already has correct prefix: ${assetPath}`);
-    return cleanPath; // No need to modify - already has correct prefix
-  }
-  
-  // Remove leading slash from assetPath if basePath has a trailing slash
-  // or if assetPath has a leading slash and basePath is not empty
-  if (cleanPath.startsWith('/') && (basePath.endsWith('/') || basePath !== '')) {
-    cleanPath = cleanPath.substring(1);
-  }
-  
-  // Construct the final path
-  const finalPath = basePath 
-    ? `${basePath}/${cleanPath}`.replace(/\/+/g, '/') // Add base path in production
-    : `/${cleanPath}`.replace(/\/+/g, '/');          // Just ensure a leading slash in development
-  
-  console.debug(`[getAssetPath] Original: "${assetPath}", Clean: "${cleanPath}", Final: "${finalPath}"`);
-  return finalPath;
+  return assetPath.replace(/\/+/g, '/');
 }; 
