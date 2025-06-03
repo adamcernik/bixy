@@ -51,14 +51,45 @@ export default function HomePage() {
           className="absolute inset-0 w-full h-full object-cover object-center opacity-60"
         />
         <div className="relative z-10 text-center px-4">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-gray-900 drop-shadow-lg">Headline</h1>
-          <p className="text-lg md:text-2xl mb-6 text-gray-700 drop-shadow">This is a short description of Adam Bikes. Edit this text to make it your own.</p>
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-gray-900 drop-shadow-lg">Find Your Perfect Ebike - Now on Sale!</h1>
+          <p className="text-lg md:text-2xl mb-6 text-gray-700 drop-shadow">Limited Time: Special Pricing on Premium Ebikes</p>
           <Link href="/catalog">
             <button className="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold shadow hover:bg-blue-700 transition-colors">
               Show Me The Bikes
             </button>
           </Link>
         </div>
+      </section>
+
+      {/* About & Value Proposition Section */}
+      <section className="max-w-3xl mx-auto px-4 py-10 text-center">
+        <p className="text-lg md:text-xl mb-6 text-gray-800">
+          After years of helping cyclists find their ideal ride and providing expert bike service, I've created this website to bring my expertise directly to you. Whether you're commuting to work, exploring trails, or simply enjoying the freedom of electric-powered cycling, I'm here to help you find the perfect ebike at an unbeatable price.
+        </p>
+      </section>
+
+      {/* Why Choose Us Section */}
+      <section className="max-w-4xl mx-auto px-4 py-8 grid md:grid-cols-3 gap-8 text-center">
+        <div className="bg-white rounded-lg shadow p-6 flex flex-col items-center">
+          <h3 className="text-xl font-bold mb-2 text-blue-700">Expertise You Can Trust</h3>
+          <p className="text-gray-700">With many years of hands-on experience in the cycling industry, I've helped countless customers choose the right bike for their needs. I understand that every rider is unique, and I'm passionate about matching you with an ebike that fits your lifestyle, budget, and riding goals.</p>
+        </div>
+        <div className="bg-white rounded-lg shadow p-6 flex flex-col items-center">
+          <h3 className="text-xl font-bold mb-2 text-blue-700">Bulls Brand Specialists</h3>
+          <p className="text-gray-700">As a specialist in Bulls ebikes, I have deep knowledge of their entire range - from urban commuters to rugged mountain bikes. Bulls has earned a reputation for quality, innovation, and reliability, and I can guide you to the perfect Bulls model for your adventures.</p>
+        </div>
+        <div className="bg-white rounded-lg shadow p-6 flex flex-col items-center">
+          <h3 className="text-xl font-bold mb-2 text-blue-700">Complete Service & Support</h3>
+          <p className="text-gray-700">Beyond sales, I'm equipped with professional-grade tools and equipment to keep your ebike running smoothly for years to come. From routine maintenance to complex repairs, you can count on expert service that keeps you riding with confidence.</p>
+        </div>
+      </section>
+
+      {/* Current Sale Section */}
+      <section className="max-w-3xl mx-auto px-4 py-10 text-center">
+        <h2 className="text-2xl md:text-3xl font-bold mb-4 text-blue-800">Current Sale - Don't Miss Out!</h2>
+        <p className="text-lg md:text-xl mb-4 text-gray-800">Take advantage of our special pricing on premium ebikes. These aren't just great bikes - they're great bikes at exceptional prices.</p>
+        <p className="text-md md:text-lg mb-6 text-gray-700">Ready to ride electric? Browse our selection or contact me directly for personalized recommendations based on your specific needs.</p>
+        <p className="text-lg font-semibold text-gray-900">Your perfect ebike adventure starts here.</p>
       </section>
 
       {/* Promoted Bikes Section */}
