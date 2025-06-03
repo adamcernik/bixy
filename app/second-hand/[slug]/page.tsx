@@ -8,7 +8,7 @@ import Link from "next/link";
 const secondHandBikes = [
   {
     slug: "wild-edge",
-    name: "Bulls Wild Edge Team",
+    name: "Bulls Wild Edge Trail",
     mainImage: "/images/outlet/wild-edge/IMG_8366.jpeg",
     gallery: [
       "/images/outlet/wild-edge/IMG_8367.jpeg",
@@ -21,13 +21,24 @@ const secondHandBikes = [
       "/images/outlet/wild-edge/IMG_8386.jpeg",
       "/images/outlet/wild-edge/IMG_8387.jpeg",
     ],
-    description: "Full suspension professional bike. More information coming soon.",
+    description: "Full suspension professional bike. Více informací níže.",
     price: "65 000 CZK",
     info: [
-      "Frame: Carbon (dummy info)",
-      "Suspension: Full (dummy info)",
-      "Size: L (dummy info)",
-      "Condition: Excellent (dummy info)"
+      "Rám | super lite carbon fibre, monocoque, tapered headtube, internal cable routing, teleskope seatpost ready, boost tru axle",
+      "Velikost rámu | M / L / XL",
+      "Vidlice | RockShox Sid Select+ RL‑R, 110 mm",
+      "Zadní tlumič | RockShox SidLuxe Sel+ RL‑R",
+      "Řazení páky | Shimano Deore XT RD-M8100, Shadow Plus",
+      "Počet rychlostí | 12-speed",
+      "Přesmykač | Shimano Deore XT SL-M8100",
+      "Kliky | Shimano Deore XT FC-M8100, 32T",
+      "Brzdy | Shimano Deore XT BR-M8100 hydraulic disc, 180/180 mm",
+      "Řídítka | Race Face Turbine",
+      "Představec | Race Face Turbine",
+      "Sedlovka | Limotec Alpha 1 Light dropper post RH 44 100 mm hub, RH 48 125 mm hub, RH 54 150 mm hub",
+      "Sedlo | Selle Royal Vivo",
+      "Zapletená kola | DT-Swiss X‑1900 Spline",
+      "Pláště | Schwalbe Wicked Will Evo, Super Ground TLE, 62 – 622/29 x 2,4"
     ]
   },
   // Add more bikes here as needed
