@@ -33,17 +33,16 @@ export default function SecondHandPage() {
 
         {/* Featured Bike: Bulls Wild Edge Team */}
         <section className="mb-12 bg-gray-50 rounded-lg shadow p-6">
-          <h2 className="text-2xl font-bold mb-2 text-blue-700">Bulls Wild Edge Team</h2>
-          <p className="text-gray-700 mb-4">Full suspension professional bike. More information coming soon.</p>
-          <div className="flex flex-col md:flex-row gap-6 items-start">
-            <img
-              src={mainImage}
-              alt="Bulls Wild Edge Team main image"
-              className="w-full md:w-1/2 rounded-lg cursor-pointer object-cover max-h-96"
-              onClick={() => { setModalOpen(true); setCurrentImgIdx(0); }}
-            />
-            <div className="flex-1">
-              <div className="flex flex-wrap gap-2 mb-4">
+          <div className="flex flex-col md:flex-row gap-8 items-start">
+            {/* Left: Images */}
+            <div className="flex-1 flex flex-col items-center">
+              <img
+                src={mainImage}
+                alt="Bulls Wild Edge Team main image"
+                className="w-full max-w-xl rounded-lg cursor-pointer object-cover max-h-[500px] mb-4"
+                onClick={() => { setModalOpen(true); setCurrentImgIdx(0); }}
+              />
+              <div className="flex flex-row flex-wrap gap-2 justify-center">
                 {galleryImages.map((img, idx) => (
                   <img
                     key={img}
@@ -54,13 +53,18 @@ export default function SecondHandPage() {
                   />
                 ))}
               </div>
-              <ul className="text-gray-600 text-sm list-disc pl-5">
+            </div>
+            {/* Right: Info */}
+            <div className="flex-1 flex flex-col justify-center items-start md:pl-8 mt-8 md:mt-0">
+              <h2 className="text-2xl font-bold mb-2 text-blue-700">Bulls Wild Edge Team</h2>
+              <ul className="text-gray-600 text-base list-disc pl-5 mb-4">
                 <li>Frame: Carbon (dummy info)</li>
                 <li>Suspension: Full (dummy info)</li>
                 <li>Size: L (dummy info)</li>
                 <li>Condition: Excellent (dummy info)</li>
-                <li>Price: To be announced</li>
               </ul>
+              <div className="text-2xl font-bold text-green-700 mb-2">65&nbsp;000 CZK</div>
+              <p className="text-gray-700">Full suspension professional bike. More information coming soon.</p>
             </div>
           </div>
         </section>
