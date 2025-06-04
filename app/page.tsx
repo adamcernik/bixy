@@ -44,7 +44,7 @@ export default function HomePage() {
   return (
     <main className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative w-full h-[400px] md:h-[500px] flex flex-col items-center justify-center bg-gray-100 overflow-hidden">
+      <section className="relative w-full min-h-[500px] md:min-h-[600px] flex flex-col items-center justify-center bg-gray-100 overflow-hidden pb-8 md:pb-12">
         <img
           src={getAssetPath('/images/hero-background.jpeg')}
           alt="Hero pozadí"
@@ -56,10 +56,10 @@ export default function HomePage() {
             src={getAssetPath('/images/hero-bike.png')}
             alt="Hero kolo"
             className="w-[60vw] max-w-[500px] drop-shadow-xl pointer-events-none select-none mx-auto"
-            style={{ maxHeight: '80%', objectFit: 'contain' }}
+            style={{ maxHeight: '80%', objectFit: 'contain', marginBottom: '-15px' }}
           />
           <div className="mt-4 text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">Najděte svůj ideální elektrokolo</h1>
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">Najděte své ideální elektrokolo</h1>
             <p className="text-lg md:text-2xl mb-6 text-white drop-shadow">Dělám to dlouho, dělám to rád a jsem v tom dobrý.</p>
             <Link href="/catalog">
               <button className="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold shadow hover:bg-blue-700 transition-colors cursor-pointer select-none">
