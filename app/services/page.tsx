@@ -55,8 +55,8 @@ export default function ServicesPage() {
               <h3 className="text-xl font-bold text-blue-900 text-center mb-2">Petr "Korporát" Novák (42 let)</h3>
               {/* Bike image */}
               <img
-                src={require("../public/jpeg/767-22951.jpeg").default || "/jpeg/767-22951.jpeg"}
-                alt="Bike 767-22951"
+                src="/jpeg/667082.jpeg"
+                alt="Bike 667082"
                 className="w-40 h-40 object-contain rounded shadow mb-2 border"
                 style={{ background: '#f9f9f9' }}
               />
