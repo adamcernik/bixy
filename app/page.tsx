@@ -46,15 +46,22 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="relative w-full h-[400px] md:h-[500px] flex items-center justify-center bg-gray-100 overflow-hidden">
         <img
-          src={getAssetPath('/images/ebike-mtb-hero.jpg')}
-          alt="Hero"
+          src={getAssetPath('/images/hero-background.jpeg')}
+          alt="Hero pozadí"
           className="absolute inset-0 w-full h-full object-cover object-center opacity-60"
         />
         {/* Dark overlay */}
         <div className="absolute inset-0 z-10" style={{ background: 'rgba(0,0,0,0.3)' }} />
-        <div className="relative z-20 text-center px-4">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">Najděte své ideální elektrokolo</h1>
-          <p className="text-lg md:text-2xl mb-6 text-white drop-shadow">Dělám to dlouho, dělám to rád a jsem v tom dobrý.</p>
+        {/* Bike image overlay */}
+        <img
+          src={getAssetPath('/images/hero-bike.png')}
+          alt="Hero kolo"
+          className="absolute z-20 w-[60vw] max-w-[500px] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 drop-shadow-xl pointer-events-none select-none"
+          style={{ maxHeight: '80%', objectFit: 'contain' }}
+        />
+        <div className="relative z-30 text-center px-4">
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">Najděte svůj ideální elektrokolo - nyní v akci!</h1>
+          <p className="text-lg md:text-2xl mb-6 text-white drop-shadow">Omezená nabídka: Speciální ceny na prémiové elektrokola</p>
           <Link href="/catalog">
             <button className="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold shadow hover:bg-blue-700 transition-colors cursor-pointer select-none">
               Zobrazit kola
