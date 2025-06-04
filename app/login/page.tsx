@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import { signInWithGoogle, signOutUser } from '../services/authService';
 import { useAuth } from '../context/AuthContext';
