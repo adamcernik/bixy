@@ -5,11 +5,11 @@ import { useState } from 'react';
 import { getAssetPath } from '../utils/pathUtils';
 
 const menuItems = [
-  { label: 'Catalog', href: '/catalog' },
+  { label: 'Katalog', href: '/catalog' },
   { label: 'Second Hand', href: '/second-hand' },
-  { label: 'Services', href: '/services' },
-  { label: 'About', href: '/about' },
-  { label: 'Contact', href: '/contact' },
+  { label: 'Služby', href: '/services' },
+  { label: 'Příběh', href: '/about' },
+  { label: 'Kontakt', href: '/contact' },
 ];
 
 export default function Header() {
