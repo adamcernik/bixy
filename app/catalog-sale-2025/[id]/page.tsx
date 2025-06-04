@@ -8,7 +8,7 @@ import { getAssetPath } from "../../utils/pathUtils";
 import SizeGuideModal from "../../components/SizeGuideModal";
 import ImageZoomModal from "../../components/ImageZoomModal";
 
-export default function BikeDetailPage() {
+export default function BikeDetailSale2025Page() {
   const router = useRouter();
   const params = useParams();
   const { id } = params;
@@ -188,7 +188,12 @@ export default function BikeDetailPage() {
           )}
           {/* Prices */}
           <div className="flex flex-col items-end mb-4">
-            {/* Ceny skryty ve veřejném katalogu */}
+            {bike.priceRetail > 0 && (
+              <span className="text-gray-400 text-base line-through mb-1">{bike.priceRetail.toLocaleString()} Kč</span>
+            )}
+            {bike.priceAction > 0 && (
+              <span className="text-3xl font-bold text-green-700">{bike.priceAction.toLocaleString()} Kč</span>
+            )}
           </div>
           <button
             className="mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-300"

@@ -63,7 +63,7 @@ const getBatteryColor = (battery: string) => {
   return 'bg-yellow-400';
 };
 
-export default function CatalogPage() {
+export default function CatalogSale2025Page() {
   const [bikes, setBikes] = useState<Bike[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
@@ -249,7 +249,7 @@ export default function CatalogPage() {
             return (
               <div key={firstBike.modelNumber.slice(0, -2)} className="relative">
                 <Link
-                  href={`/catalog/${firstBike.id}`}
+                  href={`/catalog-sale-2025/${firstBike.id}`}
                   className="group bg-white rounded-lg shadow-md overflow-hidden transition-shadow duration-300 hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 block cursor-pointer"
                   style={{ textDecoration: 'none' }}
                 >
@@ -316,7 +316,12 @@ export default function CatalogPage() {
                       </table>
                     </div>
                     <div className="flex flex-col items-end mt-4">
-                      {/* Ceny skryty ve veřejném katalogu */}
+                      {firstBike.priceRetail > 0 && (
+                        <span className="text-gray-400 text-sm line-through mb-1">{firstBike.priceRetail.toLocaleString()} Kč</span>
+                      )}
+                      {firstBike.priceAction > 0 && (
+                        <span className="text-2xl font-bold text-green-700">{firstBike.priceAction.toLocaleString()} Kč</span>
+                      )}
                     </div>
                   </div>
                 </Link>
