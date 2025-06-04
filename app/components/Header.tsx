@@ -24,8 +24,8 @@ export default function Header() {
               <img
                 src={getAssetPath('/images/adam-bikes-electric-cycling-logo.svg')}
                 alt="Adam Bikes Logo"
-                width={148}
-                height={64}
+                width={176}
+                height={28}
                 style={{ objectFit: 'contain' }}
                 className="cursor-pointer select-none"
               />
