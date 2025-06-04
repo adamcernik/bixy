@@ -133,6 +133,11 @@ export default function StockPage() {
     }
   };
 
+  // Show nothing if not authenticated or not authorized (middleware will redirect)
+  if (!user || (user && !hasAccess)) {
+    return null;
+  }
+
   if (authLoading) {
     return (
       <main className="flex min-h-screen flex-col">
@@ -166,38 +171,6 @@ export default function StockPage() {
             <p>{error.message}</p>
             <p className="mt-2">Please check your Firebase configuration and make sure you have the correct permissions.</p>
           </div>
-        </div>
-      </main>
-    );
-  }
-
-  // Show login screen or access denied if not authenticated or authorized
-  if (!user || (user && !hasAccess)) {
-    return (
-      <main className="flex min-h-screen flex-col">
-        <div className="w-full p-6">
-          {/* Header with logo and title */}
-          <div className="flex items-center mb-4">
-            <div className="flex items-center flex-grow">
-              <img 
-                src={getAssetPath('/images/adam-bikes-electric-cycling-logo.svg')}
-                alt="Adam Bikes Logo" 
-                width={80} 
-                height={64}
-                style={{ objectFit: 'contain' }}
-              />
-              <h1 className="text-3xl font-bold ml-4">Adam Bikes Stock Management</h1>
-              <div className="ml-2">
-                <ConnectionIndicator />
-              </div>
-              <div className="ml-auto">
-                <UserAvatar />
-              </div>
-            </div>
-          </div>
-          
-          {/* Show access denied if logged in but not authorized */}
-          {user && !hasAccess ? <AccessDenied /> : <SignInMessage />}
         </div>
       </main>
     );
