@@ -49,11 +49,21 @@ export default function ServicesPage() {
         {/* Persona Cards Section */}
         <div className="my-12">
           <div className="bg-white rounded-lg shadow-md p-6 mb-8 flex flex-col md:flex-row items-center gap-6 border border-gray-200">
-            <div className="flex-shrink-0 flex flex-col items-center">
+            {/* Left side: Persona name, emoji, bike image, and model name */}
+            <div className="flex-shrink-0 flex flex-col items-center w-full md:w-1/3">
               <span className="text-5xl mb-2">🏢</span>
-              <h3 className="text-xl font-bold text-blue-900 text-center">Petr "Korporát" Novák (42 let)</h3>
-              <span className="text-sm text-gray-500 text-center">IT manažer, Praha & Říčany</span>
+              <h3 className="text-xl font-bold text-blue-900 text-center mb-2">Petr "Korporát" Novák (42 let)</h3>
+              {/* Bike image */}
+              <img
+                src={require("../public/jpeg/767-22951.jpeg").default || "/jpeg/767-22951.jpeg"}
+                alt="Bike 767-22951"
+                className="w-40 h-40 object-contain rounded shadow mb-2 border"
+                style={{ background: '#f9f9f9' }}
+              />
+              {/* Bike model name */}
+              <span className="text-base font-semibold text-gray-800 text-center">Bulls E-Stream EVO AM 2 27.5+ (767-22951)</span>
             </div>
+            {/* Right side: Persona info */}
             <div className="flex-1">
               <div className="mb-2">
                 <span className="font-semibold text-gray-700">Profil:</span>
