@@ -46,6 +46,39 @@ export default function ServicesPage() {
           <p className="text-lg text-gray-800 font-semibold">Potřebujete poradit?</p>
           <p className="text-gray-700">Stejně jako desítky zákazníků přede vámi, neváhejte zavolat, když potřebujete odbornou radu nebo profesionální servis. Jsem tu, abych vám pomohl jezdit s jistotou.</p>
         </div>
+        {/* Persona Cards Section */}
+        <div className="my-12">
+          <div className="bg-white rounded-lg shadow-md p-6 mb-8 flex flex-col md:flex-row items-center gap-6 border border-gray-200">
+            <div className="flex-shrink-0 flex flex-col items-center">
+              <span className="text-5xl mb-2">🏢</span>
+              <h3 className="text-xl font-bold text-blue-900 text-center">Petr "Korporát" Novák (42 let)</h3>
+              <span className="text-sm text-gray-500 text-center">IT manažer, Praha & Říčany</span>
+            </div>
+            <div className="flex-1">
+              <div className="mb-2">
+                <span className="font-semibold text-gray-700">Profil:</span>
+                <p className="text-gray-700 mt-1">
+                  IT manažer z Prahy, který právě koupil nový dům v Říčanech. Každý den dojíždí 25 km do práce přes kopce, ale zároveň nechce přijít do kanceláře jako zmoklý had. Rád by šetřil na benzínu a parkování, ale nechce vypadat jako cyklista v tretračkách.
+                </p>
+              </div>
+              <div className="mb-2">
+                <span className="font-semibold text-gray-700">Požadavky:</span>
+                <ul className="list-disc list-inside text-gray-700 mt-1">
+                  <li>Dojezd minimálně 60 km</li>
+                  <li>Úložný prostor na notebook a svačinu</li>
+                  <li>Možnost jezdit v obleku bez pocení</li>
+                  <li>„Něco, co nevypadá jako elektrokolo mého tchána“</li>
+                </ul>
+              </div>
+              <div>
+                <span className="font-semibold text-gray-700">Rozpočet:</span>
+                <span className="ml-2 text-gray-900 font-bold">80–120 tisíc</span>
+                <span className="ml-2 text-gray-500 text-sm">(manželka schválila po zdůraznění úspor za benzín)</span>
+              </div>
+            </div>
+          </div>
+          {/* Here you can add the selected bike for this persona */}
+        </div>
       </div>
     </main>
   );
