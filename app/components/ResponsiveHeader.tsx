@@ -10,12 +10,18 @@ import {
   Box,
   Menu,
   MenuItem,
-  Avatar
+  Avatar,
+  Drawer,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText
 } from '@mui/material';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import AddIcon from '@mui/icons-material/Add';
 import PeopleIcon from '@mui/icons-material/People';
+import MenuIcon from '@mui/icons-material/Menu';
 import { useAuth } from '../context/AuthContext';
 import { getAssetPath } from '../utils/pathUtils';
 
@@ -36,6 +42,7 @@ export default function ResponsiveHeader({
   onAddNewBike: () => void;
 }) {
   const [profileMenuAnchor, setProfileMenuAnchor] = useState<null | HTMLElement>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, userData, logout } = useAuth();
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -49,28 +56,41 @@ export default function ResponsiveHeader({
     logout();
   };
 
+  const handleMobileMenuToggle = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const handleSectionChange = (section: string) => {
+    setActiveSection(section);
+    setMobileMenuOpen(false);
+  };
+
   return (
     <AppBar position="sticky" elevation={2} sx={{ backgroundColor: '#fff', color: 'inherit' }}>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
-        {/* Logo and app name */}
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <img
-            src={getAssetPath('/images/adam-bikes-electric-cycling-logo.svg')}
-            alt="Adam Bikes Logo"
-            width={40}
-            height={32}
-            style={{ objectFit: 'contain' }}
-          />
+        {/* Left: Headline and mobile menu button */}
+        <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+          {/* Mobile menu button */}
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={handleMobileMenuToggle}
+            sx={{ display: { sm: 'none' }, mr: 1 }}
+          >
+            <MenuIcon />
+          </IconButton>
           <Typography
             variant="h6"
             component="div"
-            sx={{ ml: 1, display: { xs: 'none', sm: 'block' } }}
+            sx={{ fontWeight: 'bold', color: '#000D25', fontSize: { xs: '1.1rem', sm: '1.25rem' } }}
           >
             Adam Bikes Admin
           </Typography>
         </Box>
-        {/* Menu */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+
+        {/* Desktop menu */}
+        <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center', gap: 2, flex: 2, justifyContent: 'center' }}>
           {menuItems.map((item) => (
             <Button
               key={item.key}
@@ -91,7 +111,11 @@ export default function ResponsiveHeader({
           >
             Add Bike
           </Button>
-          <IconButton color="inherit" onClick={handleProfileMenuOpen} sx={{ ml: 1 }}>
+        </Box>
+
+        {/* Profile menu */}
+        <Box>
+          <IconButton color="inherit" onClick={handleProfileMenuOpen}>
             <Avatar
               sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}
               src={user?.photoURL || undefined}
@@ -117,6 +141,38 @@ export default function ResponsiveHeader({
           </Menu>
         </Box>
       </Toolbar>
+
+      {/* Mobile menu drawer */}
+      <Drawer
+        anchor="left"
+        open={mobileMenuOpen}
+        onClose={handleMobileMenuToggle}
+      >
+        <Box sx={{ width: 250 }}>
+          <List>
+            {menuItems.map((item) => (
+              <ListItem
+                key={item.key}
+                onClick={() => handleSectionChange(item.key)}
+                sx={{ 
+                  cursor: 'pointer',
+                  bgcolor: activeSection === item.key ? 'action.selected' : 'inherit'
+                }}
+              >
+                <ListItemIcon>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.label} />
+              </ListItem>
+            ))}
+            <ListItem
+              onClick={onAddNewBike}
+              sx={{ cursor: 'pointer' }}
+            >
+              <ListItemIcon><AddIcon /></ListItemIcon>
+              <ListItemText primary="Add Bike" />
+            </ListItem>
+          </List>
+        </Box>
+      </Drawer>
     </AppBar>
   );
 } 
