@@ -163,64 +163,7 @@ export default function CatalogPage() {
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Naše kola</h1>
         <div className="bg-white p-4 rounded-lg shadow-sm mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* Height Range Filter */}
-            <div>
-              <select
-                value={selectedHeightRange}
-                onChange={(e) => setSelectedHeightRange(e.target.value)}
-                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                {heightRanges.map(range => (
-                  <option key={range.value} value={range.value}>{range.label.replace('All Heights', 'Všechny výšky')}</option>
-                ))}
-              </select>
-            </div>
-            {/* Category Filter */}
-            <div>
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Všechny kategorie</option>
-                {categories.map(category => (
-                  <option key={category} value={category}>{category}</option>
-                ))}
-              </select>
-            </div>
-            {/* Battery Filter */}
-            <div>
-              <select
-                value={selectedBattery}
-                onChange={(e) => setSelectedBattery(e.target.value)}
-                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Všechny baterie</option>
-                {batteryOptions.map(battery => (
-                  <option key={battery} value={battery}>{battery}</option>
-                ))}
-              </select>
-            </div>
-            {/* Sort */}
-            <div>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                {sortOptions.map(option => (
-                  <option key={option.value} value={option.value}>{option.label
-                    .replace('Price: Low to High', 'Cena: od nejnižší')
-                    .replace('Price: High to Low', 'Cena: od nejvyšší')
-                    .replace('Name: A to Z', 'Název: A–Z')
-                    .replace('Name: Z to A', 'Název: Z–A')
-                    .replace('Size: Small to Large', 'Velikost: od nejmenší')
-                    .replace('Size: Large to Small', 'Velikost: od největší')}
-                  </option>
-                ))}
-              </select>
-            </div>
-            {/* E-bike Toggle */}
+            {/* E-bike Toggle - now first */}
             <div className="flex items-center space-x-2 col-span-full lg:col-span-1">
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
@@ -233,6 +176,19 @@ export default function CatalogPage() {
                 <span className="ml-3 text-sm font-medium text-gray-900">Pouze elektrokola</span>
               </label>
             </div>
+            {/* Height Range Filter - now second */}
+            <div>
+              <select
+                value={selectedHeightRange}
+                onChange={(e) => setSelectedHeightRange(e.target.value)}
+                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {heightRanges.map(range => (
+                  <option key={range.value} value={range.value}>{range.label.replace('All Heights', 'Všechny výšky')}</option>
+                ))}
+              </select>
+            </div>
+            {/* All other filters are hidden in the public catalog */}
           </div>
         </div>
         {/* Results count */}
