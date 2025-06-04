@@ -53,8 +53,8 @@ export default function HomePage() {
         {/* Dark overlay */}
         <div className="absolute inset-0 z-10" style={{ background: 'rgba(0,0,0,0.3)' }} />
         <div className="relative z-20 text-center px-4">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">Najděte svůj ideální elektrokolo - nyní v akci!</h1>
-          <p className="text-lg md:text-2xl mb-6 text-white drop-shadow">Omezená nabídka: Speciální ceny na prémiové elektrokola</p>
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">Najděte své ideální elektrokolo</h1>
+          <p className="text-lg md:text-2xl mb-6 text-white drop-shadow">Dělám to dlouho, dělám to rád a jsem v tom dobrý.</p>
           <Link href="/catalog">
             <button className="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold shadow hover:bg-blue-700 transition-colors cursor-pointer select-none">
               Zobrazit kola
@@ -66,7 +66,7 @@ export default function HomePage() {
       {/* About & Value Proposition Section */}
       <section className="max-w-3xl mx-auto px-4 py-10 text-center">
         <p className="text-lg md:text-xl mb-6 text-gray-800">
-          Po letech pomoci cyklistům najít ideální kolo a poskytování odborného servisu jsem vytvořil tyto stránky, abych své zkušenosti přiblížil přímo vám. Ať už dojíždíte do práce, objevujete stezky nebo si jen užíváte svobodu jízdy na elektrokole, pomohu vám najít perfektní elektrokolo za bezkonkurenční cenu.
+        Po letech pomoci cyklistům najít ideální kolo a poskytování odborného servisu jsem vytvořil tyto stránky, abych své zkušenosti přiblížil přímo vám. Specializuji se výhradně na elektrokola značky Bulls, kterou velmi dobře a dlouho znám. Úzce spolupracuji s oficiálními dodavateli kol, motorů, baterií a dalších komponentů, což mi umožňuje nabídnout nejen kvalitní produkty, ale i spolehlivý servis a podporu. Ať už dojíždíte do práce, objevujete nové stezky nebo si jen užíváte svobodu elektrické jízdy, jsem tu, abych vám pomohl najít perfektní elektrokolo za skvělou cenu.
         </p>
       </section>
 
