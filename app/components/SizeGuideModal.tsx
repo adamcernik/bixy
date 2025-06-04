@@ -75,7 +75,7 @@ export default function SizeGuideModal({ open, onClose }: SizeGuideModalProps) {
           </div>
           
           <p className="mt-4 text-sm text-gray-600">
-            This guide helps you find the right bike size based on your height.
+            Tato tabulka vám pomůže najít správnou velikost kola podle vaší výšky.
           </p>
         </div>
       </DialogContent>

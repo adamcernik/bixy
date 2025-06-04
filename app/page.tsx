@@ -53,11 +53,11 @@ export default function HomePage() {
         {/* Dark overlay */}
         <div className="absolute inset-0 z-10" style={{ background: 'rgba(0,0,0,0.3)' }} />
         <div className="relative z-20 text-center px-4">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">Find Your Perfect Ebike - Now on Sale!</h1>
-          <p className="text-lg md:text-2xl mb-6 text-white drop-shadow">Limited Time: Special Pricing on Premium Ebikes</p>
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">Najděte svůj ideální elektrokolo - nyní v akci!</h1>
+          <p className="text-lg md:text-2xl mb-6 text-white drop-shadow">Omezená nabídka: Speciální ceny na prémiové elektrokola</p>
           <Link href="/catalog">
             <button className="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold shadow hover:bg-blue-700 transition-colors cursor-pointer select-none">
-              Show Me The Bikes
+              Zobrazit kola
             </button>
           </Link>
         </div>
@@ -66,13 +66,13 @@ export default function HomePage() {
       {/* About & Value Proposition Section */}
       <section className="max-w-3xl mx-auto px-4 py-10 text-center">
         <p className="text-lg md:text-xl mb-6 text-gray-800">
-          After years of helping cyclists find their ideal ride and providing expert bike service, I've created this website to bring my expertise directly to you. Whether you're commuting to work, exploring trails, or simply enjoying the freedom of electric-powered cycling, I'm here to help you find the perfect ebike at an unbeatable price.
+          Po letech pomoci cyklistům najít ideální kolo a poskytování odborného servisu jsem vytvořil tyto stránky, abych své zkušenosti přiblížil přímo vám. Ať už dojíždíte do práce, objevujete stezky nebo si jen užíváte svobodu jízdy na elektrokole, pomohu vám najít perfektní elektrokolo za bezkonkurenční cenu.
         </p>
       </section>
 
       {/* Promoted Bikes Section */}
       <section className="max-w-6xl mx-auto px-4 py-12">
-        <h2 className="text-3xl font-bold mb-8 text-center">Featured Bikes</h2>
+        <h2 className="text-3xl font-bold mb-8 text-center">Doporučená kola</h2>
         {loading ? (
           <div className="flex justify-center items-center h-40">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
@@ -96,10 +96,10 @@ export default function HomePage() {
                     ? `${bike.priceAction} Kč`
                     : (typeof bike.priceRetail === 'number' && bike.priceRetail > 0
                         ? `${bike.priceRetail} Kč`
-                        : 'Contact for price')
+                        : 'Cena na dotaz')
                 }</p>
                 <Link href={`/catalog/${bike.id}`} className="text-blue-600 hover:underline font-semibold">
-                  View Details
+                  Detail kola
                 </Link>
               </div>
             ))}

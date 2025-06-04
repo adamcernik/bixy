@@ -105,57 +105,57 @@ export default function BikeDetailPage() {
           <div className="flex flex-wrap items-center gap-2 mb-4">
             <span className="text-lg text-gray-700 font-medium">{bike.manufacturer}</span>
             {bike.isEbike && (
-              <span className="bg-blue-600 text-white px-2 py-1 rounded text-xs font-semibold">E-bike</span>
+              <span className="bg-blue-600 text-white px-2 py-1 rounded text-xs font-semibold">Elektrokolo</span>
             )}
             <span className="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs">{bike.category}</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             <div>
-              <div className="text-gray-500 text-sm">Model Number</div>
+              <div className="text-gray-500 text-sm">Katalogové číslo</div>
               <div className="text-gray-900 font-medium">{bike.modelNumber}</div>
             </div>
             <div>
-              <div className="text-gray-500 text-sm">Model Year</div>
+              <div className="text-gray-500 text-sm">Modelový rok</div>
               <div className="text-gray-900 font-medium">{bike.modelYear}</div>
             </div>
             <div>
-              <div className="text-gray-500 text-sm">Frame Material</div>
+              <div className="text-gray-500 text-sm">Materiál rámu</div>
               <div className="text-gray-900 font-medium">{bike.frameMaterial}</div>
             </div>
             <div>
-              <div className="text-gray-500 text-sm">Color</div>
+              <div className="text-gray-500 text-sm">Barva</div>
               <div className="text-gray-900 font-medium">{bike.color}</div>
             </div>
             <div>
-              <div className="text-gray-500 text-sm">Battery</div>
+              <div className="text-gray-500 text-sm">Baterie</div>
               <div className="text-gray-900 font-medium">{bike.battery}</div>
             </div>
             <div>
-              <div className="text-gray-500 text-sm">Sizes</div>
+              <div className="text-gray-500 text-sm">Velikosti</div>
               <div className="flex items-center">
-                <span className="text-gray-900 font-medium">{groupedBikes.length > 1 ? 'more' : (bike.size || '-')}</span>
+                <span className="text-gray-900 font-medium">{groupedBikes.length > 1 ? 'více' : (bike.size || '-')}</span>
                 <button 
                   onClick={handleOpenSizeGuide}
                   className="ml-2 text-xs text-blue-600 hover:text-blue-800 hover:underline text-sm font-semibold mb-2 cursor-pointer select-none"
                 >
-                  Size guide
+                  Tabulka velikostí
                 </button>
               </div>
             </div>
             <div>
-              <div className="text-gray-500 text-sm">Pieces</div>
+              <div className="text-gray-500 text-sm">Ks</div>
               <div className="text-gray-900 font-medium">{groupedBikes.reduce((sum, b) => sum + (b.pieces || 0), 0)}</div>
             </div>
           </div>
           {/* Sizes Table */}
           {groupedBikes.length > 1 && (
             <div className="mb-4">
-              <div className="text-gray-700 font-semibold mb-2">Available Sizes</div>
+              <div className="text-gray-700 font-semibold mb-2">Dostupné velikosti</div>
               <table className="min-w-full text-sm border rounded">
                 <thead>
                   <tr className="bg-gray-100">
-                    <th className="px-3 py-2 text-left">Size</th>
-                    <th className="px-3 py-2 text-left">Pieces</th>
+                    <th className="px-3 py-2 text-left">Velikost</th>
+                    <th className="px-3 py-2 text-left">Ks</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -182,24 +182,24 @@ export default function BikeDetailPage() {
           )}
           {bike.note && (
             <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded mb-4">
-              <div className="text-yellow-800 font-semibold mb-1">Note</div>
+              <div className="text-yellow-800 font-semibold mb-1">Poznámka</div>
               <div className="text-yellow-700 text-sm">{bike.note}</div>
             </div>
           )}
           {/* Prices */}
           <div className="flex flex-col items-end mb-4">
             {bike.priceRetail > 0 && (
-              <span className="text-gray-400 text-base line-through mb-1">{bike.priceRetail.toLocaleString()} CZK</span>
+              <span className="text-gray-400 text-base line-through mb-1">{bike.priceRetail.toLocaleString()} Kč</span>
             )}
             {bike.priceAction > 0 && (
-              <span className="text-3xl font-bold text-green-700">{bike.priceAction.toLocaleString()} CZK</span>
+              <span className="text-3xl font-bold text-green-700">{bike.priceAction.toLocaleString()} Kč</span>
             )}
           </div>
           <button
             className="mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-300"
             onClick={() => router.back()}
           >
-            Back to Catalog
+            Zpět do katalogu
           </button>
           {bike.link && (
             <a
@@ -208,7 +208,7 @@ export default function BikeDetailPage() {
               rel="noopener noreferrer"
               className="mt-4 ml-4 px-6 py-3 bg-transparent border border-blue-600 text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-colors duration-300"
             >
-              Product Description
+              Popis produktu
             </a>
           )}
         </div>

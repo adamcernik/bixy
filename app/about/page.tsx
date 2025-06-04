@@ -7,13 +7,13 @@ export default function AboutPage() {
     <Container maxWidth="md" sx={{ py: 6 }}>
       <Paper elevation={3} sx={{ p: 6, mt: 4, borderRadius: 2, textAlign: 'center' }}>
         <Typography variant="h3" component="h1" gutterBottom fontWeight="bold">
-          Coming Soon
+          Již brzy
         </Typography>
         <Typography variant="h5" color="text.secondary" sx={{ mb: 4 }}>
-          We're working on something exciting!
+          Pracujeme na něčem zajímavém!
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Our About page is currently under construction. Check back soon to learn more about Adam Bikes and our story.
+          Naše stránka O nás je momentálně ve výstavbě. Brzy se zde dozvíte více o Adam Bikes a našem příběhu.
         </Typography>
       </Paper>
     </Container>

@@ -13,7 +13,7 @@ export default function AppFooter() {
       <Container maxWidth="lg">
         <Box className="text-center">
           <Typography variant="body2" color="text.secondary">
-            © {new Date().getFullYear()} Adam Bikes. All rights reserved.
+            © {new Date().getFullYear()} Adam Bikes. Všechna práva vyhrazena.
           </Typography>
           
           {isAdminPage && (
@@ -24,10 +24,10 @@ export default function AppFooter() {
                 </Link>
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Database: {process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL}
+                Databáze: {process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                App Version: {process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0'}
+                Verze aplikace: {process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0'}
               </Typography>
             </Box>
           )}

@@ -49,19 +49,18 @@ export default function AccessDenied() {
         </Avatar>
         
         <Typography variant="h5" component="h1" sx={{ mb: 2, mt: 2, fontWeight: 'bold' }}>
-          Registration Successful
+          Registrace úspěšná
         </Typography>
         
         <Typography variant="body1" align="center" sx={{ mb: 3 }}>
-          Hello <strong>{userData?.displayName || 'User'}</strong>,
-          <br />
-          Your account has been registered successfully.
+          Dobrý den <strong>{userData?.displayName || 'Uživatel'}</strong>,<br />
+          Váš účet byl úspěšně zaregistrován.
         </Typography>
         
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
           <CircularProgress size={20} sx={{ mr: 2 }} />
           <Typography variant="body2" color="text.secondary">
-            Waiting for administrator approval. This usually takes a short while.
+            Čeká se na schválení administrátorem. Obvykle to trvá jen krátkou chvíli.
           </Typography>
         </Box>
         
@@ -71,7 +70,7 @@ export default function AccessDenied() {
           onClick={logout}
           sx={{ mt: 2 }}
         >
-          Sign Out
+          Odhlásit se
         </Button>
       </Paper>
     </Box>

@@ -10,7 +10,7 @@ export default function ContactPage() {
   return (
     <Container maxWidth="md" sx={{ py: 6 }}>
       <Typography variant="h3" component="h1" gutterBottom textAlign="center" fontWeight="bold">
-        Contact
+        Kontakt
       </Typography>
       
       <Paper elevation={3} sx={{ p: 4, mt: 4, borderRadius: 2 }}>
@@ -61,7 +61,7 @@ export default function ContactPage() {
               
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <LocationOnIcon sx={{ mr: 2, color: 'primary.main', fontSize: 28 }} />
-                <Typography>Praha, Czech Republic</Typography>
+                <Typography>Praha, Česká republika</Typography>
               </Box>
             </Box>
           </div>
@@ -94,7 +94,7 @@ export default function ContactPage() {
         align="center" 
         sx={{ mt: 4, color: 'text.secondary' }}
       >
-        Feel free to contact me with any questions about bikes or potential collaborations.
+        Neváhejte mě kontaktovat s jakýmikoli dotazy ohledně kol nebo možné spolupráce.
       </Typography>
     </Container>
   );

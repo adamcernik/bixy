@@ -160,7 +160,7 @@ export default function CatalogPage() {
   return (
     <main className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Our Bikes</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">Naše kola</h1>
         <div className="bg-white p-4 rounded-lg shadow-sm mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Height Range Filter */}
@@ -171,7 +171,7 @@ export default function CatalogPage() {
                 className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 {heightRanges.map(range => (
-                  <option key={range.value} value={range.value}>{range.label}</option>
+                  <option key={range.value} value={range.value}>{range.label.replace('All Heights', 'Všechny výšky')}</option>
                 ))}
               </select>
             </div>
@@ -182,7 +182,7 @@ export default function CatalogPage() {
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">All Categories</option>
+                <option value="">Všechny kategorie</option>
                 {categories.map(category => (
                   <option key={category} value={category}>{category}</option>
                 ))}
@@ -195,7 +195,7 @@ export default function CatalogPage() {
                 onChange={(e) => setSelectedBattery(e.target.value)}
                 className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">All Batteries</option>
+                <option value="">Všechny baterie</option>
                 {batteryOptions.map(battery => (
                   <option key={battery} value={battery}>{battery}</option>
                 ))}
@@ -209,7 +209,14 @@ export default function CatalogPage() {
                 className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 {sortOptions.map(option => (
-                  <option key={option.value} value={option.value}>{option.label}</option>
+                  <option key={option.value} value={option.value}>{option.label
+                    .replace('Price: Low to High', 'Cena: od nejnižší')
+                    .replace('Price: High to Low', 'Cena: od nejvyšší')
+                    .replace('Name: A to Z', 'Název: A–Z')
+                    .replace('Name: Z to A', 'Název: Z–A')
+                    .replace('Size: Small to Large', 'Velikost: od nejmenší')
+                    .replace('Size: Large to Small', 'Velikost: od největší')}
+                  </option>
                 ))}
               </select>
             </div>
@@ -223,15 +230,15 @@ export default function CatalogPage() {
                   className="sr-only peer"
                 />
                 <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                <span className="ml-3 text-sm font-medium text-gray-900">E-bikes only</span>
+                <span className="ml-3 text-sm font-medium text-gray-900">Pouze elektrokola</span>
               </label>
             </div>
           </div>
         </div>
         {/* Results count */}
         <div className="mb-4 text-gray-600 flex flex-wrap gap-4 items-center">
-          <span>Showing {sortedGroupedBikes.length} of {groupBikesByModel(bikes).length} models</span>
-          <span className="font-semibold">Total in stock: {totalPieces}</span>
+          <span>Zobrazeno {sortedGroupedBikes.length} z {groupBikesByModel(bikes).length} modelů</span>
+          <span className="font-semibold">Celkem skladem: {totalPieces}</span>
         </div>
         {/* Bike Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -282,8 +289,8 @@ export default function CatalogPage() {
                       <table className="w-full text-xs border-collapse">
                         <thead className="bg-gray-100">
                           <tr>
-                            <th className="py-1 px-2 text-left border text-gray-700">Size</th>
-                            <th className="py-1 px-2 text-left border text-gray-700">Pieces</th>
+                            <th className="py-1 px-2 text-left border text-gray-700">Velikost</th>
+                            <th className="py-1 px-2 text-left border text-gray-700">Ks</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -310,10 +317,10 @@ export default function CatalogPage() {
                     </div>
                     <div className="flex flex-col items-end mt-4">
                       {firstBike.priceRetail > 0 && (
-                        <span className="text-gray-400 text-sm line-through mb-1">{firstBike.priceRetail.toLocaleString()} CZK</span>
+                        <span className="text-gray-400 text-sm line-through mb-1">{firstBike.priceRetail.toLocaleString()} Kč</span>
                       )}
                       {firstBike.priceAction > 0 && (
-                        <span className="text-2xl font-bold text-green-700">{firstBike.priceAction.toLocaleString()} CZK</span>
+                        <span className="text-2xl font-bold text-green-700">{firstBike.priceAction.toLocaleString()} Kč</span>
                       )}
                     </div>
                   </div>
@@ -325,7 +332,7 @@ export default function CatalogPage() {
         {/* No results message */}
         {sortedGroupedBikes.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No bikes found matching your criteria</p>
+            <p className="text-gray-500 text-lg">Nebylo nalezeno žádné kolo odpovídající vašim kritériím</p>
             <button
               onClick={() => {
                 setSelectedCategory('');
@@ -333,7 +340,7 @@ export default function CatalogPage() {
               }}
               className="mt-4 text-blue-600 hover:text-blue-800 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors cursor-pointer select-none"
             >
-              Clear all filters
+              Vymazat všechny filtry
             </button>
           </div>
         )}
