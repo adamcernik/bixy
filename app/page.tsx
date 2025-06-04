@@ -44,21 +44,21 @@ export default function HomePage() {
   return (
     <main className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative w-full h-[400px] md:h-[500px] flex items-center bg-gray-100 overflow-hidden">
+      <section className="relative w-full h-[400px] md:h-[500px] flex flex-col items-center justify-center bg-gray-100 overflow-hidden">
         <img
           src={getAssetPath('/images/hero-background.jpeg')}
           alt="Hero pozadí"
           className="absolute inset-0 w-full h-full object-cover object-center opacity-60"
         />
-        {/* Bike image overlay, not centered */}
-        <img
-          src={getAssetPath('/images/hero-bike.png')}
-          alt="Hero kolo"
-          className="absolute z-20 w-[60vw] max-w-[500px] left-0 top-1/2 -translate-y-1/2 drop-shadow-xl pointer-events-none select-none"
-          style={{ maxHeight: '80%', objectFit: 'contain' }}
-        />
-        <div className="relative z-30 w-full flex flex-col items-end pr-8 md:pr-16">
-          <div className="bg-transparent text-right mt-[320px] md:mt-[340px]">
+        {/* Centered bike image */}
+        <div className="relative z-20 flex flex-col items-center w-full">
+          <img
+            src={getAssetPath('/images/hero-bike.png')}
+            alt="Hero kolo"
+            className="w-[60vw] max-w-[500px] drop-shadow-xl pointer-events-none select-none mx-auto"
+            style={{ maxHeight: '80%', objectFit: 'contain' }}
+          />
+          <div className="mt-4 text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">Najděte svůj ideální elektrokolo - nyní v akci!</h1>
             <p className="text-lg md:text-2xl mb-6 text-white drop-shadow">Omezená nabídka: Speciální ceny na prémiové elektrokola</p>
             <Link href="/catalog">
