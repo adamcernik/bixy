@@ -48,7 +48,7 @@ export default function HomePage() {
         <img
           src={getAssetPath('/images/hero-background.jpeg')}
           alt="Hero pozadí"
-          className="absolute inset-0 w-full h-full object-cover object-center opacity-60"
+          className="absolute inset-0 w-full h-full object-cover object-center"
         />
         {/* Centered bike image */}
         <div className="relative z-20 flex flex-col items-center w-full">
@@ -59,8 +59,8 @@ export default function HomePage() {
             style={{ maxHeight: '80%', objectFit: 'contain' }}
           />
           <div className="mt-4 text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">Najděte svůj ideální elektrokolo - nyní v akci!</h1>
-            <p className="text-lg md:text-2xl mb-6 text-white drop-shadow">Omezená nabídka: Speciální ceny na prémiové elektrokola</p>
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">Najděte svůj ideální elektrokolo</h1>
+            <p className="text-lg md:text-2xl mb-6 text-white drop-shadow">Dělám to dlouho, dělám to rád a jsem v tom dobrý.</p>
             <Link href="/catalog">
               <button className="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold shadow hover:bg-blue-700 transition-colors cursor-pointer select-none">
                 Zobrazit kola
