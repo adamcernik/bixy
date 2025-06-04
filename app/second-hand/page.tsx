@@ -19,9 +19,9 @@ export default function SecondHandPage() {
   return (
     <main className="min-h-screen bg-white py-12 px-4">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl md:text-5xl font-bold mb-6 text-center text-blue-800">Second Hand & Ex-Demo Ebikes</h1>
-        <p className="text-lg text-gray-700 mb-10 text-center">
-          Discover great deals on quality used and ex-demo ebikes. All bikes have been professionally checked and serviced.
+        <h1 className="text-4xl md:text-5xl font-bold mb-6 text-center text-blue-800">Ojetá a testovací kola</h1>
+        <p className="text-lg text-gray-700 mb-8 text-center">
+          Kvalitní ojetá kola Bulls v perfektním technickém stavu. Nabízíme jak elektrokola, tak klasická kola, která byla používána jako testovací nebo prošla jen krátkodobým používáním. Před prodejem jsou důkladně zkontrolována a servisována, takže získáte spolehlivé kolo se zárukou funkčnosti za výhodnou cenu.
         </p>
         <ul className="space-y-8">
           {secondHandBikes.map((bike) => (
