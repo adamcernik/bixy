@@ -17,7 +17,7 @@ export default function LoginPage() {
               <span className="text-lg font-semibold text-green-700 mb-2">Signed in as</span>
               <span className="text-blue-900 font-bold">{user.displayName || user.email}</span>
             </div>
-            <Link href="/stock" className="w-full mb-2">
+            <Link href="/admin/inventory" className="w-full mb-2">
               <button className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-300 mb-2">
                 Přejít do skladu
               </button>
