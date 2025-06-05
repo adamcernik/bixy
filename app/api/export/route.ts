@@ -39,8 +39,20 @@ export async function POST(request: Request) {
     });
     worksheet.addRow(headers);
 
-    // Add data
-    bikes.forEach(bike => {
+    // Set column widths and style for modelNumber/modelName
+    columns.forEach((col: string, idx: number) => {
+      if (col === 'modelNumber') {
+        worksheet.getColumn(idx + 1).width = 22;
+      } else if (col === 'modelName') {
+        worksheet.getColumn(idx + 1).width = 32;
+      } else {
+        worksheet.getColumn(idx + 1).width = 16;
+      }
+      worksheet.getColumn(idx + 1).alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+    });
+
+    // Add data with alternating row colors and model name as hyperlink
+    bikes.forEach((bike, i) => {
       const row: any[] = [];
       columns.forEach((col: string) => {
         switch(col) {
@@ -51,7 +63,12 @@ export async function POST(request: Request) {
             row.push(bike.size || '');
             break;
           case 'modelName':
-            row.push(bike.modelName || '');
+            // Add hyperlink if link exists
+            if (bike.link) {
+              row.push({ text: bike.modelName || '', hyperlink: bike.link });
+            } else {
+              row.push(bike.modelName || '');
+            }
             break;
           case 'battery':
             row.push(bike.battery || '');
@@ -75,7 +92,17 @@ export async function POST(request: Request) {
             row.push('');
         }
       });
-      worksheet.addRow(row);
+      const addedRow = worksheet.addRow(row);
+      // Double color (striped rows)
+      if (i % 2 === 1) {
+        addedRow.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FFF5F5F5' }
+        };
+      }
+      // Increase row height for padding
+      addedRow.height = 24;
     });
 
     // Style the header row
@@ -85,6 +112,12 @@ export async function POST(request: Request) {
       pattern: 'solid',
       fgColor: { argb: 'FFE0E0E0' }
     };
+    worksheet.getRow(1).height = 28;
+
+    // Freeze header row and model number column
+    worksheet.views = [
+      { state: 'frozen', xSplit: columns.indexOf('modelNumber') + 1, ySplit: 1 }
+    ];
 
     // Generate buffer
     const buffer = await workbook.xlsx.writeBuffer();
