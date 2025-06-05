@@ -4,7 +4,7 @@ import { Dialog, DialogTitle, DialogContent, IconButton, Box, Button } from '@mu
 import CloseIcon from '@mui/icons-material/Close';
 import DownloadIcon from '@mui/icons-material/Download';
 import LinkIcon from '@mui/icons-material/Link';
-import { getAssetPath } from '../utils/pathUtils';
+import { getAssetPath } from '../../utils/pathUtils';
 
 interface ImageViewerModalProps {
   open: boolean;

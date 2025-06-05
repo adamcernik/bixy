@@ -9,7 +9,7 @@ import {
   CircularProgress
 } from '@mui/material';
 import { LockOutlined as LockIcon } from '@mui/icons-material';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 
 export default function AccessDenied() {
   const { userData, logout } = useAuth();

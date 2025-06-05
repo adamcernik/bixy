@@ -7,7 +7,7 @@ import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import PeopleIcon from '@mui/icons-material/People';
 import AddIcon from '@mui/icons-material/Add';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 
 const menuItems = [
   { key: 'inventory', label: 'Sklad', icon: <WarehouseIcon />, href: '/admin/inventory' },

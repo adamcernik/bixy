@@ -22,8 +22,8 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import AddIcon from '@mui/icons-material/Add';
 import PeopleIcon from '@mui/icons-material/People';
 import MenuIcon from '@mui/icons-material/Menu';
-import { useAuth } from '../context/AuthContext';
-import { getAssetPath } from '../utils/pathUtils';
+import { useAuth } from '../../context/AuthContext';
+import { getAssetPath } from '../../utils/pathUtils';
 import { useRouter } from 'next/navigation';
 
 const menuItems = [

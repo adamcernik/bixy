@@ -17,9 +17,9 @@ import {
   Snackbar,
   Alert
 } from '@mui/material';
-import { updateUserAccess, getAllUsers, UserData } from '../services/authService';
-import { useAuth } from '../context/AuthContext';
-import { ADMIN_EMAIL } from '../firebase/config';
+import { updateUserAccess, getAllUsers, UserData } from '../../services/authService';
+import { useAuth } from '../../context/AuthContext';
+import { ADMIN_EMAIL } from '../../firebase/config';
 
 export default function UserManagementPage() {
   const { userData } = useAuth();

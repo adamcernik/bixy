@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import { Box, Container, Typography, Link } from '@mui/material';
-import { getAssetPath } from '../utils/pathUtils';
+import { getAssetPath } from '../../utils/pathUtils';
 
 export default function AppFooter() {
   const pathname = usePathname();
