@@ -171,7 +171,8 @@ export default function ResponsiveHeader({
               </ListItem>
             ))}
             <ListItem
-              onClick={onAddNewBike}
+              component="a"
+              href="/admin/addbike"
               sx={{ cursor: 'pointer' }}
             >
               <ListItemIcon><AddIcon /></ListItemIcon>

@@ -15,10 +15,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     setActiveSection(section);
   }, [section]);
 
-  const handleAddNewBike = () => {
-    router.push('/admin/addbike');
-  };
-
   return (
     <AuthProvider>
       <AdminHeader activeSection={activeSection} />

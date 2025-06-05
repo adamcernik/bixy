@@ -185,9 +185,6 @@ export default function StockPage() {
             />
           </div>
         )}
-        {activeSection === 'users' && isAdmin && (
-          <UserManagement open={true} onClose={() => {}} />
-        )}
         {activeSection === 'promoted' && isAdmin && (
           <PromotedBikesAdmin bikes={bikes} />
         )}
