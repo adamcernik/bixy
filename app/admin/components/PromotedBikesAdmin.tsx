@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Box, Typography, FormControl, InputLabel, Select, MenuItem, Button, CircularProgress, Alert } from '@mui/material';
 import { Bike } from '../../models/Bike';
-import { getPromotedBikes, setPromotedBikes } from '../../services/promoted/promotedService';
+import { getPromotedBikes, setPromotedBikes } from '../../lib/services/promoted/promotedService';
 
 interface PromotedBikesAdminProps {
   bikes: Bike[];

@@ -7,7 +7,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 import { getAssetPath } from '../../utils/pathUtils';
 import { Bike } from '../../models/Bike';
-import { getBikes } from '../../services/bike/bikeService';
+import { getBikes } from '../../lib/services/bike/bikeService';
 import PromotedBikesAdmin from '../components/PromotedBikesAdmin';
 
 const BikeDataGrid = dynamic(() => import('../components/BikeDataGrid'), {

@@ -17,7 +17,7 @@ import {
   Snackbar,
   Alert
 } from '@mui/material';
-import { updateUserAccess, getAllUsers, UserData } from '../../services/auth/authService';
+import { updateUserAccess, getAllUsers, UserData } from '../../lib/services/auth/authService';
 import { useAuth } from '../../context/AuthContext';
 import { ADMIN_EMAIL } from '../../firebase/config';
 

@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import PromotedBikesAdmin from '../components/PromotedBikesAdmin';
-import { getBikes } from '../../services/bike/bikeService';
+import { getBikes } from '../../lib/services/bike/bikeService';
 import { Bike } from '../../models/Bike';
 
 export default function AdminPromotedPage() {

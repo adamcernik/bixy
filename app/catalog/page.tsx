@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
-import { getBikes } from '../services/bike/bikeService';
+import { getBikes } from '../lib/services/bike/bikeService';
 import { Bike } from '../models/Bike';
 import { getAssetPath } from '../utils/pathUtils';
 import Link from 'next/link';

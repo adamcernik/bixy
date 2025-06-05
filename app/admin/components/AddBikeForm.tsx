@@ -1,7 +1,7 @@
 "use client";
 import { useState } from 'react';
 import { Box, Button, TextField, FormControlLabel, Switch, MenuItem, Select, InputLabel, FormControl, Typography } from '@mui/material';
-import { addBike, updateBike } from '../../services/bike/bikeService';
+import { addBike, updateBike } from '../../lib/services/bike/bikeService';
 import { Bike } from '../../models/Bike';
 import { getAssetPath } from '../../utils/pathUtils';
 
