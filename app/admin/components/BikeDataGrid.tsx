@@ -37,6 +37,7 @@ import {
   Select
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
+import EditIcon from '@mui/icons-material/Edit';
 import { getBikes, addBike, updateBike, deleteBike } from '../../lib/services/bike/bikeService';
 import { Bike } from '../../models/Bike';
 import { getAssetPath } from '../../utils/pathUtils';
@@ -533,7 +534,13 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog, onEditBi
       type: 'actions',
       headerName: 'Actions',
       width: columnWidths.actions || 70,
-      getActions: ({ id }) => [
+      getActions: ({ id, row }) => [
+        <GridActionsCellItem
+          icon={<EditIcon />}
+          label="Edit"
+          onClick={() => onEditBike && onEditBike(row as Bike)}
+          color="primary"
+        />, 
         <GridActionsCellItem
           icon={<DeleteIcon />}
           label="Delete"
