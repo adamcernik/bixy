@@ -12,24 +12,21 @@ export default function AppFooter() {
     <Box component="footer" className="bg-white py-8">
       <Container maxWidth="lg">
         <Box className="text-center">
-          <Typography variant="body2" color="text.secondary">
-            © {new Date().getFullYear()} Adam Bikes. Všechna práva vyhrazena.
-          </Typography>
-          
-          {isAdminPage && (
-            <Box className="mt-2 space-y-1">
-              <Typography variant="body2" color="text.secondary">
-                <Link href="mailto:info@adambikes.com" color="inherit" underline="hover">
-                  info@adambikes.com
-                </Link>
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Databáze: {process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Verze aplikace: {process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0'}
-              </Typography>
-            </Box>
+          {isAdminPage ? (
+            <Typography variant="body2" color="text.secondary">
+              © {new Date().getFullYear()} Adam Bikes -{' '}
+              <Link href="mailto:mail@adamcernik.cz" color="inherit" underline="hover">
+                mail@adamcernik.cz
+              </Link>
+              {' - '}
+              <Link href="https://adambikes.cz" color="inherit" underline="hover" target="_blank" rel="noopener noreferrer">
+                adambikes.cz
+              </Link>
+            </Typography>
+          ) : (
+            <Typography variant="body2" color="text.secondary">
+              © {new Date().getFullYear()} Adam Bikes. Všechna práva vyhrazena.
+            </Typography>
           )}
         </Box>
       </Container>
