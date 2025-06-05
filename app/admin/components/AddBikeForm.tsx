@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Button, TextField, FormControlLabel, Switch, MenuItem, Select, InputLabel, FormControl, Typography } from '@mui/material';
 import { addBike, updateBike } from '../../lib/services/bike/bikeService';
 import { Bike } from '../../models/Bike';
@@ -32,10 +32,14 @@ const categoryOptions = ['MTB', 'Road', 'Gravel', 'City', 'Trekking', 'Kids', 'O
 const getImagePath = (imageNumber: number) => getAssetPath(`/jpeg/${imageNumber}.jpeg`);
 const getPlaceholderImage = () => getAssetPath('/file.svg');
 
-export default function AddBikeForm({ onSuccess }: { onSuccess: () => void }) {
-  const [currentBike, setCurrentBike] = useState<Bike>(initialBikeState);
+export default function AddBikeForm({ onSuccess, initialBike, onSave, isEdit }: { onSuccess?: () => void, initialBike?: Bike, onSave?: (bike: Bike) => Promise<void>, isEdit?: boolean }) {
+  const [currentBike, setCurrentBike] = useState<Bike>(initialBike || initialBikeState);
   const [imagePreviewError, setImagePreviewError] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (initialBike) setCurrentBike(initialBike);
+  }, [initialBike]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -69,8 +73,12 @@ export default function AddBikeForm({ onSuccess }: { onSuccess: () => void }) {
         priceAction: (typeof currentBike.priceAction === 'string' && (currentBike.priceAction as string).trim() === '') || currentBike.priceAction === undefined ? 0 : Number(currentBike.priceAction),
         priceReseller: (typeof currentBike.priceReseller === 'string' && (currentBike.priceReseller as string).trim() === '') || currentBike.priceReseller === undefined ? 0 : Number(currentBike.priceReseller),
       };
-      await addBike(bikeToSave);
-      onSuccess();
+      if (onSave) {
+        await onSave(bikeToSave);
+      } else {
+        await addBike(bikeToSave);
+        if (onSuccess) onSuccess();
+      }
     } catch (error) {
       console.error("Error saving bike:", error);
     } finally {
@@ -80,7 +88,7 @@ export default function AddBikeForm({ onSuccess }: { onSuccess: () => void }) {
 
   return (
     <Box component="form" sx={{ maxWidth: 700, mx: 'auto', p: 2, display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }} noValidate autoComplete="off">
-      <Typography variant="h5" sx={{ mb: 2, width: '100%' }}>Přidat nové kolo</Typography>
+      <Typography variant="h5" sx={{ mb: 2, width: '100%' }}>{isEdit ? 'Upravit kolo' : 'Přidat nové kolo'}</Typography>
       {/* Row 1: Model number, Battery */}
       <Box sx={{ display: 'flex', gap: 2 }}>
         <TextField label="Model Number" name="modelNumber" value={currentBike.modelNumber} onChange={handleInputChange} required fullWidth />
@@ -128,7 +136,7 @@ export default function AddBikeForm({ onSuccess }: { onSuccess: () => void }) {
       {/* Notes */}
       <TextField label="Notes" name="note" value={currentBike.note} onChange={handleInputChange} multiline rows={4} fullWidth />
       {/* Save button */}
-      <Button variant="contained" color="primary" onClick={handleSave} disabled={saving} sx={{ width: '100%', mt: 2, fontWeight: 'bold', fontSize: 20, py: 1.5 }}>SAVE</Button>
+      <Button variant="contained" color="primary" onClick={handleSave} disabled={saving} sx={{ width: '100%', mt: 2, fontWeight: 'bold', fontSize: 20, py: 1.5 }}>{isEdit ? 'ULOŽIT ZMĚNY' : 'SAVE'}</Button>
     </Box>
   );
 } 
