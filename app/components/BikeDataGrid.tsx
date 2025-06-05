@@ -118,7 +118,7 @@ const getImagePath = (imageNumber: number): string => {
 
 // Add a placeholder image function
 const getPlaceholderImage = (): string => {
-  return getAssetPath('/bixy-logo.svg');
+  return getAssetPath('/images/adam-bikes-electric-cycling-logo.svg');
 };
 
 export default function BikeDataGrid({ openAddDialog, setOpenAddDialog, onEditBike }: BikeDataGridProps) {

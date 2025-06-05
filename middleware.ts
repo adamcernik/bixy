@@ -4,15 +4,12 @@ import type { NextRequest } from 'next/server';
 // Only protect /admin
 const protectedPaths = ['/admin'];
 
-// Get the base path based on environment
-const basePath = process.env.NODE_ENV === 'production' ? '/bixy' : '';
-
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Check if the path is protected
   const isProtectedPath = protectedPaths.some(path => 
-    pathname.startsWith(`${basePath}${path}`) || pathname.startsWith(path)
+    pathname.startsWith(path)
   );
 
   if (isProtectedPath) {
@@ -21,15 +18,15 @@ export function middleware(request: NextRequest) {
 
     // If there's no token, redirect to the login page
     if (!token) {
-      const url = new URL(`${basePath}/login`, request.url);
+      const url = new URL('/login', request.url);
       url.searchParams.set('from', pathname);
       return NextResponse.redirect(url);
     }
   }
 
   // If the path is /catalog, redirect to the homepage
-  if (pathname === '/catalog' || pathname === `${basePath}/catalog`) {
-    return NextResponse.redirect(new URL(basePath || '/', request.url));
+  if (pathname === '/catalog') {
+    return NextResponse.redirect(new URL('/', request.url));
   }
 
   return NextResponse.next();
@@ -40,9 +37,6 @@ export const config = {
   matcher: [
     '/catalog',
     '/admin/:path*',
-    '/partners/:path*',
-    '/bixy/catalog',
-    '/bixy/admin/:path*',
-    '/bixy/partners/:path*'
+    '/partners/:path*'
   ]
 }; 

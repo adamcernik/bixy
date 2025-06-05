@@ -45,7 +45,6 @@ export default function StockPage() {
   const hasAccess = userData?.hasAccess || isAdmin;
 
   const pathname = usePathname();
-  const basePath = process.env.NODE_ENV === 'production' ? '/bixy' : '';
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -81,12 +80,12 @@ export default function StockPage() {
 
   useEffect(() => {
     if (!user) {
-      router.push(`${basePath}/login?from=${pathname}`);
+      router.push(`/login?from=${pathname}`);
       return;
     }
 
     if (user && !hasAccess) {
-      router.push(basePath || '/');
+      router.push('/');
       return;
     }
 
@@ -102,7 +101,7 @@ export default function StockPage() {
     };
 
     fetchBikes();
-  }, [user, hasAccess, router, pathname, basePath]);
+  }, [user, hasAccess, router, pathname]);
 
   // Function to handle Add New Bike button click
   const handleAddNewBike = () => {

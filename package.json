@@ -2,7 +2,6 @@
   "name": "bixy",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://adamcernik.github.io/bixy",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
