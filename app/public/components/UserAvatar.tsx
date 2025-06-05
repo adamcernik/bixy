@@ -12,7 +12,7 @@ import {
   Typography
 } from '@mui/material';
 import { AccountCircle } from '@mui/icons-material';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import GoogleIcon from '@mui/icons-material/Google';
 
 export default function UserAvatar() {
