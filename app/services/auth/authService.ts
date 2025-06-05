@@ -16,7 +16,7 @@ import {
   updateDoc,
   Timestamp 
 } from 'firebase/firestore';
-import { auth, googleProvider, db, ADMIN_EMAIL } from '../firebase/config';
+import { auth, googleProvider, db, ADMIN_EMAIL } from '../../firebase/config';
 
 // Define the User model with access permission
 export interface UserData {
