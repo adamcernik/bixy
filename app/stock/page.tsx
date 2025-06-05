@@ -23,12 +23,6 @@ const BikeDataGrid = dynamic(() => import('../components/BikeDataGrid'), {
   loading: () => <p>Loading bike inventory...</p>
 });
 
-// Dynamically import the CsvImporter component
-const CsvImporter = dynamic(() => import('../components/CsvImporter'), {
-  ssr: false,
-  loading: () => <p>Loading CSV importer...</p>
-});
-
 // Dynamically import the UserManagement component
 const UserManagement = dynamic(() => import('../components/UserManagement'), {
   ssr: false

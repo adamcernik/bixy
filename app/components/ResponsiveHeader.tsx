@@ -27,7 +27,7 @@ import { getAssetPath } from '../utils/pathUtils';
 
 const menuItems = [
   { key: 'inventory', label: 'Inventory', icon: <InventoryIcon /> },
-  { key: 'csv', label: 'CSV Upload', icon: <UploadFileIcon /> },
+  { key: 'export', label: 'Export', icon: <UploadFileIcon />, href: '/export' },
   { key: 'promoted', label: 'Promoted', icon: <AddIcon /> },
   { key: 'users', label: 'Users', icon: <PeopleIcon /> },
 ];
@@ -91,17 +91,29 @@ export default function ResponsiveHeader({
 
         {/* Desktop menu */}
         <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center', gap: 2, flex: 2, justifyContent: 'center' }}>
-          {menuItems.map((item) => (
-            <Button
-              key={item.key}
-              color={activeSection === item.key ? 'primary' : 'inherit'}
-              startIcon={item.icon}
-              onClick={() => setActiveSection(item.key)}
-              sx={{ fontWeight: activeSection === item.key ? 'bold' : 'normal' }}
-            >
-              {item.label}
-            </Button>
-          ))}
+          {menuItems.map((item) =>
+            item.href ? (
+              <Button
+                key={item.key}
+                color={activeSection === item.key ? 'primary' : 'inherit'}
+                startIcon={item.icon}
+                href={item.href}
+                sx={{ fontWeight: activeSection === item.key ? 'bold' : 'normal' }}
+              >
+                {item.label}
+              </Button>
+            ) : (
+              <Button
+                key={item.key}
+                color={activeSection === item.key ? 'primary' : 'inherit'}
+                startIcon={item.icon}
+                onClick={() => setActiveSection(item.key)}
+                sx={{ fontWeight: activeSection === item.key ? 'bold' : 'normal' }}
+              >
+                {item.label}
+              </Button>
+            )
+          )}
           <Button
             variant="contained"
             color="primary"
@@ -150,19 +162,34 @@ export default function ResponsiveHeader({
       >
         <Box sx={{ width: 250 }}>
           <List>
-            {menuItems.map((item) => (
-              <ListItem
-                key={item.key}
-                onClick={() => handleSectionChange(item.key)}
-                sx={{ 
-                  cursor: 'pointer',
-                  bgcolor: activeSection === item.key ? 'action.selected' : 'inherit'
-                }}
-              >
-                <ListItemIcon>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.label} />
-              </ListItem>
-            ))}
+            {menuItems.map((item) =>
+              item.href ? (
+                <ListItem
+                  key={item.key}
+                  component="a"
+                  href={item.href}
+                  sx={{
+                    cursor: 'pointer',
+                    bgcolor: activeSection === item.key ? 'action.selected' : 'inherit'
+                  }}
+                >
+                  <ListItemIcon>{item.icon}</ListItemIcon>
+                  <ListItemText primary={item.label} />
+                </ListItem>
+              ) : (
+                <ListItem
+                  key={item.key}
+                  onClick={() => handleSectionChange(item.key)}
+                  sx={{ 
+                    cursor: 'pointer',
+                    bgcolor: activeSection === item.key ? 'action.selected' : 'inherit'
+                  }}
+                >
+                  <ListItemIcon>{item.icon}</ListItemIcon>
+                  <ListItemText primary={item.label} />
+                </ListItem>
+              )
+            )}
             <ListItem
               onClick={onAddNewBike}
               sx={{ cursor: 'pointer' }}
