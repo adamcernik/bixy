@@ -538,7 +538,11 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog, onEditBi
         <GridActionsCellItem
           icon={<EditIcon />}
           label="Edit"
-          onClick={() => onEditBike && onEditBike(row as Bike)}
+          onClick={() => {
+            console.log("BikeDataGrid: Edit button clicked for bike:", row);
+            console.log("BikeDataGrid: Bike ID:", (row as Bike).id);
+            onEditBike && onEditBike(row as Bike);
+          }}
           color="primary"
         />, 
         <GridActionsCellItem

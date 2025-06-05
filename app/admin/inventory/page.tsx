@@ -95,7 +95,11 @@ export default function StockPage() {
   return (
     <main className="flex min-h-screen flex-col bg-white">
       <div className="w-full p-4">
-        <BikeDataGrid onEditBike={(bike) => router.push(`/admin/editbike/${bike.id}`)} />
+        <BikeDataGrid onEditBike={(bike) => {
+          console.log("Inventory: Navigating to edit bike:", bike);
+          console.log("Inventory: Navigation URL:", `/admin/editbike/${bike.id}`);
+          router.push(`/admin/editbike/${bike.id}`);
+        }} />
       </div>
     </main>
   );

@@ -2,8 +2,8 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import AddBikeForm from "../../components/AddBikeForm";
-import { getBikes, updateBike } from "../../lib/services/bike/bikeService";
-import { Bike } from "../../models/Bike";
+import { getBikes, updateBike } from "../../../lib/services/bike/bikeService";
+import { Bike } from "../../../models/Bike";
 
 export default function EditBikePage() {
   const router = useRouter();
@@ -14,10 +14,20 @@ export default function EditBikePage() {
 
   useEffect(() => {
     const fetchBike = async () => {
-      const bikes = await getBikes();
-      const found = bikes.find((b) => b.id === id);
-      setBike(found || null);
-      setLoading(false);
+      console.log("EditBikePage: Fetching bike with ID:", id);
+      try {
+        const bikes = await getBikes();
+        console.log("EditBikePage: All bikes fetched:", bikes.length);
+        console.log("EditBikePage: Looking for bike with ID:", id);
+        const found = bikes.find((b: Bike) => b.id === id);
+        console.log("EditBikePage: Found bike:", found);
+        setBike(found || null);
+      } catch (error) {
+        console.error("EditBikePage: Error fetching bike:", error);
+        setBike(null);
+      } finally {
+        setLoading(false);
+      }
     };
     if (id) fetchBike();
   }, [id]);
@@ -30,6 +40,7 @@ export default function EditBikePage() {
       <AddBikeForm
         initialBike={bike}
         onSave={async (updatedBike) => {
+          console.log("EditBikePage: Saving updated bike:", updatedBike);
           await updateBike(bike.id!, updatedBike);
           router.push("/admin/inventory");
         }}
