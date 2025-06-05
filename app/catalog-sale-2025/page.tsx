@@ -147,7 +147,7 @@ export default function CatalogSale2025Page() {
 
   // Calculate total pieces (sum of pieces for all grouped bikes)
   const totalPieces = useMemo(() => {
-    return sortedGroupedBikes.reduce((sum, group) => sum + group.reduce((gSum, bike) => gSum + (bike.pieces || 0), 0), 0);
+    return sortedGroupedBikes.reduce((sum, group) => sum + group.reduce((gSum, bike) => gSum + (Number(bike.pieces) || 0), 0), 0);
   }, [sortedGroupedBikes]);
 
   if (loading) {
@@ -246,7 +246,7 @@ export default function CatalogSale2025Page() {
           {sortedGroupedBikes.map((group) => {
             const firstBike = group[0];
             const sizes = group.map(b => b.size).filter(Boolean).sort((a, b) => (parseInt(a) || 0) - (parseInt(b) || 0));
-            const totalGroupPieces = group.reduce((sum, b) => sum + (b.pieces || 0), 0);
+            const totalGroupPieces = group.reduce((sum, b) => sum + (Number(b.pieces) || 0), 0);
             return (
               <div key={firstBike.modelNumber.slice(0, -2)} className="relative">
                 <Link
@@ -296,7 +296,7 @@ export default function CatalogSale2025Page() {
                           {Object.entries(group.reduce((acc, bike) => {
                             const size = bike.size || '-';
                             if (!acc[size]) acc[size] = 0;
-                            acc[size] += bike.pieces || 0;
+                            acc[size] += Number(bike.pieces) || 0;
                             return acc;
                           }, {} as Record<string, number>))
                             .sort(([sizeA], [sizeB]) => {
