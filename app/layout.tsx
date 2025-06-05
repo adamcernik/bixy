@@ -14,6 +14,23 @@ const geist = Geist({
 export const metadata: Metadata = {
   title: "Adam Bikes",
   description: "Bike inventory management system",
+  icons: {
+    icon: [
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-icon-180x180.png', sizes: '180x180', type: 'image/png' },
+    ],
+    other: [
+      {
+        rel: 'mask-icon',
+        url: '/android-icon-192x192.png',
+      },
+    ],
+  },
+  manifest: '/manifest.json',
+  themeColor: '#ffffff',
 };
 
 export default function RootLayout({
@@ -23,10 +40,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <link rel="manifest" href="/site.webmanifest" />
-      </head>
       <body className={`${geist.variable} font-sans`}>
         <PublicHeaderWrapper />
         <AuthProvider>{children}</AuthProvider>
