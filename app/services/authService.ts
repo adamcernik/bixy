@@ -36,6 +36,14 @@ export const signInWithGoogle = async (): Promise<UserData | null> => {
     const result = await signInWithPopup(auth, googleProvider);
     const user = result.user;
     
+    // Get ID token and set auth-token cookie via API
+    const token = await user.getIdToken();
+    await fetch('/api/session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token })
+    });
+    
     // Check if user exists in the database
     const userRef = doc(db, 'users', user.uid);
     const userSnap = await getDoc(userRef);
