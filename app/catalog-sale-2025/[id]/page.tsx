@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { getBikes } from "../../services/bikeService";
+import { getBikes } from "../../services/bike/bikeService";
 import { Bike } from "../../models/Bike";
 import { getAssetPath } from "../../utils/pathUtils";
 import SizeGuideModal from '../../public/components/SizeGuideModal';

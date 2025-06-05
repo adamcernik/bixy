@@ -37,7 +37,7 @@ import {
   Select
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
-import { getBikes, addBike, updateBike, deleteBike } from '../../services/bikeService';
+import { getBikes, addBike, updateBike, deleteBike } from '../../services/bike/bikeService';
 import { Bike } from '../../models/Bike';
 import { getAssetPath } from '../../utils/pathUtils';
 import ImageViewerModal from './ImageViewerModal';

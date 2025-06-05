@@ -8,7 +8,7 @@ import {
   signInWithGoogle, 
   signOutUser, 
   UserData 
-} from '../services/authService';
+} from '../services/auth/authService';
 
 interface AuthContextType {
   user: User | null;
