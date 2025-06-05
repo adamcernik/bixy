@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { AuthProvider } from "./context/AuthContext";
 import "./globals.css";
-import AppFooter from './components/AppFooter';
+import AppFooter from './public/components/AppFooter';
 import { Analytics } from '@vercel/analytics/next';
-import PublicHeaderWrapper from './components/PublicHeaderWrapper';
+import PublicHeaderWrapper from './public/components/PublicHeaderWrapper';
 
 const geist = Geist({
   subsets: ["latin"],
