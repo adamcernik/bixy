@@ -155,11 +155,6 @@ export default function StockPage() {
   if (error) {
     return (
       <main className="flex min-h-screen flex-col">
-        <ResponsiveHeader 
-          activeSection={activeSection}
-          setActiveSection={setActiveSection}
-          onAddNewBike={handleAddNewBike}
-        />
         <div className="p-6">
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
             <p className="font-bold">Error connecting to database</p>
@@ -181,11 +176,6 @@ export default function StockPage() {
 
   return (
     <main className="flex min-h-screen flex-col bg-white">
-      <ResponsiveHeader
-        activeSection={activeSection}
-        setActiveSection={setActiveSection}
-        onAddNewBike={handleAddNewBike}
-      />
       <div className="w-full p-4">
         {activeSection === 'inventory' && (
           <div className="h-[calc(100vh-100px)]">
