@@ -1,43 +1,22 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import ConnectionIndicator from '../../components/ConnectionIndicator';
-import UserAvatar from '../../components/UserAvatar';
 import AccessDenied from '../../components/AccessDenied';
-import SignInMessage from '../../components/SignInMessage';
-import ResponsiveHeader from '../../components/ResponsiveHeader';
-import { Box, Tabs, Tab, Button, IconButton } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import PeopleIcon from '@mui/icons-material/People';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 import { getAssetPath } from '../../utils/pathUtils';
 import { Bike } from '../../models/Bike';
-import { getBikes, addBike, updateBike, deleteBike } from '../../services/bikeService';
+import { getBikes } from '../../services/bikeService';
 import PromotedBikesAdmin from '../../components/PromotedBikesAdmin';
 
-// Dynamically import the BikeDataGrid component to avoid server-side rendering issues with Firebase
 const BikeDataGrid = dynamic(() => import('../../components/BikeDataGrid'), {
   ssr: false,
   loading: () => <p>Loading bike inventory...</p>
 });
 
-// Dynamically import the UserManagement component
-const UserManagement = dynamic(() => import('../../components/UserManagement'), {
-  ssr: false
-});
-
-// Dynamically import the AddBikeModal component
-const AddBikeModal = dynamic(() => import('../../components/AddBikeModal'), {
-  ssr: false
-});
-
 export default function StockPage() {
   const [error, setError] = useState<Error | null>(null);
-  const [activeSection, setActiveSection] = useState<string>('inventory');
-  const [openAddDialog, setOpenAddDialog] = useState(false);
-  const [editingBike, setEditingBike] = useState<Bike | undefined>(undefined);
   const [bikes, setBikes] = useState<Bike[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -46,49 +25,16 @@ export default function StockPage() {
 
   const pathname = usePathname();
   const router = useRouter();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Check database connection
-  useEffect(() => {
-    const checkDbConnection = async () => {
-      try {
-        // We'll use the ConnectionIndicator's logic but just to set state
-        const { db } = await import('../../firebase/config');
-        const { collection, getDocs } = await import('firebase/firestore');
-        await getDocs(collection(db, 'bikes'));
-      } catch (err) {
-        console.error("Firebase connection error:", err);
-      }
-    };
-
-    checkDbConnection();
-  }, []);
-
-  // Global error handler for Firebase errors
-  useEffect(() => {
-    const handleGlobalError = (event: ErrorEvent) => {
-      console.error("Global error:", event.error);
-      if (event.error?.toString().includes("Firebase") || event.error?.toString().includes("Firestore")) {
-        setError(event.error);
-        event.preventDefault();
-      }
-    };
-
-    window.addEventListener('error', handleGlobalError);
-    return () => window.removeEventListener('error', handleGlobalError);
-  }, []);
 
   useEffect(() => {
     if (!user) {
       router.push(`/login?from=${pathname}`);
       return;
     }
-
     if (user && !hasAccess) {
       router.push('/');
       return;
     }
-
     const fetchBikes = async () => {
       try {
         const bikesData = await getBikes();
@@ -99,34 +45,9 @@ export default function StockPage() {
         setLoading(false);
       }
     };
-
     fetchBikes();
   }, [user, hasAccess, router, pathname]);
 
-  // Function to handle Add New Bike button click
-  const handleAddNewBike = () => {
-    setEditingBike(undefined); // Clear any editing bike
-    setOpenAddDialog(true);
-  };
-
-  const handleCloseAddBikeModal = () => {
-    setOpenAddDialog(false);
-    setEditingBike(undefined); // Clear the editing bike when closing
-  };
-
-  const handleEditBike = (bike: Bike) => {
-    setEditingBike(bike);
-    setOpenAddDialog(true);
-  };
-
-  const handleBikeAddSuccess = () => {
-    // If we're on the data grid page, refresh it
-    if (activeSection === 'inventory') {
-      // The BikeDataGrid will handle its own refresh when the modal is closed
-    }
-  };
-
-  // Show loading state while checking auth
   if (authLoading) {
     return (
       <main className="flex min-h-screen flex-col">
@@ -146,7 +67,6 @@ export default function StockPage() {
     );
   }
 
-  // Show access denied if not authenticated or not authorized
   if (!user || (user && !hasAccess)) {
     return <AccessDenied />;
   }
@@ -176,25 +96,9 @@ export default function StockPage() {
   return (
     <main className="flex min-h-screen flex-col bg-white">
       <div className="w-full p-4">
-        {activeSection === 'inventory' && (
-          <div>
-            <BikeDataGrid
-              openAddDialog={false}
-              setOpenAddDialog={setOpenAddDialog}
-              onEditBike={handleEditBike}
-            />
-          </div>
-        )}
-        {activeSection === 'promoted' && isAdmin && (
-          <PromotedBikesAdmin bikes={bikes} />
-        )}
+        <BikeDataGrid />
+        {isAdmin && <PromotedBikesAdmin bikes={bikes} />}
       </div>
-      <AddBikeModal
-        open={openAddDialog}
-        onClose={handleCloseAddBikeModal}
-        onSuccess={handleBikeAddSuccess}
-        editBike={editingBike}
-      />
     </main>
   );
 } 
