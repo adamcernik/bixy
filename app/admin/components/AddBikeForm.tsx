@@ -96,14 +96,14 @@ export default function AddBikeForm({ onSuccess }: { onSuccess: () => void }) {
       </Box>
       {/* Row 4: Pieces, Category, Image Number */}
       <Box sx={{ display: 'flex', gap: 2 }}>
-        <TextField label="Pieces" name="pieces" type="number" value={currentBike.pieces} onChange={handleInputChange} fullWidth />
+        <TextField label="Pieces" name="pieces" type="number" value={currentBike.pieces} onChange={handleInputChange} fullWidth InputProps={{ inputProps: { style: { fontSize: 20 }, step: 1, min: 1 }, sx: { '& input[type=number]::-webkit-inner-spin-button, & input[type=number]::-webkit-outer-spin-button': { WebkitAppearance: 'auto', width: 32, height: 32 } } }} />
         <FormControl fullWidth>
           <InputLabel id="category-label">Category</InputLabel>
           <Select labelId="category-label" id="category" name="category" value={currentBike.category} label="Category" onChange={handleSelectChange as any}>
             {categoryOptions.map(option => (<MenuItem key={option} value={option}>{option}</MenuItem>))}
           </Select>
         </FormControl>
-        <TextField label="Image Number" name="imageUrl" type="number" value={currentBike.imageUrl} onChange={handleImageUrlChange} placeholder="Enter image number" fullWidth helperText="JPEG file number in the jpeg folder" />
+        <TextField label="Image Number" name="imageUrl" type="text" value={currentBike.imageUrl} onChange={handleImageUrlChange} fullWidth />
       </Box>
       {/* Image preview */}
       {currentBike.imageUrl > 0 && (
@@ -113,8 +113,8 @@ export default function AddBikeForm({ onSuccess }: { onSuccess: () => void }) {
       )}
       {/* Row 5: Year, Weight, Location */}
       <Box sx={{ display: 'flex', gap: 2 }}>
-        <TextField label="Year" name="modelYear" type="number" value={currentBike.modelYear} onChange={handleInputChange} required fullWidth />
-        <TextField label="Weight (kg)" name="weight" type="number" value={currentBike.weight} onChange={handleInputChange} fullWidth />
+        <TextField label="Year" name="modelYear" type="text" value={currentBike.modelYear} onChange={handleInputChange} required fullWidth />
+        <TextField label="Weight (kg)" name="weight" type="text" value={currentBike.weight} onChange={handleInputChange} fullWidth />
         <TextField label="Location" name="location" value={currentBike.location} onChange={handleInputChange} fullWidth />
       </Box>
       {/* Row 6: All 3 price inputs */}
