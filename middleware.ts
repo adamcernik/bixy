@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 // Add paths that should be protected
-const protectedPaths = ['/admin', '/partners'];
+const protectedPaths = ['/admin', '/partners', '/stock'];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -35,6 +35,7 @@ export const config = {
   matcher: [
     '/catalog',
     '/admin/:path*',
-    '/partners/:path*'
+    '/partners/:path*',
+    '/stock/:path*'
   ]
 }; 

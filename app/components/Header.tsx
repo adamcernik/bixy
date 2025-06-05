@@ -6,9 +6,9 @@ import { getAssetPath } from '../utils/pathUtils';
 
 const menuItems = [
   { label: 'Katalog', href: '/catalog' },
-  { label: 'Second Hand', href: '/second-hand' },
   { label: 'Služby', href: '/services' },
   { label: 'Příběh', href: '/about' },
+  { label: 'Second Hand', href: '/second-hand' },
   { label: 'Kontakt', href: '/contact' },
 ];
 

@@ -11,6 +11,7 @@ export default function HomePage() {
   const [bikes, setBikes] = useState<Bike[]>([]);
   const [promotedModelNumbers, setPromotedModelNumbers] = useState<string[]>(['', '', '']);
   const [loading, setLoading] = useState(true);
+  const [activeHero, setActiveHero] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -24,6 +25,13 @@ export default function HomePage() {
       setLoading(false);
     };
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveHero((prev) => (prev === 0 ? 1 : 0));
+    }, 6000);
+    return () => clearInterval(interval);
   }, []);
 
   // Get promoted bikes by model number, fallback to latest bikes
@@ -43,29 +51,61 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen bg-white">
-      {/* Hero Section */}
+      {/* Hero Section Carousel */}
       <section className="relative w-full min-h-[500px] md:min-h-[600px] flex flex-col items-center justify-center bg-gray-100 overflow-hidden pb-8 md:pb-12">
-        <img
-          src={getAssetPath('/images/hero-background.jpeg')}
-          alt="Hero pozadí"
-          className="absolute inset-0 w-full h-full object-cover object-center"
-        />
-        {/* Centered bike image */}
-        <div className="relative z-20 flex flex-col items-center w-full">
+        {/* Hero Slides */}
+        {/* Slide 1 */}
+        <div
+          className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ${activeHero === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
+        >
           <img
-            src={getAssetPath('/images/hero-bike.png')}
-            alt="Hero kolo"
-            className="w-[60vw] max-w-[500px] drop-shadow-xl pointer-events-none select-none mx-auto"
-            style={{ maxHeight: '80%', objectFit: 'contain', marginBottom: '-15px' }}
+            src={getAssetPath('/images/hero-background.jpeg')}
+            alt="Hero pozadí"
+            className="absolute inset-0 w-full h-full object-cover object-center"
           />
-          <div className="mt-4 text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">Najděte své ideální elektrokolo</h1>
-            <p className="text-lg md:text-2xl mb-6 text-white drop-shadow">Dělám to dlouho, dělám to rád a jsem v tom dobrý.</p>
-            <Link href="/catalog">
-              <button className="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold shadow hover:bg-blue-700 transition-colors cursor-pointer select-none">
-                Zobrazit kola
-              </button>
-            </Link>
+          <div className="relative z-20 flex flex-col items-center w-full h-full justify-center">
+            <img
+              src={getAssetPath('/images/hero-bike.png')}
+              alt="Hero kolo"
+              className="w-[60vw] max-w-[500px] drop-shadow-xl pointer-events-none select-none mx-auto"
+              style={{ maxHeight: '80%', objectFit: 'contain', marginBottom: '-15px' }}
+            />
+            <div className="mt-4 text-center">
+              <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">Najděte své ideální elektrokolo</h1>
+              <p className="text-lg md:text-2xl mb-6 text-white drop-shadow">Dělám to dlouho, dělám to rád a jsem v tom dobrý.</p>
+              <Link href="/catalog">
+                <button className="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold shadow hover:bg-blue-700 transition-colors cursor-pointer select-none">
+                  Zobrazit kola
+                </button>
+              </Link>
+            </div>
+          </div>
+        </div>
+        {/* Slide 2 */}
+        <div
+          className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ${activeHero === 1 ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
+        >
+          <img
+            src={getAssetPath('/images/hero-background-city.jpg')}
+            alt="Hero pozadí město"
+            className="absolute inset-0 w-full h-full object-cover object-center"
+          />
+          <div className="relative z-20 flex flex-col items-center w-full h-full justify-center">
+            <img
+              src={getAssetPath('/images/846-18641.png')}
+              alt="Hero kolo město"
+              className="w-[60vw] max-w-[500px] drop-shadow-xl pointer-events-none select-none mx-auto"
+              style={{ maxHeight: '80%', objectFit: 'contain', marginBottom: '-15px' }}
+            />
+            <div className="mt-4 text-center">
+              <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">Objevte městskou mobilitu</h1>
+              <p className="text-lg md:text-2xl mb-6 text-white drop-shadow">Styl, výkon a pohodlí pro každodenní jízdu.</p>
+              <Link href="/catalog">
+                <button className="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold shadow hover:bg-blue-700 transition-colors cursor-pointer select-none">
+                  Zobrazit kola
+                </button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -91,7 +131,7 @@ export default function HomePage() {
                 <img
                   src={getAssetPath(`/jpeg/${bike.imageUrl}.jpeg`)}
                   alt={bike.modelName}
-                  className="w-full h-48 object-contain mb-4 bg-gray-50 rounded"
+                  className="w-full h-48 object-contain mb-4 bg-white rounded"
                   onError={(e) => {
                     (e.target as HTMLImageElement).src = getAssetPath('/jpeg/placeholder.jpeg');
                   }}

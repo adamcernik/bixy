@@ -60,11 +60,27 @@ export const signInWithGoogle = async (): Promise<UserData | null> => {
       };
       
       await setDoc(userRef, userData);
+      // Redirect to /stock after successful sign-in
+      if (window.location.pathname === '/login') {
+        const params = new URLSearchParams(window.location.search);
+        const from = params.get('from') || '/stock';
+        window.location.href = from;
+      } else {
+        window.location.href = '/stock';
+      }
       return userData;
     } else {
       // Update the lastLogin time
       const userData = userSnap.data() as UserData;
       await updateDoc(userRef, { lastLogin: now });
+      // Redirect to /stock after successful sign-in
+      if (window.location.pathname === '/login') {
+        const params = new URLSearchParams(window.location.search);
+        const from = params.get('from') || '/stock';
+        window.location.href = from;
+      } else {
+        window.location.href = '/stock';
+      }
       return userData;
     }
   } catch (error) {

@@ -7,6 +7,7 @@ import { Bike } from "../../models/Bike";
 import { getAssetPath } from "../../utils/pathUtils";
 import SizeGuideModal from "../../components/SizeGuideModal";
 import ImageZoomModal from "../../components/ImageZoomModal";
+import Link from "next/link";
 
 export default function BikeDetailSale2025Page() {
   const router = useRouter();
@@ -84,6 +85,7 @@ export default function BikeDetailSale2025Page() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 bg-white">
+      <Link href="/catalog-sale-2025" className="text-blue-600 hover:underline mb-4 inline-block">&larr; Zpět do katalogu</Link>
       <div className="flex flex-col lg:flex-row gap-8 items-start">
         {/* Image */}
         <div className="w-full lg:w-1/2">
@@ -195,12 +197,6 @@ export default function BikeDetailSale2025Page() {
               <span className="text-3xl font-bold text-green-700">{bike.priceAction.toLocaleString()} Kč</span>
             )}
           </div>
-          <button
-            className="mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-300"
-            onClick={() => router.back()}
-          >
-            Zpět do katalogu
-          </button>
           {bike.link && (
             <a
               href={bike.link}

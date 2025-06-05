@@ -31,17 +31,17 @@ export default function SizeGuideModal({ open, onClose }: SizeGuideModalProps) {
         </IconButton>
         
         <div className="pt-4">
-          <h2 className="text-2xl font-bold mb-4">Size Guide</h2>
+          <h2 className="text-2xl font-bold mb-4">Tabulka velikostí</h2>
           
           <div className="overflow-auto">
             <table className="min-w-full border-collapse border border-gray-300">
               <thead>
                 <tr className="bg-gray-50">
                   <th className="border border-gray-300 px-6 py-3 text-left text-gray-900 font-semibold">
-                    Height
+                    Výška
                   </th>
                   <th className="border border-gray-300 px-6 py-3 text-left text-gray-900 font-semibold">
-                    Recommended Frame Size
+                    Doporučená velikost rámu
                   </th>
                 </tr>
               </thead>
