@@ -147,7 +147,18 @@ export default function CatalogPage() {
 
   // Calculate total pieces (sum of pieces for all grouped bikes)
   const totalPieces = useMemo(() => {
-    return sortedGroupedBikes.reduce((sum, group) => sum + group.reduce((gSum, bike) => gSum + (Number(bike.pieces) || 0), 0), 0);
+    console.log('Calculating total pieces...');
+    const total = sortedGroupedBikes.reduce((sum, group) => {
+      const groupTotal = group.reduce((gSum, bike) => {
+        const pieces = Number(bike.pieces) || 0;
+        console.log(`Bike ${bike.modelName}: pieces = "${bike.pieces}" (type: ${typeof bike.pieces}) -> converted to ${pieces}`);
+        return gSum + pieces;
+      }, 0);
+      console.log(`Group total: ${groupTotal}`);
+      return sum + groupTotal;
+    }, 0);
+    console.log(`Final total pieces: ${total}`);
+    return total;
   }, [sortedGroupedBikes]);
 
   if (loading) {
