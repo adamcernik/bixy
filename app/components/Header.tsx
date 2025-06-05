@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { getAssetPath } from '../utils/pathUtils';
+import { useAuth } from '../context/AuthContext';
 
 const menuItems = [
   { label: 'Katalog', href: '/catalog' },
@@ -12,8 +13,14 @@ const menuItems = [
   { label: 'Kontakt', href: '/contact' },
 ];
 
+const adminMenuItems = [
+  { label: 'Inventory', href: '/stock' },
+  { label: 'Export', href: '/export' },
+];
+
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { user, isAdmin } = useAuth();
 
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
@@ -38,6 +45,11 @@ export default function Header() {
                 {item.label}
               </Link>
             ))}
+            {isAdmin && adminMenuItems.map((item) => (
+              <Link key={item.href} href={item.href} className="text-gray-600 hover:text-gray-900 cursor-pointer select-none">
+                {item.label}
+              </Link>
+            ))}
           </nav>
           {/* Hamburger Icon for Mobile */}
           <button
@@ -54,6 +66,16 @@ export default function Header() {
         {menuOpen && (
           <nav className="md:hidden bg-white border-t border-gray-200 py-2">
             {menuItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="block px-4 py-2 text-gray-700 hover:bg-gray-100 cursor-pointer select-none"
+                onClick={() => setMenuOpen(false)}
+              >
+                {item.label}
+              </Link>
+            ))}
+            {isAdmin && adminMenuItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}

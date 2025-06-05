@@ -14,6 +14,7 @@ interface AuthContextType {
   user: User | null;
   userData: UserData | null;
   loading: boolean;
+  isAdmin: boolean;
   loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -22,6 +23,7 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   userData: null,
   loading: true,
+  isAdmin: false,
   loginWithGoogle: async () => {},
   logout: async () => {}
 });
@@ -38,6 +40,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -47,8 +50,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
         // Get additional user data from Firestore
         const userDataFromFirestore = await getCurrentUserData(user);
         setUserData(userDataFromFirestore);
+        setIsAdmin(userDataFromFirestore?.isAdmin || false);
       } else {
         setUserData(null);
+        setIsAdmin(false);
       }
       
       setLoading(false);
@@ -61,6 +66,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       const userData = await signInWithGoogle();
       setUserData(userData);
+      setIsAdmin(userData?.isAdmin || false);
     } catch (error) {
       console.error("Error logging in with Google:", error);
     }
@@ -70,6 +76,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       await signOutUser();
       setUserData(null);
+      setIsAdmin(false);
     } catch (error) {
       console.error("Error logging out:", error);
     }
@@ -79,6 +86,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     user,
     userData,
     loading,
+    isAdmin,
     loginWithGoogle,
     logout
   };
