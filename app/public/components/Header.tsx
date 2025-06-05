@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { getAssetPath } from '../utils/pathUtils';
-import { useAuth } from '../context/AuthContext';
+import { getAssetPath } from '../../utils/pathUtils';
+import { useAuth } from '../../context/AuthContext';
 
 const menuItems = [
   { label: 'Katalog', href: '/catalog' },
