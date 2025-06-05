@@ -14,8 +14,8 @@ const menuItems = [
 ];
 
 const adminMenuItems = [
-  { label: 'Inventory', href: '/stock' },
-  { label: 'Export', href: '/export' },
+  { label: 'Inventory', href: '/admin/inventory' },
+  { label: 'Export', href: '/admin/export' },
 ];
 
 export default function Header() {

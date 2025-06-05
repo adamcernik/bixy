@@ -68,26 +68,26 @@ export const signInWithGoogle = async (): Promise<UserData | null> => {
       };
       
       await setDoc(userRef, userData);
-      // Redirect to /stock after successful sign-in
+      // Redirect to /admin/inventory after successful sign-in
       if (window.location.pathname === '/login') {
         const params = new URLSearchParams(window.location.search);
-        const from = params.get('from') || '/stock';
+        const from = params.get('from') || '/admin/inventory';
         window.location.href = from;
       } else {
-        window.location.href = '/stock';
+        window.location.href = '/admin/inventory';
       }
       return userData;
     } else {
       // Update the lastLogin time
       const userData = userSnap.data() as UserData;
       await updateDoc(userRef, { lastLogin: now });
-      // Redirect to /stock after successful sign-in
+      // Redirect to /admin/inventory after successful sign-in
       if (window.location.pathname === '/login') {
         const params = new URLSearchParams(window.location.search);
-        const from = params.get('from') || '/stock';
+        const from = params.get('from') || '/admin/inventory';
         window.location.href = from;
       } else {
-        window.location.href = '/stock';
+        window.location.href = '/admin/inventory';
       }
       return userData;
     }

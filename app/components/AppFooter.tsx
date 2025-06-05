@@ -6,7 +6,7 @@ import { getAssetPath } from '../utils/pathUtils';
 
 export default function AppFooter() {
   const pathname = usePathname();
-  const isAdminPage = pathname === '/stock';
+  const isAdminPage = pathname.startsWith('/admin');
 
   return (
     <Box component="footer" className="bg-white py-8">
