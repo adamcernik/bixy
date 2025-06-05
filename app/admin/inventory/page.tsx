@@ -2,34 +2,34 @@
 
 import { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
-import ConnectionIndicator from '../components/ConnectionIndicator';
-import UserAvatar from '../components/UserAvatar';
-import AccessDenied from '../components/AccessDenied';
-import SignInMessage from '../components/SignInMessage';
-import ResponsiveHeader from '../components/ResponsiveHeader';
+import ConnectionIndicator from '../../components/ConnectionIndicator';
+import UserAvatar from '../../components/UserAvatar';
+import AccessDenied from '../../components/AccessDenied';
+import SignInMessage from '../../components/SignInMessage';
+import ResponsiveHeader from '../../components/ResponsiveHeader';
 import { Box, Tabs, Tab, Button, IconButton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import PeopleIcon from '@mui/icons-material/People';
 import { usePathname, useRouter } from 'next/navigation';
-import { useAuth } from '../context/AuthContext';
-import { getAssetPath } from '../utils/pathUtils';
-import { Bike } from '../models/Bike';
-import { getBikes, addBike, updateBike, deleteBike } from '../services/bikeService';
-import PromotedBikesAdmin from '../components/PromotedBikesAdmin';
+import { useAuth } from '../../context/AuthContext';
+import { getAssetPath } from '../../utils/pathUtils';
+import { Bike } from '../../models/Bike';
+import { getBikes, addBike, updateBike, deleteBike } from '../../services/bikeService';
+import PromotedBikesAdmin from '../../components/PromotedBikesAdmin';
 
 // Dynamically import the BikeDataGrid component to avoid server-side rendering issues with Firebase
-const BikeDataGrid = dynamic(() => import('../components/BikeDataGrid'), {
+const BikeDataGrid = dynamic(() => import('../../components/BikeDataGrid'), {
   ssr: false,
   loading: () => <p>Loading bike inventory...</p>
 });
 
 // Dynamically import the UserManagement component
-const UserManagement = dynamic(() => import('../components/UserManagement'), {
+const UserManagement = dynamic(() => import('../../components/UserManagement'), {
   ssr: false
 });
 
 // Dynamically import the AddBikeModal component
-const AddBikeModal = dynamic(() => import('../components/AddBikeModal'), {
+const AddBikeModal = dynamic(() => import('../../components/AddBikeModal'), {
   ssr: false
 });
 
@@ -54,7 +54,7 @@ export default function StockPage() {
     const checkDbConnection = async () => {
       try {
         // We'll use the ConnectionIndicator's logic but just to set state
-        const { db } = await import('../firebase/config');
+        const { db } = await import('../../firebase/config');
         const { collection, getDocs } = await import('firebase/firestore');
         await getDocs(collection(db, 'bikes'));
       } catch (err) {
