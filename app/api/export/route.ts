@@ -52,44 +52,58 @@ export async function POST(request: Request) {
     });
 
     // Add data with alternating row colors and model name as hyperlink
+    const colMaxLens: number[] = Array(columns.length).fill(0);
     bikes.forEach((bike, i) => {
       const row: any[] = [];
-      columns.forEach((col: string) => {
+      columns.forEach((col: string, colIdx: number) => {
+        let cellValue = '';
         switch(col) {
           case 'modelNumber':
-            row.push(bike.modelNumber || '');
+            cellValue = bike.modelNumber || '';
+            row.push(cellValue);
             break;
           case 'size':
-            row.push(bike.size || '');
+            cellValue = bike.size || '';
+            row.push(cellValue);
             break;
           case 'modelName':
-            // Add hyperlink if link exists
+            cellValue = bike.modelName || '';
             if (bike.link) {
-              row.push({ text: bike.modelName || '', hyperlink: bike.link });
+              row.push({ text: cellValue, hyperlink: bike.link, font: { color: { argb: 'FF0000FF' }, underline: true } });
             } else {
-              row.push(bike.modelName || '');
+              row.push(cellValue);
             }
             break;
           case 'battery':
-            row.push(bike.battery || '');
+            cellValue = bike.battery || '';
+            row.push(cellValue);
             break;
           case 'pieces':
-            row.push(bike.pieces || 0);
+            cellValue = (bike.pieces || 0).toString();
+            row.push(cellValue);
             break;
           case 'note':
-            row.push(bike.note || '');
+            cellValue = bike.note || '';
+            row.push(cellValue);
             break;
           case 'priceRetail':
-            row.push(bike.priceRetail || 0);
+            cellValue = (bike.priceRetail || 0).toString();
+            row.push(cellValue);
             break;
           case 'priceAdam':
-            row.push(bike.priceAdam || 0);
+            cellValue = (bike.priceAdam || 0).toString();
+            row.push(cellValue);
             break;
           case 'priceAction':
-            row.push(bike.priceAction || 0);
+            cellValue = (bike.priceAction || 0).toString();
+            row.push(cellValue);
             break;
           default:
             row.push('');
+        }
+        // Track max length for auto-fit
+        if (typeof cellValue === 'string' && cellValue.length > colMaxLens[colIdx]) {
+          colMaxLens[colIdx] = cellValue.length;
         }
       });
       const addedRow = worksheet.addRow(row);
@@ -113,6 +127,27 @@ export async function POST(request: Request) {
       fgColor: { argb: 'FFE0E0E0' }
     };
     worksheet.getRow(1).height = 28;
+
+    // Auto-fit column widths, with min/max and special cases
+    columns.forEach((col: string, idx: number) => {
+      let width = colMaxLens[idx] + 4; // Add padding
+      if (col === 'modelName') width = Math.max(width, 30);
+      if (col === 'modelNumber') width = Math.max(width, 18);
+      if (['size', 'battery', 'pieces'].includes(col)) width = Math.min(width, 12);
+      width = Math.max(8, Math.min(width, 40));
+      worksheet.getColumn(idx + 1).width = width;
+      worksheet.getColumn(idx + 1).alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+    });
+
+    // Style hyperlinks in model name column
+    const modelNameIdx = columns.indexOf('modelName');
+    if (modelNameIdx !== -1) {
+      worksheet.getColumn(modelNameIdx + 1).eachCell((cell, rowNumber) => {
+        if (rowNumber > 1 && cell.hyperlink) {
+          cell.font = { color: { argb: 'FF0000FF' }, underline: true };
+        }
+      });
+    }
 
     // Freeze header row and model number column
     worksheet.views = [
