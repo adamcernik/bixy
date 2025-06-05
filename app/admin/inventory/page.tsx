@@ -8,7 +8,6 @@ import { useAuth } from '../../context/AuthContext';
 import { getAssetPath } from '../../utils/pathUtils';
 import { Bike } from '../../models/Bike';
 import { getBikes } from '../../lib/services/bike/bikeService';
-import PromotedBikesAdmin from '../components/PromotedBikesAdmin';
 
 const BikeDataGrid = dynamic(() => import('../components/BikeDataGrid'), {
   ssr: false,
@@ -96,8 +95,7 @@ export default function StockPage() {
   return (
     <main className="flex min-h-screen flex-col bg-white">
       <div className="w-full p-4">
-        <BikeDataGrid />
-        {isAdmin && <PromotedBikesAdmin bikes={bikes} />}
+        <BikeDataGrid onEditBike={(bike) => router.push(`/admin/editbike/${bike.id}`)} />
       </div>
     </main>
   );
