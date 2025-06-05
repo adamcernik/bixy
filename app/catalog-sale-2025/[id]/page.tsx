@@ -106,7 +106,7 @@ export default function BikeDetailSale2025Page() {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{bike.modelName}</h1>
           <div className="flex flex-wrap items-center gap-2 mb-4">
             <span className="text-lg text-gray-700 font-medium">{bike.manufacturer}</span>
-            {bike.isEbike && (
+            {bike.battery && bike.battery.trim() !== '' && (
               <span className="bg-blue-600 text-white px-2 py-1 rounded text-xs font-semibold">Elektrokolo</span>
             )}
             <span className="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs">{bike.category}</span>

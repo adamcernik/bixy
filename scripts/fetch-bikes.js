@@ -27,7 +27,7 @@ async function getEBikes() {
         id: doc.id,
         ...doc.data()
       }))
-      .filter(bike => bike.isEbike); // Only get e-bikes
+      .filter(bike => bike.battery && bike.battery.trim() !== ''); // Only get e-bikes (bikes with battery info)
     
     console.log('E-bikes:', bikes);
     return bikes;

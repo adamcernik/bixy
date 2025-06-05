@@ -57,7 +57,7 @@ const initialBikeState: Bike = {
   color: '',
   size: '',
   category: '',
-  isEbike: false,
+  isEbike: false, // Will be determined by battery field content
   pieces: 1,
   priceRetail: 0,
   priceAction: 0,
@@ -211,7 +211,7 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog, onEditBi
     const field = params.field;
     const id = params.id;
     // Don't enter edit mode for these fields or if we're clicking on a checkbox
-    if (field === 'actions' || field === 'manufacturer' || field === 'isEbike' || field === 'imageUrl' || field === '__check__') {
+    if (field === 'actions' || field === 'manufacturer' || field === 'imageUrl' || field === '__check__') {
       return;
     }
     // Always set the clicked cell to edit mode
@@ -444,24 +444,7 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog, onEditBi
         return params.value || 'No category';
       }
     },
-    { 
-      field: 'isEbike', 
-      headerName: 'E-Bike', 
-      width: columnWidths.isEbike || 100,
-      type: 'boolean',
-      editable: false,
-      renderCell: (params: GridRenderCellParams) => {
-        return (
-          <Switch
-            checked={params.value}
-            onChange={(e) => handleToggleEbike(params.row.id as string, params.value as boolean)}
-            onClick={(e) => e.stopPropagation()}
-            color="primary"
-            size="small"
-          />
-        );
-      }
-    },
+
     { field: 'pieces', headerName: 'Pieces', width: columnWidths.pieces || 80, type: 'number', editable: true },
     { 
       field: 'priceRetail', 
@@ -555,28 +538,7 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog, onEditBi
     }
   ];
 
-  const handleToggleEbike = async (id: string, currentValue: boolean) => {
-    try {
-      const bikeToUpdate = bikes.find(bike => bike.id === id);
-      if (bikeToUpdate) {
-        const updatedBike = { ...bikeToUpdate, isEbike: !currentValue };
-        await updateBike(id, updatedBike);
-        fetchBikes();
-        setSnackbar({
-          open: true,
-          message: `E-bike status ${!currentValue ? 'enabled' : 'disabled'}`,
-          severity: 'success'
-        });
-      }
-    } catch (error) {
-      console.error("Error toggling e-bike status:", error);
-      setSnackbar({
-        open: true,
-        message: 'Error updating e-bike status',
-        severity: 'error'
-      });
-    }
-  };
+
 
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false });
@@ -741,13 +703,13 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog, onEditBi
           const cellElement = target.closest('.MuiDataGrid-cell');
           if (cellElement) {
             const field = cellElement.getAttribute('data-field');
-            if (field && field !== 'actions' && field !== 'modelNumber' && field !== 'isEbike' && field !== 'imageUrl') {
+            if (field && field !== 'actions' && field !== 'modelNumber' && field !== 'imageUrl') {
               event.defaultMuiPrevented = true;
             }
           }
         }}
         isCellEditable={(params) => {
-          return params.field !== 'actions' && params.field !== 'modelNumber' && params.field !== 'isEbike' && params.field !== 'imageUrl';
+          return params.field !== 'actions' && params.field !== 'modelNumber' && params.field !== 'imageUrl';
         }}
         getCellClassName={(params) => {
           // Apply yellow background to modified cells

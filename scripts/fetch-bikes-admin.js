@@ -21,7 +21,7 @@ async function getEBikes() {
         id: doc.id,
         ...doc.data()
       }))
-      .filter(bike => bike.isEbike); // Only get e-bikes
+      .filter(bike => bike.battery && bike.battery.trim() !== ''); // Only get e-bikes (bikes with battery info)
     
     // Write to retail/bikes.json
     const outputPath = path.join(__dirname, '../retail/bikes.json');

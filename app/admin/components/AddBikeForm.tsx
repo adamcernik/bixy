@@ -64,6 +64,9 @@ export default function AddBikeForm({ onSuccess, initialBike, onSave, isEdit }: 
   const handleSave = async () => {
     setSaving(true);
     try {
+      // Determine if bike is an e-bike based on battery field content
+      const hasBattery = Boolean(currentBike.battery && typeof currentBike.battery === 'string' && currentBike.battery.trim() !== '');
+      
       const bikeToSave: Bike = {
         ...currentBike,
         modelYear: (typeof currentBike.modelYear === 'string' && (currentBike.modelYear as string).trim() === '') || currentBike.modelYear === undefined ? 0 : Number(currentBike.modelYear),
@@ -72,6 +75,7 @@ export default function AddBikeForm({ onSuccess, initialBike, onSave, isEdit }: 
         priceRetail: (typeof currentBike.priceRetail === 'string' && (currentBike.priceRetail as string).trim() === '') || currentBike.priceRetail === undefined ? 0 : Number(currentBike.priceRetail),
         priceAction: (typeof currentBike.priceAction === 'string' && (currentBike.priceAction as string).trim() === '') || currentBike.priceAction === undefined ? 0 : Number(currentBike.priceAction),
         priceReseller: (typeof currentBike.priceReseller === 'string' && (currentBike.priceReseller as string).trim() === '') || currentBike.priceReseller === undefined ? 0 : Number(currentBike.priceReseller),
+        isEbike: hasBattery // Automatically set based on battery field
       };
       if (onSave) {
         await onSave(bikeToSave);

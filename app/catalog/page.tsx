@@ -98,8 +98,9 @@ export default function CatalogPage() {
       const matchesCategory = !selectedCategory || bike.category === selectedCategory;
       // Battery filter
       const matchesBattery = !selectedBattery || bike.battery === selectedBattery;
-      // E-bike filter
-      const matchesEbike = !showOnlyEbikes || bike.isEbike;
+      // E-bike filter - determined by battery field content
+      const isEbike = Boolean(bike.battery && bike.battery.trim() !== '');
+      const matchesEbike = !showOnlyEbikes || isEbike;
       // Height range filter
       const matchesHeight = !selectedHeightRange || 
         (bike.size && sizeToHeightRange[selectedHeightRange]?.some(size => {
@@ -221,11 +222,9 @@ export default function CatalogPage() {
                     <div className="absolute top-2 right-2 flex gap-2">
                       {firstBike.battery && (
                         <span className={`${getBatteryColor(firstBike.battery)} text-white px-2 py-1 rounded text-xs font-semibold flex items-center gap-1`}>
-                          {firstBike.isEbike && (
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="white" className="w-4 h-4 inline-block">
-                              <path d="M11.3 1.046A1 1 0 0 1 13 2v5h3a1 1 0 0 1 .8 1.6l-7 10A1 1 0 0 1 8 18v-5H5a1 1 0 0 1-.8-1.6l7-10a1 1 0 0 1 .1-.094z" />
-                            </svg>
-                          )}
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="white" className="w-4 h-4 inline-block">
+                            <path d="M11.3 1.046A1 1 0 0 1 13 2v5h3a1 1 0 0 1 .8 1.6l-7 10A1 1 0 0 1 8 18v-5H5a1 1 0 0 1-.8-1.6l7-10a1 1 0 0 1 .1-.094z" />
+                          </svg>
                           {firstBike.battery}
                         </span>
                       )}
