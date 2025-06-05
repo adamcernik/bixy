@@ -1,7 +1,7 @@
 'use client';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import ResponsiveHeader from '../components/ResponsiveHeader';
+import AdminHeader from '../components/AdminHeader';
 import { AuthProvider } from '../context/AuthContext';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -21,11 +21,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <AuthProvider>
-      <ResponsiveHeader
-        activeSection={activeSection}
-        setActiveSection={setActiveSection}
-        onAddNewBike={handleAddNewBike}
-      />
+      <AdminHeader activeSection={activeSection} />
       <div className="w-full p-4">
         {children}
       </div>
