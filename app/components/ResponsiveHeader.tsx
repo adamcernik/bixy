@@ -71,83 +71,85 @@ export default function ResponsiveHeader({
   return (
     <AppBar position="sticky" elevation={2} sx={{ backgroundColor: '#fff', color: 'inherit' }}>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
-        {/* Left: Headline and mobile menu button */}
+        {/* Left: Headline */}
         <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
-          {/* Mobile menu button */}
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            onClick={handleMobileMenuToggle}
-            sx={{ display: { sm: 'none' }, mr: 1 }}
-          >
-            <MenuIcon />
-          </IconButton>
           <Typography
             variant="h6"
             component="div"
             sx={{ fontWeight: 'bold', color: '#000D25', fontSize: { xs: '1.1rem', sm: '1.25rem' } }}
           >
-            Adam Bikes Admin
+            Biketime Sklad
           </Typography>
         </Box>
 
-        {/* Desktop menu */}
-        <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center', gap: 2, flex: 2, justifyContent: 'center' }}>
-          {menuItems.map((item) => (
+        {/* Desktop menu aligned right, hamburger and profile */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 2, justifyContent: 'flex-end' }}>
+          {/* Desktop menu (hidden on sm and below) */}
+          <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center', gap: 2 }}>
+            {menuItems.map((item) => (
+              <Button
+                key={item.key}
+                color={activeSection === item.key ? 'primary' : 'inherit'}
+                startIcon={item.icon}
+                href={item.href}
+                sx={{ fontWeight: activeSection === item.key ? 'bold' : 'normal' }}
+              >
+                {item.label}
+              </Button>
+            ))}
             <Button
-              key={item.key}
-              color={activeSection === item.key ? 'primary' : 'inherit'}
-              startIcon={item.icon}
-              href={item.href}
-              sx={{ fontWeight: activeSection === item.key ? 'bold' : 'normal' }}
+              variant="contained"
+              color="primary"
+              startIcon={<AddIcon />}
+              onClick={onAddNewBike}
+              sx={{ ml: 2 }}
             >
-              {item.label}
+              Add Bike
             </Button>
-          ))}
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={onAddNewBike}
-            sx={{ ml: 2 }}
+          </Box>
+          {/* Hamburger Icon for tablet and mobile, right side */}
+          <IconButton
+            edge="end"
+            color="inherit"
+            aria-label="menu"
+            onClick={handleMobileMenuToggle}
+            sx={{ display: { sm: 'flex', md: 'none' }, ml: 1 }}
           >
-            Add Bike
-          </Button>
-        </Box>
-
-        {/* Profile menu */}
-        <Box>
-          <IconButton color="inherit" onClick={handleProfileMenuOpen}>
-            <Avatar
-              sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}
-              src={user?.photoURL || undefined}
-            >
-              {user?.displayName?.charAt(0) || user?.email?.charAt(0) || 'U'}
-            </Avatar>
+            <MenuIcon />
           </IconButton>
-          <Menu
-            anchorEl={profileMenuAnchor}
-            open={Boolean(profileMenuAnchor)}
-            onClose={handleProfileMenuClose}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-          >
-            {user && (
-              <MenuItem disabled>
-                <Typography variant="body2" color="textSecondary">
-                  {user.email}
-                </Typography>
-              </MenuItem>
-            )}
-            <MenuItem onClick={handleLogout}>Sign Out</MenuItem>
-          </Menu>
+          {/* Profile menu */}
+          <Box>
+            <IconButton color="inherit" onClick={handleProfileMenuOpen}>
+              <Avatar
+                sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}
+                src={user?.photoURL || undefined}
+              >
+                {user?.displayName?.charAt(0) || user?.email?.charAt(0) || 'U'}
+              </Avatar>
+            </IconButton>
+            <Menu
+              anchorEl={profileMenuAnchor}
+              open={Boolean(profileMenuAnchor)}
+              onClose={handleProfileMenuClose}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+              {user && (
+                <MenuItem disabled>
+                  <Typography variant="body2" color="textSecondary">
+                    {user.email}
+                  </Typography>
+                </MenuItem>
+              )}
+              <MenuItem onClick={handleLogout}>Sign Out</MenuItem>
+            </Menu>
+          </Box>
         </Box>
       </Toolbar>
 
       {/* Mobile menu drawer */}
       <Drawer
-        anchor="left"
+        anchor="right"
         open={mobileMenuOpen}
         onClose={handleMobileMenuToggle}
       >
