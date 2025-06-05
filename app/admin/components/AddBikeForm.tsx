@@ -5,14 +5,14 @@ import { addBike, updateBike } from '../../lib/services/bike/bikeService';
 import { Bike } from '../../models/Bike';
 import { getAssetPath } from '../../utils/pathUtils';
 
-const initialBikeState: Bike = {
+const initialBikeState: any = {
   manufacturer: 'Bulls',
   modelName: '',
   modelNumber: '',
-  modelYear: new Date().getFullYear(),
-  weight: 0,
+  modelYear: '',
+  weight: '',
   frameMaterial: '',
-  imageUrl: 0,
+  imageUrl: '',
   link: '',
   location: '',
   battery: '',
@@ -21,9 +21,9 @@ const initialBikeState: Bike = {
   category: '',
   isEbike: false,
   pieces: 1,
-  priceRetail: 0,
-  priceAction: 0,
-  priceReseller: 0,
+  priceRetail: '',
+  priceAction: '',
+  priceReseller: '',
   note: ''
 };
 
@@ -41,7 +41,7 @@ export default function AddBikeForm({ onSuccess }: { onSuccess: () => void }) {
     const { name, value, type, checked } = e.target;
     setCurrentBike(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : type === 'number' ? Number(value) : value
+      [name]: type === 'checkbox' ? checked : value
     }));
   };
 
@@ -60,7 +60,16 @@ export default function AddBikeForm({ onSuccess }: { onSuccess: () => void }) {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await addBike(currentBike);
+      const bikeToSave: Bike = {
+        ...currentBike,
+        modelYear: (typeof currentBike.modelYear === 'string' && (currentBike.modelYear as string).trim() === '') || currentBike.modelYear === undefined ? 0 : Number(currentBike.modelYear),
+        weight: (typeof currentBike.weight === 'string' && (currentBike.weight as string).trim() === '') || currentBike.weight === undefined ? 0 : Number(currentBike.weight),
+        imageUrl: (typeof currentBike.imageUrl === 'string' && (currentBike.imageUrl as string).trim() === '') || currentBike.imageUrl === undefined ? 0 : Number(currentBike.imageUrl),
+        priceRetail: (typeof currentBike.priceRetail === 'string' && (currentBike.priceRetail as string).trim() === '') || currentBike.priceRetail === undefined ? 0 : Number(currentBike.priceRetail),
+        priceAction: (typeof currentBike.priceAction === 'string' && (currentBike.priceAction as string).trim() === '') || currentBike.priceAction === undefined ? 0 : Number(currentBike.priceAction),
+        priceReseller: (typeof currentBike.priceReseller === 'string' && (currentBike.priceReseller as string).trim() === '') || currentBike.priceReseller === undefined ? 0 : Number(currentBike.priceReseller),
+      };
+      await addBike(bikeToSave);
       onSuccess();
     } catch (error) {
       console.error("Error saving bike:", error);
@@ -110,9 +119,9 @@ export default function AddBikeForm({ onSuccess }: { onSuccess: () => void }) {
       </Box>
       {/* Row 6: All 3 price inputs */}
       <Box sx={{ display: 'flex', gap: 2 }}>
-        <TextField label="Retail Price" name="priceRetail" type="number" value={currentBike.priceRetail} onChange={handleInputChange} fullWidth />
-        <TextField label="Adam Price" name="priceAction" type="number" value={currentBike.priceAction} onChange={handleInputChange} fullWidth />
-        <TextField label="Reseller Price" name="priceReseller" type="number" value={currentBike.priceReseller} onChange={handleInputChange} fullWidth />
+        <TextField label="Retail Price" name="priceRetail" type="text" value={currentBike.priceRetail} onChange={handleInputChange} fullWidth />
+        <TextField label="Adam Price" name="priceAction" type="text" value={currentBike.priceAction} onChange={handleInputChange} fullWidth />
+        <TextField label="Reseller Price" name="priceReseller" type="text" value={currentBike.priceReseller} onChange={handleInputChange} fullWidth />
       </Box>
       {/* Product URL */}
       <TextField label="Product URL" name="link" value={currentBike.link} onChange={handleInputChange} fullWidth />
