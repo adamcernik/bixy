@@ -70,42 +70,56 @@ export default function AddBikeForm({ onSuccess }: { onSuccess: () => void }) {
   };
 
   return (
-    <Box component="form" sx={{ maxWidth: 700, mx: 'auto', p: 2, '& .MuiTextField-root': { m: 1, width: { xs: 'calc(100% - 16px)', sm: '47%' } }, display: 'flex', flexWrap: 'wrap', mt: 1 }} noValidate autoComplete="off">
+    <Box component="form" sx={{ maxWidth: 700, mx: 'auto', p: 2, display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }} noValidate autoComplete="off">
       <Typography variant="h5" sx={{ mb: 2, width: '100%' }}>Přidat nové kolo</Typography>
-      <TextField label="Manufacturer" name="manufacturer" value={currentBike.manufacturer} onChange={handleInputChange} disabled />
-      <TextField label="Model Name" name="modelName" value={currentBike.modelName} onChange={handleInputChange} required />
-      <TextField label="Model Year" name="modelYear" type="number" value={currentBike.modelYear} onChange={handleInputChange} required />
-      <TextField label="Weight (kg)" name="weight" type="number" value={currentBike.weight} onChange={handleInputChange} />
-      <TextField label="Frame Material" name="frameMaterial" value={currentBike.frameMaterial} onChange={handleInputChange} />
-      <Box sx={{ m: 1, width: { xs: 'calc(100% - 16px)', sm: '97%' } }}>
-        <TextField label="Image Number" name="imageUrl" type="number" value={currentBike.imageUrl} onChange={handleImageUrlChange} placeholder="Enter image number" fullWidth helperText="Enter the number of the JPEG file in the jpeg folder" InputProps={{ endAdornment: currentBike.imageUrl ? (<a href={getImagePath(currentBike.imageUrl)} target="_blank" rel="noopener noreferrer" style={{ marginLeft: '8px', color: '#1976d2', textDecoration: 'none' }}>View image</a>) : null }} />
-        {currentBike.imageUrl > 0 && (
-          <Box sx={{ mt: 1, display: 'flex', justifyContent: 'center', height: '100px' }}>
-            <img src={getImagePath(currentBike.imageUrl)} alt="Bike preview" style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} onError={e => { setImagePreviewError(true); (e.target as HTMLImageElement).src = getPlaceholderImage(); (e.target as HTMLImageElement).onerror = null; }} onLoad={() => setImagePreviewError(false)} />
-          </Box>
-        )}
+      {/* Row 1: Model number, Battery */}
+      <Box sx={{ display: 'flex', gap: 2 }}>
+        <TextField label="Model Number" name="modelNumber" value={currentBike.modelNumber} onChange={handleInputChange} required fullWidth />
+        <TextField label="Battery" name="battery" value={currentBike.battery} onChange={handleInputChange} fullWidth />
       </Box>
-      <TextField label="Location" name="location" value={currentBike.location} onChange={handleInputChange} />
-      <TextField label="Battery" name="battery" value={currentBike.battery} onChange={handleInputChange} />
-      <TextField label="Color" name="color" value={currentBike.color} onChange={handleInputChange} />
-      <TextField label="Size" name="size" value={currentBike.size} onChange={handleInputChange} />
-      <FormControl sx={{ m: 1, width: { xs: 'calc(100% - 16px)', sm: '47%' } }}>
-        <InputLabel id="category-label">Category</InputLabel>
-        <Select labelId="category-label" id="category" name="category" value={currentBike.category} label="Category" onChange={handleSelectChange as any}>
-          {categoryOptions.map(option => (<MenuItem key={option} value={option}>{option}</MenuItem>))}
-        </Select>
-      </FormControl>
-      <FormControlLabel control={<Switch checked={currentBike.isEbike} onChange={handleInputChange} name="isEbike" />} label="E-Bike" sx={{ m: 1, width: { xs: 'calc(100% - 16px)', sm: '47%' } }} />
-      <TextField label="Model Number" name="modelNumber" value={currentBike.modelNumber} onChange={handleInputChange} />
-      <TextField label="Product Link" name="link" value={currentBike.link} onChange={handleInputChange} />
-      <TextField label="Pieces" name="pieces" type="number" value={currentBike.pieces} onChange={handleInputChange} />
-      <TextField label="Retail Price" name="priceRetail" type="number" value={currentBike.priceRetail} onChange={handleInputChange} />
-      <TextField label="Action Price" name="priceAction" type="number" value={currentBike.priceAction} onChange={handleInputChange} />
-      <TextField label="Reseller Price" name="priceReseller" type="number" value={currentBike.priceReseller} onChange={handleInputChange} />
-      <TextField label="Notes" name="note" value={currentBike.note} onChange={handleInputChange} multiline rows={4} sx={{ m: 1, width: { xs: 'calc(100% - 16px)', sm: '97%' } }} />
-      <Box sx={{ width: '100%', mt: 2, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-        <Button variant="contained" color="primary" onClick={handleSave} disabled={saving}>Uložit</Button>
+      {/* Row 2: Model name */}
+      <TextField label="Model Name" name="modelName" value={currentBike.modelName} onChange={handleInputChange} required fullWidth />
+      {/* Row 3: Color, Size, Frame Material */}
+      <Box sx={{ display: 'flex', gap: 2 }}>
+        <TextField label="Color" name="color" value={currentBike.color} onChange={handleInputChange} fullWidth />
+        <TextField label="Size" name="size" value={currentBike.size} onChange={handleInputChange} fullWidth />
+        <TextField label="Frame Material" name="frameMaterial" value={currentBike.frameMaterial} onChange={handleInputChange} fullWidth />
       </Box>
+      {/* Row 4: Pieces, Category, Image Number */}
+      <Box sx={{ display: 'flex', gap: 2 }}>
+        <TextField label="Pieces" name="pieces" type="number" value={currentBike.pieces} onChange={handleInputChange} fullWidth />
+        <FormControl fullWidth>
+          <InputLabel id="category-label">Category</InputLabel>
+          <Select labelId="category-label" id="category" name="category" value={currentBike.category} label="Category" onChange={handleSelectChange as any}>
+            {categoryOptions.map(option => (<MenuItem key={option} value={option}>{option}</MenuItem>))}
+          </Select>
+        </FormControl>
+        <TextField label="Image Number" name="imageUrl" type="number" value={currentBike.imageUrl} onChange={handleImageUrlChange} placeholder="Enter image number" fullWidth helperText="JPEG file number in the jpeg folder" />
+      </Box>
+      {/* Image preview */}
+      {currentBike.imageUrl > 0 && (
+        <Box sx={{ mt: 1, display: 'flex', justifyContent: 'center', height: '100px' }}>
+          <img src={getImagePath(currentBike.imageUrl)} alt="Bike preview" style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} onError={e => { setImagePreviewError(true); (e.target as HTMLImageElement).src = getPlaceholderImage(); (e.target as HTMLImageElement).onerror = null; }} onLoad={() => setImagePreviewError(false)} />
+        </Box>
+      )}
+      {/* Row 5: Year, Weight, Location */}
+      <Box sx={{ display: 'flex', gap: 2 }}>
+        <TextField label="Year" name="modelYear" type="number" value={currentBike.modelYear} onChange={handleInputChange} required fullWidth />
+        <TextField label="Weight (kg)" name="weight" type="number" value={currentBike.weight} onChange={handleInputChange} fullWidth />
+        <TextField label="Location" name="location" value={currentBike.location} onChange={handleInputChange} fullWidth />
+      </Box>
+      {/* Row 6: All 3 price inputs */}
+      <Box sx={{ display: 'flex', gap: 2 }}>
+        <TextField label="Retail Price" name="priceRetail" type="number" value={currentBike.priceRetail} onChange={handleInputChange} fullWidth />
+        <TextField label="Adam Price" name="priceAction" type="number" value={currentBike.priceAction} onChange={handleInputChange} fullWidth />
+        <TextField label="Reseller Price" name="priceReseller" type="number" value={currentBike.priceReseller} onChange={handleInputChange} fullWidth />
+      </Box>
+      {/* Product URL */}
+      <TextField label="Product URL" name="link" value={currentBike.link} onChange={handleInputChange} fullWidth />
+      {/* Notes */}
+      <TextField label="Notes" name="note" value={currentBike.note} onChange={handleInputChange} multiline rows={4} fullWidth />
+      {/* Save button */}
+      <Button variant="contained" color="primary" onClick={handleSave} disabled={saving} sx={{ width: '100%', mt: 2, fontWeight: 'bold', fontSize: 20, py: 1.5 }}>SAVE</Button>
     </Box>
   );
 } 
