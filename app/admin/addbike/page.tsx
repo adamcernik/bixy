@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from 'next/navigation';
-import AddBikeForm from '../../components/AddBikeForm';
+import AddBikeForm from '../components/AddBikeForm';
 
 export default function AddBikePage() {
   const router = useRouter();

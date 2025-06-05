@@ -1,7 +1,7 @@
 'use client';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import AdminHeader from '../components/AdminHeader';
+import AdminHeader from './components/AdminHeader';
 import { AuthProvider } from '../context/AuthContext';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

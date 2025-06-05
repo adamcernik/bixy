@@ -5,8 +5,8 @@ import { useRouter, useParams } from "next/navigation";
 import { getBikes } from "../../services/bikeService";
 import { Bike } from "../../models/Bike";
 import { getAssetPath } from "../../utils/pathUtils";
-import SizeGuideModal from "../../components/SizeGuideModal";
-import ImageZoomModal from "../../components/ImageZoomModal";
+import SizeGuideModal from '../../public/components/SizeGuideModal';
+import ImageZoomModal from '../../admin/components/ImageZoomModal';
 import Link from "next/link";
 
 export default function BikeDetailSale2025Page() {

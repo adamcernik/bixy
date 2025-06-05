@@ -2,15 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import AccessDenied from '../../components/AccessDenied';
+import AccessDenied from '../components/AccessDenied';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 import { getAssetPath } from '../../utils/pathUtils';
 import { Bike } from '../../models/Bike';
 import { getBikes } from '../../services/bikeService';
-import PromotedBikesAdmin from '../../components/PromotedBikesAdmin';
+import PromotedBikesAdmin from '../components/PromotedBikesAdmin';
 
-const BikeDataGrid = dynamic(() => import('../../components/BikeDataGrid'), {
+const BikeDataGrid = dynamic(() => import('../components/BikeDataGrid'), {
   ssr: false,
   loading: () => <p>Loading bike inventory...</p>
 });
