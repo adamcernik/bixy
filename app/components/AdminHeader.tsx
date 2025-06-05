@@ -41,6 +41,7 @@ export default function AdminHeader({ activeSection }: { activeSection: string }
   const handleSignOut = async () => {
     await logout();
     setAvatarMenuAnchor(null);
+    router.push('/login');
   };
 
   return (
