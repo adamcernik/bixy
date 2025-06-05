@@ -177,7 +177,7 @@ export default function StockPage() {
     <main className="flex min-h-screen flex-col bg-white">
       <div className="w-full p-4">
         {activeSection === 'inventory' && (
-          <div className="h-[calc(100vh-100px)]">
+          <div>
             <BikeDataGrid
               openAddDialog={false}
               setOpenAddDialog={setOpenAddDialog}

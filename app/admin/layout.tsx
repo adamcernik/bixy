@@ -22,7 +22,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <AuthProvider>
       <AdminHeader activeSection={activeSection} />
-      <div className="w-full p-4">
+      <div className="w-full p-4 flex-1 flex flex-col">
         {children}
       </div>
     </AuthProvider>
