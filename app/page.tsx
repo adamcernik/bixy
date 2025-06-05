@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
-import { getBikes } from './services/bike/bikeService';
-import { getPromotedBikes } from './services/promoted/promotedService';
+import { getBikes } from './lib/services/bike/bikeService';
+import { getPromotedBikes } from './lib/services/promoted/promotedService';
 import { Bike } from './models/Bike';
 import { getAssetPath } from './utils/pathUtils';
 import Link from 'next/link';

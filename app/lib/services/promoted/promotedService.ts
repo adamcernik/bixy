@@ -1,5 +1,5 @@
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '../../firebase/config';
+import { db } from '../../../firebase/config';
 
 const PROMOTED_DOC = 'promoted/bikes';
 

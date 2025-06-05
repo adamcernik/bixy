@@ -1,6 +1,6 @@
 import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where } from "firebase/firestore";
-import { db } from "../../firebase/config";
-import { Bike } from "../../models/Bike";
+import { db } from "../../../firebase/config";
+import { Bike } from "../../../models/Bike";
 
 const COLLECTION_NAME = "bikes";
 const bikesCollection = collection(db, COLLECTION_NAME);
