@@ -24,12 +24,13 @@ import PeopleIcon from '@mui/icons-material/People';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useAuth } from '../context/AuthContext';
 import { getAssetPath } from '../utils/pathUtils';
+import { useRouter } from 'next/navigation';
 
 const menuItems = [
-  { key: 'inventory', label: 'Inventory', icon: <InventoryIcon /> },
-  { key: 'export', label: 'Export', icon: <UploadFileIcon />, href: '/export' },
-  { key: 'promoted', label: 'Promoted', icon: <AddIcon /> },
-  { key: 'users', label: 'Users', icon: <PeopleIcon /> },
+  { key: 'inventory', label: 'Inventory', icon: <InventoryIcon />, href: '/admin/inventory' },
+  { key: 'export', label: 'Export', icon: <UploadFileIcon />, href: '/admin/export' },
+  { key: 'promoted', label: 'Promoted', icon: <AddIcon />, href: '/admin/promoted' },
+  { key: 'users', label: 'Users', icon: <PeopleIcon />, href: '/admin/users' },
 ];
 
 export default function ResponsiveHeader({
@@ -44,6 +45,7 @@ export default function ResponsiveHeader({
   const [profileMenuAnchor, setProfileMenuAnchor] = useState<null | HTMLElement>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, userData, logout } = useAuth();
+  const router = useRouter();
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setProfileMenuAnchor(event.currentTarget);
@@ -60,9 +62,10 @@ export default function ResponsiveHeader({
     setMobileMenuOpen(!mobileMenuOpen);
   };
 
-  const handleSectionChange = (section: string) => {
+  const handleSectionChange = (section: string, href?: string) => {
     setActiveSection(section);
     setMobileMenuOpen(false);
+    if (href) router.push(href);
   };
 
   return (
@@ -91,29 +94,17 @@ export default function ResponsiveHeader({
 
         {/* Desktop menu */}
         <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center', gap: 2, flex: 2, justifyContent: 'center' }}>
-          {menuItems.map((item) =>
-            item.href ? (
-              <Button
-                key={item.key}
-                color={activeSection === item.key ? 'primary' : 'inherit'}
-                startIcon={item.icon}
-                href={item.href}
-                sx={{ fontWeight: activeSection === item.key ? 'bold' : 'normal' }}
-              >
-                {item.label}
-              </Button>
-            ) : (
-              <Button
-                key={item.key}
-                color={activeSection === item.key ? 'primary' : 'inherit'}
-                startIcon={item.icon}
-                onClick={() => setActiveSection(item.key)}
-                sx={{ fontWeight: activeSection === item.key ? 'bold' : 'normal' }}
-              >
-                {item.label}
-              </Button>
-            )
-          )}
+          {menuItems.map((item) => (
+            <Button
+              key={item.key}
+              color={activeSection === item.key ? 'primary' : 'inherit'}
+              startIcon={item.icon}
+              href={item.href}
+              sx={{ fontWeight: activeSection === item.key ? 'bold' : 'normal' }}
+            >
+              {item.label}
+            </Button>
+          ))}
           <Button
             variant="contained"
             color="primary"
@@ -162,34 +153,21 @@ export default function ResponsiveHeader({
       >
         <Box sx={{ width: 250 }}>
           <List>
-            {menuItems.map((item) =>
-              item.href ? (
-                <ListItem
-                  key={item.key}
-                  component="a"
-                  href={item.href}
-                  sx={{
-                    cursor: 'pointer',
-                    bgcolor: activeSection === item.key ? 'action.selected' : 'inherit'
-                  }}
-                >
-                  <ListItemIcon>{item.icon}</ListItemIcon>
-                  <ListItemText primary={item.label} />
-                </ListItem>
-              ) : (
-                <ListItem
-                  key={item.key}
-                  onClick={() => handleSectionChange(item.key)}
-                  sx={{ 
-                    cursor: 'pointer',
-                    bgcolor: activeSection === item.key ? 'action.selected' : 'inherit'
-                  }}
-                >
-                  <ListItemIcon>{item.icon}</ListItemIcon>
-                  <ListItemText primary={item.label} />
-                </ListItem>
-              )
-            )}
+            {menuItems.map((item) => (
+              <ListItem
+                key={item.key}
+                component="a"
+                href={item.href}
+                sx={{
+                  cursor: 'pointer',
+                  bgcolor: activeSection === item.key ? 'action.selected' : 'inherit'
+                }}
+                onClick={() => handleSectionChange(item.key, item.href)}
+              >
+                <ListItemIcon>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.label} />
+              </ListItem>
+            ))}
             <ListItem
               onClick={onAddNewBike}
               sx={{ cursor: 'pointer' }}

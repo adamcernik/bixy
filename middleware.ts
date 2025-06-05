@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// Add paths that should be protected
-const protectedPaths = ['/admin', '/partners', '/stock', '/export'];
+// Only protect /admin
+const protectedPaths = ['/admin'];
 
 // Get the base path based on environment
 const basePath = process.env.NODE_ENV === 'production' ? '/bixy' : '';
@@ -41,12 +41,8 @@ export const config = {
     '/catalog',
     '/admin/:path*',
     '/partners/:path*',
-    '/stock/:path*',
-    '/export/:path*',
     '/bixy/catalog',
     '/bixy/admin/:path*',
-    '/bixy/partners/:path*',
-    '/bixy/stock/:path*',
-    '/bixy/export/:path*'
+    '/bixy/partners/:path*'
   ]
 }; 
