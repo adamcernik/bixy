@@ -47,9 +47,8 @@ export default function StockPage() {
   const [bikes, setBikes] = useState<Bike[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const { user, userData, loading: authLoading } = useAuth();
-  const hasAccess = userData?.hasAccess || userData?.isAdmin;
-  const isAdmin = userData?.isAdmin;
+  const { user, userData, loading: authLoading, isAdmin } = useAuth();
+  const hasAccess = userData?.hasAccess || isAdmin;
 
   const pathname = usePathname();
   const basePath = process.env.NODE_ENV === 'production' ? '/bixy' : '';
@@ -88,11 +87,12 @@ export default function StockPage() {
 
   useEffect(() => {
     if (!user) {
-      return; // Don't redirect if not signed in, let the user see the sign-in screen
+      router.push(`${basePath}/login?from=${pathname}`);
+      return;
     }
 
     if (user && !hasAccess) {
-      router.push('/');
+      router.push(basePath || '/');
       return;
     }
 
@@ -108,7 +108,7 @@ export default function StockPage() {
     };
 
     fetchBikes();
-  }, [user, hasAccess, router]);
+  }, [user, hasAccess, router, pathname, basePath]);
 
   // Function to handle Add New Bike button click
   const handleAddNewBike = () => {
@@ -133,11 +133,7 @@ export default function StockPage() {
     }
   };
 
-  // Show nothing if not authenticated or not authorized (middleware will redirect)
-  if (!user || (user && !hasAccess)) {
-    return null;
-  }
-
+  // Show loading state while checking auth
   if (authLoading) {
     return (
       <main className="flex min-h-screen flex-col">
@@ -155,6 +151,11 @@ export default function StockPage() {
         </div>
       </main>
     );
+  }
+
+  // Show access denied if not authenticated or not authorized
+  if (!user || (user && !hasAccess)) {
+    return <AccessDenied />;
   }
 
   if (error) {
@@ -201,16 +202,11 @@ export default function StockPage() {
             />
           </div>
         )}
-        {activeSection === 'csv' && (
-          <div>
-            <CsvImporter />
-          </div>
-        )}
-        {activeSection === 'promoted' && (
-          <PromotedBikesAdmin bikes={bikes} />
-        )}
         {activeSection === 'users' && isAdmin && (
           <UserManagement open={true} onClose={() => {}} />
+        )}
+        {activeSection === 'promoted' && isAdmin && (
+          <PromotedBikesAdmin bikes={bikes} />
         )}
       </div>
       <AddBikeModal
