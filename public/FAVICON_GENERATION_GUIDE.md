@@ -1,7 +1,7 @@
 # Favicon Generation Guide for Adam Bikes
 
 ## Source File
-Use `public/images/adam-bikes-electric-cycling-logo.svg` as the source for generating all favicon sizes.
+Use `public/icon.svg` as the source for generating all favicon sizes.
 
 ## Required Favicon Files to Generate
 
