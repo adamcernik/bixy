@@ -43,7 +43,8 @@ export const getBikes = async (): Promise<Bike[]> => {
           priceRetail: 59990,
           priceAction: 54990,
           priceReseller: 49990,
-          note: 'Test bike'
+          note: 'Test bike',
+          isVisible: true
         };
         await addDoc(bikesCollection, testBike);
         const snapshotRetry = await getDocs(bikesCollection);
