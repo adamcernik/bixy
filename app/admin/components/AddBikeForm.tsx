@@ -24,7 +24,8 @@ const initialBikeState: any = {
   priceRetail: '',
   priceAction: '',
   priceReseller: '',
-  note: ''
+  note: '',
+  isVisible: true
 };
 
 const categoryOptions = ['MTB', 'Road', 'Gravel', 'City', 'Trekking', 'Kids', 'Other'];
@@ -75,7 +76,8 @@ export default function AddBikeForm({ onSuccess, initialBike, onSave, isEdit }: 
         priceRetail: (typeof currentBike.priceRetail === 'string' && (currentBike.priceRetail as string).trim() === '') || currentBike.priceRetail === undefined ? 0 : Number(currentBike.priceRetail),
         priceAction: (typeof currentBike.priceAction === 'string' && (currentBike.priceAction as string).trim() === '') || currentBike.priceAction === undefined ? 0 : Number(currentBike.priceAction),
         priceReseller: (typeof currentBike.priceReseller === 'string' && (currentBike.priceReseller as string).trim() === '') || currentBike.priceReseller === undefined ? 0 : Number(currentBike.priceReseller),
-        isEbike: hasBattery // Automatically set based on battery field
+        isEbike: hasBattery, // Automatically set based on battery field
+        isVisible: currentBike.isVisible !== false // Default to visible if undefined
       };
       if (onSave) {
         await onSave(bikeToSave);
@@ -139,6 +141,17 @@ export default function AddBikeForm({ onSuccess, initialBike, onSave, isEdit }: 
       <TextField label="Product URL" name="link" value={currentBike.link} onChange={handleInputChange} fullWidth />
       {/* Notes */}
       <TextField label="Notes" name="note" value={currentBike.note} onChange={handleInputChange} multiline rows={4} fullWidth />
+      {/* Visibility toggle */}
+      <FormControlLabel
+        control={
+          <Switch
+            checked={currentBike.isVisible !== false}
+            onChange={(e) => setCurrentBike(prev => ({ ...prev, isVisible: e.target.checked }))}
+            name="isVisible"
+          />
+        }
+        label="Visible in catalog"
+      />
       {/* Save button */}
       <Button variant="contained" color="primary" onClick={handleSave} disabled={saving} sx={{ width: '100%', mt: 2, fontWeight: 'bold', fontSize: 20, py: 1.5 }}>{isEdit ? 'ULOŽIT ZMĚNY' : 'SAVE'}</Button>
     </Box>

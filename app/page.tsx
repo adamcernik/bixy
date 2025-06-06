@@ -113,7 +113,7 @@ export default function HomePage() {
       {/* About & Value Proposition Section */}
       <section className="max-w-3xl mx-auto px-4 py-10 text-center">
         <p className="text-lg md:text-xl mb-6 text-gray-800">
-        Po letech pomoci cyklistům najít ideální kolo a poskytování odborného servisu jsem vytvořil tyto stránky, abych své zkušenosti přiblížil přímo vám. Specializuji se výhradně na elektrokola značky Bulls, kterou velmi dobře a dlouho znám. Úzce spolupracuji s oficiálními dodavateli kol, motorů, baterií a dalších komponentů, což mi umožňuje nabídnout nejen kvalitní produkty, ale i spolehlivý servis a podporu. Ať už dojíždíte do práce, objevujete nové stezky nebo si jen užíváte svobodu elektrické jízdy, jsem tu, abych vám pomohl najít perfektní elektrokolo za skvělou cenu.
+        Roky pomáhám lidem najít jejich ideální elektrokolo. Specializuji se na Bulls kola, která důvěrně znám, a díky přímé spolupráci s dodavateli nabízím skvělé ceny i servis. Ať už potřebujete kolo do práce nebo na výlety, najdeme společně to pravé.
         </p>
       </section>
 

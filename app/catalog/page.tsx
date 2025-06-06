@@ -94,6 +94,8 @@ export default function CatalogPage() {
   // Filter and sort bikes (before grouping)
   const filteredBikes = useMemo(() => {
     return bikes.filter(bike => {
+      // Visibility filter - only show visible bikes in catalog
+      const isVisible = bike.isVisible !== false; // Default to visible if field doesn't exist
       // Category filter
       const matchesCategory = !selectedCategory || bike.category === selectedCategory;
       // Battery filter
@@ -108,7 +110,7 @@ export default function CatalogPage() {
           const rangeSize = parseInt(size);
           return !isNaN(bikeSize) && !isNaN(rangeSize) && bikeSize === rangeSize;
         }));
-      return matchesCategory && matchesBattery && matchesEbike && matchesHeight;
+      return isVisible && matchesCategory && matchesBattery && matchesEbike && matchesHeight;
     });
   }, [bikes, selectedCategory, selectedBattery, showOnlyEbikes, selectedHeightRange]);
 

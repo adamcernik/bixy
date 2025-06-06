@@ -19,4 +19,5 @@ export interface Bike {
   priceAction: number; // Special price for us - CZK
   priceReseller: number; // Normal price for resellers - CZK
   note: string; // Freetext with occasional information
+  isVisible: boolean; // Whether the bike is visible in the catalog
 } 

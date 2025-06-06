@@ -38,6 +38,8 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { getBikes, addBike, updateBike, deleteBike } from '../../lib/services/bike/bikeService';
 import { Bike } from '../../models/Bike';
 import { getAssetPath } from '../../utils/pathUtils';
@@ -62,7 +64,8 @@ const initialBikeState: Bike = {
   priceRetail: 0,
   priceAction: 0,
   priceReseller: 0,
-  note: ''
+  note: '',
+  isVisible: true // New bikes are visible by default
 };
 
 // Define color palette for bikes
@@ -197,6 +200,26 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog, onEditBi
           severity: 'error'
         });
       }
+    }
+  };
+
+  const handleVisibilityToggle = (bike: Bike) => async () => {
+    try {
+      const updatedBike = { ...bike, isVisible: !bike.isVisible };
+      await updateBike(bike.id!, updatedBike);
+      fetchBikes();
+      setSnackbar({
+        open: true,
+        message: `Bike ${updatedBike.isVisible ? 'shown' : 'hidden'} in catalog`,
+        severity: 'success'
+      });
+    } catch (error) {
+      console.error("Error updating bike visibility:", error);
+      setSnackbar({
+        open: true,
+        message: 'Error updating bike visibility',
+        severity: 'error'
+      });
     }
   };
 
@@ -516,25 +539,34 @@ export default function BikeDataGrid({ openAddDialog, setOpenAddDialog, onEditBi
       field: 'actions',
       type: 'actions',
       headerName: 'Actions',
-      width: columnWidths.actions || 70,
-      getActions: ({ id, row }) => [
-        <GridActionsCellItem
-          icon={<EditIcon />}
-          label="Edit"
-          onClick={() => {
-            console.log("BikeDataGrid: Edit button clicked for bike:", row);
-            console.log("BikeDataGrid: Bike ID:", (row as Bike).id);
-            onEditBike && onEditBike(row as Bike);
-          }}
-          color="primary"
-        />, 
-        <GridActionsCellItem
-          icon={<DeleteIcon />}
-          label="Delete"
-          onClick={handleDeleteClick(id as string)}
-          color="inherit"
-        />
-      ],
+      width: columnWidths.actions || 120,
+      getActions: ({ id, row }) => {
+        const bike = row as Bike;
+        return [
+          <GridActionsCellItem
+            icon={bike.isVisible ? <VisibilityIcon /> : <VisibilityOffIcon />}
+            label={bike.isVisible ? "Hide from catalog" : "Show in catalog"}
+            onClick={handleVisibilityToggle(bike)}
+            color={bike.isVisible ? "primary" : "default"}
+          />,
+          <GridActionsCellItem
+            icon={<EditIcon />}
+            label="Edit"
+            onClick={() => {
+              console.log("BikeDataGrid: Edit button clicked for bike:", row);
+              console.log("BikeDataGrid: Bike ID:", (row as Bike).id);
+              onEditBike && onEditBike(row as Bike);
+            }}
+            color="primary"
+          />, 
+          <GridActionsCellItem
+            icon={<DeleteIcon />}
+            label="Delete"
+            onClick={handleDeleteClick(id as string)}
+            color="inherit"
+          />
+        ];
+      },
     }
   ];
 
