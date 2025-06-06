@@ -36,7 +36,6 @@ export const metadata: Metadata = {
   themeColor: '#ffffff',
   other: {
     'msapplication-TileColor': '#da532c',
-    'msapplication-TileImage': '/ms-icon-144x144.png',
   },
 };
 
